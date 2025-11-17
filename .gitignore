@@ -19,6 +19,9 @@ output/
 output_*/
 *.out
 
+# Debug directories
+debug/
+
 # Temporary runtime or generated files
 *.tmp
 *.bak
