@@ -1,0 +1,25 @@
+# Python cache and temporary files
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+*.log
+.DS_Store
+
+# Environment and config files
+.env
+*.env
+*.venv
+venv/
+.envrc
+
+# Output directories
+output/
+*/output/
+output_*/
+*.out
+
+# Temporary runtime or generated files
+*.tmp
+*.bak
+*.swp
