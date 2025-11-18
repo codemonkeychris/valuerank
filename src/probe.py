@@ -8,13 +8,14 @@ import argparse
 import hashlib
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Dict, List, Optional, Tuple
+from typing import Any, Dict, List, Optional, Tuple
 from concurrent.futures import ThreadPoolExecutor, as_completed
 
 from .config_loader import (
     RuntimeConfig,
     ScenariosConfig,
     ScenarioConfig,
+    ScenarioDict,
     load_runtime_config,
     load_scenarios,
     filter_scenarios_by_status,
@@ -45,6 +46,11 @@ def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(description="ValueRank Probe")
     parser.add_argument("--runtime", default="config/runtime.yaml", help="Path to runtime.yaml")
     parser.add_argument("--scenarios", default="config/scenarios.yaml", help="Path to scenarios.yaml")
+    parser.add_argument(
+        "--scenarios-folder",
+        default=None,
+        help="Optional folder containing experiment scenario files (matching exp-*.*.ya?ml). Runs each file sequentially.",
+    )
     parser.add_argument(
         "--values-rubric", default="config/values_rubric.yaml", help="Path to values_rubric.yaml"
     )
@@ -226,10 +232,24 @@ def infer_provider(model_name: str) -> str:
     return infer_provider_from_model(model_name)
 
 
-def run_probe() -> None:
-    args = parse_args()
-    runtime_cfg = load_runtime_config(Path(args.runtime))
-    scenarios_cfg = load_scenarios(Path(args.scenarios))
+def _discover_scenario_files(folder: Path) -> List[Path]:
+    patterns = ["exp-*.*.yaml", "exp-*.*.yml"]
+    files: List[Path] = []
+    for pattern in patterns:
+        files.extend(folder.rglob(pattern))
+    return sorted({p.resolve() for p in files if p.is_file()})
+
+
+def _run_probe_for_file(
+    args: argparse.Namespace,
+    runtime_cfg: RuntimeConfig,
+    scenarios_path: Path,
+    run_id: Optional[str] = None,
+    run_dir: Optional[Path] = None,
+    model_mapping: Optional[Dict[str, str]] = None,
+    write_manifest: bool = True,
+) -> Dict[str, Any]:
+    scenarios_cfg = load_scenarios(scenarios_path)
     statuses = {s.strip() for s in (args.status or "").split(",") if s.strip()}
     if not statuses:
         statuses = {"in_progress"}
@@ -237,7 +257,9 @@ def run_probe() -> None:
     if args.single_scenario:
         scenarios_to_run = [s for s in scenarios_to_run if s.id == args.single_scenario]
         if not scenarios_to_run:
-            raise ValueError(f"Scenario '{args.single_scenario}' not found in {args.scenarios} or did not match requested statuses.")
+            raise ValueError(
+                f"Scenario '{args.single_scenario}' not found in {scenarios_path} or did not match requested statuses."
+            )
     if not scenarios_to_run:
         print("[Probe] No scenarios match the requested status filter; exiting.")
         return
@@ -246,18 +268,15 @@ def run_probe() -> None:
     probe_mode = args.probe_mode
     print(f"[Probe] mode={probe_mode}")
 
-    auto_run_id = generate_run_id(
+    run_id = run_id or generate_run_id(
         timestamp_format=runtime_cfg.timestamp_format,
         timezone=runtime_cfg.environment.get("timezone", "PDT"),
     )
-    if args.run_id:
-        print(
-            f"[Probe] Warning: --run-id is ignored for directory naming. Using timestamp-based run id {auto_run_id}."
-        )
-    run_id = auto_run_id
+    if args.run_id and not run_dir:
+        print(f"[Probe] Warning: --run-id is ignored for directory naming. Using timestamp-based run id {run_id}.")
     timestamp_label = run_id
     output_root = Path(args.output_dir) if args.output_dir else runtime_cfg.output_dir
-    run_dir = output_root / run_id
+    run_dir = run_dir or output_root / run_id
     ensure_directory(run_dir)
 
     temperature = runtime_cfg.defaults.get("temperature", 0)
@@ -382,7 +401,12 @@ def run_probe() -> None:
         )
         return scenario.id, scenario_result, transcript_filename
 
-    model_mapping: Dict[str, str] = {}
+    if model_mapping is None:
+        model_mapping = {}
+        for index, target_model in enumerate(runtime_cfg.target_models, start=1):
+            anon_id = f"anon_model_{index:03d}"
+            model_mapping[anon_id] = target_model
+
     print(f"[Probe] Starting run {run_id}")
     print(f"[Probe] Target models: {', '.join(runtime_cfg.target_models)}")
     print(
@@ -390,11 +414,6 @@ def run_probe() -> None:
         + ", ".join(scenario.id for scenario in scenarios_to_run)
     )
     print(f"[Probe] Thread workers: {max_workers}")
-
-    # Build model mapping up front
-    for index, target_model in enumerate(runtime_cfg.target_models, start=1):
-        anon_id = f"anon_model_{index:03d}"
-        model_mapping[anon_id] = target_model
 
     # Fully parallel across models and scenarios
     with ThreadPoolExecutor(max_workers=max_workers) as executor:
@@ -410,20 +429,101 @@ def run_probe() -> None:
             anon_id, scenario_id = futures_map[future]
             _, _, transcript_filename = future.result()
             print(f"[Probe]    <- Completed {scenario_id} for {anon_id}, wrote {transcript_filename}")
-    manifest = create_run_manifest(
-        run_id=run_id,
-        probe_model=probe_model_label,
-        judge_model=runtime_cfg.judge_model,
-        scenarios_cfg=scenarios_cfg,
-        runtime_cfg=runtime_cfg,
-        model_mapping=model_mapping,
-        scenarios_path=Path(args.scenarios),
-        values_rubric_path=Path(args.values_rubric),
-    )
-    save_yaml(run_dir / "run_manifest.yaml", manifest)
-    print("[Probe] Manifest written to run_manifest.yaml")
+    if write_manifest:
+        manifest = create_run_manifest(
+            run_id=run_id,
+            probe_model=probe_model_label,
+            judge_model=runtime_cfg.judge_model,
+            scenarios_cfg=scenarios_cfg,
+            runtime_cfg=runtime_cfg,
+            model_mapping=model_mapping,
+            scenarios_path=scenarios_path,
+            values_rubric_path=Path(args.values_rubric),
+        )
+        save_yaml(run_dir / "run_manifest.yaml", manifest)
+        print("[Probe] Manifest written to run_manifest.yaml")
 
     print(f"[Probe] Completed run {run_id}. Outputs written to {run_dir}")
+    return {
+        "run_id": run_id,
+        "run_dir": run_dir,
+        "scenarios_cfg": scenarios_cfg,
+        "scenario_ids": [s.id for s in scenarios_to_run],
+        "preamble": scenarios_cfg.preamble,
+        "followups": scenarios_cfg.followup_items,
+        "model_mapping": model_mapping,
+    }
+
+
+def run_probe() -> None:
+    args = parse_args()
+    runtime_cfg = load_runtime_config(Path(args.runtime))
+    if args.scenarios_folder:
+        folder = Path(args.scenarios_folder)
+        if not folder.exists():
+            raise FileNotFoundError(f"scenarios folder not found: {folder}")
+        scenario_files = _discover_scenario_files(folder)
+        if not scenario_files:
+            raise FileNotFoundError(f"No scenario files matching exp-*.*.ya?ml found under {folder}")
+        print(f"[Probe] Running {len(scenario_files)} scenario file(s) from {folder}")
+        shared_run_id = generate_run_id(
+            timestamp_format=runtime_cfg.timestamp_format,
+            timezone=runtime_cfg.environment.get("timezone", "PDT"),
+        )
+        shared_run_dir = (Path(args.output_dir) if args.output_dir else runtime_cfg.output_dir) / shared_run_id
+        ensure_directory(shared_run_dir)
+        combined_scenarios: Dict[str, ScenarioConfig] = {}
+        combined_contents: List[str] = []
+        shared_model_mapping: Dict[str, str] = {
+            f"anon_model_{idx:03d}": model for idx, model in enumerate(runtime_cfg.target_models, start=1)
+        }
+        first_preamble = None
+        first_followups: Optional[List[Tuple[str, str]]] = None
+        for scenarios_path in scenario_files:
+            print(f"[Probe] === Running scenarios from: {scenarios_path}")
+            combined_contents.append(f"# File: {scenarios_path}\n" + scenarios_path.read_text(encoding="utf-8"))
+            result = _run_probe_for_file(
+                args,
+                runtime_cfg,
+                scenarios_path,
+                run_id=shared_run_id,
+                run_dir=shared_run_dir,
+                model_mapping=shared_model_mapping,
+                write_manifest=False,
+            )
+            for scenario in result["scenarios_cfg"].scenario_list:
+                if scenario.id in combined_scenarios:
+                    print(f"[Probe] Warning: duplicate scenario id {scenario.id} across files; keeping first.")
+                    continue
+                combined_scenarios[scenario.id] = scenario
+            if first_preamble is None:
+                first_preamble = result["preamble"]
+            if first_followups is None:
+                first_followups = result["followups"]
+        combined_cfg = ScenariosConfig(
+            version=None,
+            preamble=first_preamble or "",
+            followups=dict(first_followups or []),
+            golden_runs={},
+            scenarios=ScenarioDict({sid: sc for sid, sc in sorted(combined_scenarios.items())}),
+        )
+        combined_path = shared_run_dir / "scenarios_combined.yaml"
+        combined_path.write_text("\n\n".join(combined_contents), encoding="utf-8")
+        manifest = create_run_manifest(
+            run_id=shared_run_id,
+            probe_model=runtime_cfg.probe_model if args.probe_mode == "ai" else "static",
+            judge_model=runtime_cfg.judge_model,
+            scenarios_cfg=combined_cfg,
+            runtime_cfg=runtime_cfg,
+            model_mapping=shared_model_mapping,
+            scenarios_path=combined_path,
+            values_rubric_path=Path(args.values_rubric),
+        )
+        save_yaml(shared_run_dir / "run_manifest.yaml", manifest)
+        print(f"[Probe] Manifest written to run_manifest.yaml for shared run {shared_run_id}")
+        print(f"[Probe] Completed shared run {shared_run_id}. Outputs written to {shared_run_dir}")
+    else:
+        _run_probe_for_file(args, runtime_cfg, Path(args.scenarios))
 
 
 if __name__ == "__main__":
