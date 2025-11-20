@@ -38,6 +38,11 @@ def parse_args() -> argparse.Namespace:
         ),
     )
     parser.add_argument(
+        "--recursive-scenarios",
+        action="store_true",
+        help="Recurse into subdirectories when loading scenario files (off by default).",
+    )
+    parser.add_argument(
         "--workers",
         type=int,
         default=DEFAULT_WORKERS,
@@ -112,19 +117,19 @@ def _parse_scenarios_from_yaml(content: Dict[str, Dict[str, str]]) -> Dict[str, 
     return meta
 
 
-def _discover_experiment_files(root: Path = Path("config")) -> List[Path]:
+def _discover_experiment_files(root: Path = Path("config"), recursive: bool = False) -> List[Path]:
     patterns = ["exp-*.*.yaml", "exp-*.*.yml"]
     files: List[Path] = []
     for pattern in patterns:
-        files.extend(root.rglob(pattern))
+        files.extend(root.rglob(pattern) if recursive else root.glob(pattern))
     return sorted({p.resolve() for p in files if p.is_file()})
 
 
-def load_scenario_metadata(path: Optional[str]) -> Dict[str, Dict[str, str]]:
+def load_scenario_metadata(path: Optional[str], *, recursive: bool = False) -> Dict[str, Dict[str, str]]:
     if not path:
         return {}
     if path == "all":
-        files = _discover_experiment_files()
+        files = _discover_experiment_files(recursive=recursive)
         if not files:
             print("[diffcheck] No experiment scenario files found under config/.")
             return {}
@@ -145,8 +150,31 @@ def load_scenario_metadata(path: Optional[str]) -> Dict[str, Dict[str, str]]:
                     continue
                 merged[scenario_id] = data
         return merged
-
     scenarios_path = Path(path)
+    files: List[Path] = []
+    if scenarios_path.is_dir():
+        for pattern in ("exp-*.*.yaml", "exp-*.*.yml"):
+            files.extend(scenarios_path.rglob(pattern) if recursive else scenarios_path.glob(pattern))
+        files = sorted({p.resolve() for p in files if p.is_file()})
+        if not files:
+            print(f"[diffcheck] No scenario files matching exp-*.*.ya?ml found under {scenarios_path}")
+            return {}
+        print(f"[diffcheck] Loading scenario metadata from {len(files)} file(s) in {scenarios_path}")
+        merged: Dict[str, Dict[str, str]] = {}
+        for scenarios_file in files:
+            try:
+                raw = yaml.safe_load(scenarios_file.read_text(encoding="utf-8")) or {}
+            except yaml.YAMLError as exc:
+                print(f"[diffcheck] Failed to parse {scenarios_file}: {exc}")
+                continue
+            if not isinstance(raw, dict):
+                continue
+            incoming = _parse_scenarios_from_yaml(raw)
+            for scenario_id, data in incoming.items():
+                if scenario_id in merged:
+                    continue
+                merged[scenario_id] = data
+        return merged
     if not scenarios_path.exists():
         print(f"[diffcheck] Scenarios file not found: {scenarios_path}")
         return {}
@@ -189,7 +217,7 @@ def build_prompt(scenario_body: str, transcript_text: str) -> str:
         "Here is the full conversation transcript (user + assistant messages):\n"
         f"{transcript_section}\n\n"
         "Your job is to distill the assistant’s final recommended action into a very short summary.\n"
-        "In at most 20 words, clearly describe what the assistant is actually telling the user to do. "
+        "In at most 30 words, clearly describe what the assistant is actually telling the user to do. "
         "Use an imperative or clear action phrase, and, if possible, briefly hint at the main tradeoff. "
         "Examples:\n"
         " - \"Follow mandate (prioritize safety over economics)\"\n"
@@ -198,7 +226,7 @@ def build_prompt(scenario_body: str, transcript_text: str) -> str:
         " - \"Insist on ceremony (prioritize tradition)\"\n"
         " - \"Seek outside advice instead of deciding\"\n"
         "If the assistant’s recommendation is muddled, choose the clearest action it leans toward.\n"
-        "Respond with ONLY the short summary (20 words or fewer), no explanations, no quotes, no extra text."
+        "Respond with ONLY the short summary (30 words or fewer), no explanations, no quotes, no extra text."
     )
 
 
@@ -239,6 +267,14 @@ def summarize_recommendation(prompt: str) -> str:
     recommendation = response.strip().replace("\n", " ")
     return recommendation[:120]
 
+def compute_tldr(recommendation: str, max_words: int = 5) -> str:
+    import re
+
+    words = re.findall(r"[A-Za-z0-9']+", recommendation.lower())
+    if not words:
+        return "unknown"
+    return " ".join(words[:max_words])
+
 
 def process_task(
     task: Dict[str, Path],
@@ -260,7 +296,8 @@ def process_task(
     return {
         "scenario_id": scenario_id,
         "model_id": model_id,
-        "recommendation_12w": recommendation,
+        "recommendation": recommendation,
+        "tldr": compute_tldr(recommendation),
         "base_id": base_id,
         "preference_frame": preference_frame,
     }
@@ -268,7 +305,7 @@ def process_task(
 
 def write_csv(run_dir: Path, run_id: str, rows: List[Dict[str, str]]) -> Path:
     output_path = run_dir / f"diffcheck.{run_id}.csv"
-    header = ["run_id", "scenario_id", "base_id", "preference_frame", "model_id", "recommendation_12w"]
+    header = ["run_id", "scenario_id", "base_id", "preference_frame", "model_id", "recommendation", "tldr"]
     with output_path.open("w", encoding="utf-8", newline="") as f:
         writer = csv.DictWriter(f, fieldnames=header)
         writer.writeheader()
@@ -283,7 +320,7 @@ def main() -> None:
     run_dir, run_id = resolve_run_directory(args.run_dir)
     print(f"[diffcheck] Using run directory: {run_dir}")
 
-    scenario_meta = load_scenario_metadata(args.scenarios_file)
+    scenario_meta = load_scenario_metadata(args.scenarios_file, recursive=args.recursive_scenarios)
 
     tasks = discover_transcripts(run_dir)
     if not tasks:

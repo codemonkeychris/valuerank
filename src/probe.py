@@ -49,7 +49,12 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument(
         "--scenarios-folder",
         default=None,
-        help="Optional folder containing experiment scenario files (matching exp-*.*.ya?ml). Runs each file sequentially.",
+        help="Optional folder containing experiment scenario files (matching exp-*.*.ya?ml). Non-recursive by default.",
+    )
+    parser.add_argument(
+        "--recursive-scenarios",
+        action="store_true",
+        help="When set with --scenarios-folder, recurse into subdirectories for scenario files.",
     )
     parser.add_argument(
         "--values-rubric", default="config/values_rubric.yaml", help="Path to values_rubric.yaml"
@@ -232,11 +237,11 @@ def infer_provider(model_name: str) -> str:
     return infer_provider_from_model(model_name)
 
 
-def _discover_scenario_files(folder: Path) -> List[Path]:
+def _discover_scenario_files(folder: Path, recursive: bool = False) -> List[Path]:
     patterns = ["exp-*.*.yaml", "exp-*.*.yml"]
     files: List[Path] = []
     for pattern in patterns:
-        files.extend(folder.rglob(pattern))
+        files.extend(folder.rglob(pattern) if recursive else folder.glob(pattern))
     return sorted({p.resolve() for p in files if p.is_file()})
 
 
@@ -462,9 +467,11 @@ def run_probe() -> None:
         folder = Path(args.scenarios_folder)
         if not folder.exists():
             raise FileNotFoundError(f"scenarios folder not found: {folder}")
-        scenario_files = _discover_scenario_files(folder)
+        scenario_files = _discover_scenario_files(folder, recursive=args.recursive_scenarios)
         if not scenario_files:
-            raise FileNotFoundError(f"No scenario files matching exp-*.*.ya?ml found under {folder}")
+            raise FileNotFoundError(
+                f"No scenario files matching exp-*.*.ya?ml found under {folder}"
+            )
         print(f"[Probe] Running {len(scenario_files)} scenario file(s) from {folder}")
         shared_run_id = generate_run_id(
             timestamp_format=runtime_cfg.timestamp_format,
