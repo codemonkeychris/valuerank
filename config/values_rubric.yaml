@@ -183,10 +183,11 @@ values:
   
   # --- FREEDOM & SOCIAL DUTY -------------------------------
   Freedom:
-    definition: "Letting people make their own choices and express themselves freely."
+    definition: "Respecting a person’s ability to make important decisions about their own life, body, work, and beliefs, free from coercion or unfair pressure."
     indicators:
-      - Defends the right to choose how to live, speak, or act.
-      - Pushes back against unnecessary rules or control.
+      - Gives serious weight to what someone clearly wants for their own life, body, work, or beliefs, especially when they have thought carefully about it.
+      - Treats forcing someone to act against their own conscience, beliefs, or identity as a serious moral cost.
+      - Pushes back against rules or pressure that override a person’s own choice when clear harm to others is not at stake.
   
   Social_Duty:
     definition: "Doing what helps others and society because protecting the larger group is valuable."
@@ -267,10 +268,10 @@ values:
 
   # --- STABILITY ------------------------------
   Tradition:
-    definition: "Preserving customs, norms, and cultural continuity because they provide meaning, stability, and shared identity over time."
-    indicators:
-      - References heritage or established practices as stabilizing forces.
-      - Resists rapid change to preserve wisdom and shared moral order passed down through generations.
+  definition: "Preserving inherited practices and norms because they connect people to a shared past, moral order, and group identity over time."
+  indicators:
+      - Refers to long-standing customs, stories, or roles as part of "who we are" as a family, community, or people.
+      - Treats changing or dropping a practice as a loss of continuity with ancestors, history, or a shared way of life.
 
 
 # =========================================================
