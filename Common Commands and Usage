@@ -1,0 +1,11 @@
+Probe Usage
+
+python3 -m src.probe \
+  --scenarios-folder "scenarios/Building_Planning_Economics_vs_Environment" \
+  --output-dir output
+
+Summary
+
+python3 -m src.summary \
+  --scenarios-file scenarios/Building_Planning_Economics_vs_Environment \
+  --workers 6
