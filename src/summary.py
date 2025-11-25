@@ -22,6 +22,7 @@ from .llm_adapters import AdapterHTTPError, MockLLMAdapter, REGISTRY, normalize_
 
 DEFAULT_WORKERS = 6
 SUMMARY_MODEL = "gpt-5"
+SUMMARY_COST_PER_CALL_USD = 0.01
 
 
 def parse_args() -> argparse.Namespace:
@@ -379,15 +380,21 @@ def main() -> None:
     print(f"[summary] Found {len(tasks)} transcript(s). Summarizing with {workers} worker(s)...")
 
     results: List[Dict[str, str]] = []
+    total_tasks = len(tasks)
     with ThreadPoolExecutor(max_workers=workers) as executor:
-        for result in executor.map(lambda t: process_task(t, scenario_meta), tasks):
-            print(f"[summary] {result['model_id']}.{result['scenario_id']}")
+        for idx, result in enumerate(executor.map(lambda t: process_task(t, scenario_meta), tasks), start=1):
+            print(f"[summary] {idx}/{total_tasks}-{result['model_name']}.{result['scenario_id']}")
             result["run_id"] = run_id
             results.append(result)
 
     results.sort(key=lambda r: (str(r.get("scenario_number", "")), r.get("scenario_id", ""), r.get("model_name", "")))
     csv_path = write_csv(run_dir, run_id, results, variable_names)
     print(f"[summary] Wrote {len(results)} rows to {csv_path}")
+    cost_estimate = len(results) * SUMMARY_COST_PER_CALL_USD
+    print(
+        f"[summary] Estimated cost: ${cost_estimate:.2f} "
+        f"(~${SUMMARY_COST_PER_CALL_USD:.2f} per {SUMMARY_MODEL} call)"
+    )
 
 
 if __name__ == "__main__":

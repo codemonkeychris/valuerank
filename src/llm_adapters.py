@@ -50,6 +50,8 @@ PROVIDER_PREFIX_MAP = {
     "anthropic": "anthropic",
     "xai": "xai",
     "google": "google",
+    "deepseek": "deepseek",
+    "mistral": "mistral",
 }
 MAX_SEED_VALUE = 2**63 - 1
 MAX_SEED_VALUE_31 = 2**31 - 1
@@ -176,6 +178,8 @@ def _prepare_generation_params(
         presence_penalty = None
         frequency_penalty = None
         n = None
+        if temperature is not None and top_p is not None:
+            top_p = None
     params: Dict[str, Any] = {}
     debug_meta: Dict[str, str] = {}
     deterministic = _is_reasoning_model(model)
@@ -644,6 +648,144 @@ class XAIAdapter(BaseLLMAdapter):
             raise AdapterHTTPError("Unexpected xAI response format.") from exc
 
 
+@dataclass
+class DeepseekAdapter(BaseLLMAdapter):
+    """
+    Adapter for Deepseek chat completions API (OpenAI-compatible schema).
+    """
+
+    api_key: Optional[str] = None
+    base_url: str = "https://api.deepseek.com/v1/chat/completions"
+    timeout: int = DEFAULT_TIMEOUT
+
+    def __post_init__(self) -> None:
+        self.api_key = self.api_key or os.getenv("DEEPSEEK_API_KEY")
+
+    def generate(
+        self,
+        model: str,
+        messages: List[Dict[str, str]],
+        temperature: Optional[float],
+        max_tokens: int,
+        run_seed: Optional[int] = None,
+        debug: bool = False,
+        status_label: Optional[str] = None,
+        response_format: Optional[Dict[str, Any]] = None,
+        top_p: Optional[float] = None,
+        presence_penalty: Optional[float] = None,
+        frequency_penalty: Optional[float] = None,
+        n: Optional[int] = None,
+    ) -> str:
+        if not self.api_key:
+            raise AdapterHTTPError("DEEPSEEK_API_KEY is not set.")
+        headers = {
+            "Authorization": f"Bearer {self.api_key}",
+            "Content-Type": "application/json",
+        }
+        vendor = "deepseek"
+        param_payload = _prepare_generation_params(
+            model,
+            vendor,
+            temperature=temperature,
+            top_p=top_p,
+            presence_penalty=presence_penalty,
+            frequency_penalty=frequency_penalty,
+            n=n,
+            debug=debug,
+        )
+        max_tokens = min(max_tokens, 8192)
+        payload = {
+            "model": model,
+            "messages": messages,
+            "max_tokens": max_tokens,
+        }
+        payload.update(param_payload)
+        _ensure_text_response_format(payload, model=model, response_format=response_format, debug=debug)
+        request_timeout = _resolve_timeout_for_model(model, self.timeout)
+        data = _post_json_with_param_retry(
+            self.base_url,
+            headers,
+            payload,
+            model=model,
+            timeout=request_timeout,
+            debug=debug,
+            status_label=status_label,
+        )
+        try:
+            return _extract_message_content(data["choices"][0]["message"])
+        except (KeyError, IndexError, TypeError) as exc:
+            raise AdapterHTTPError("Unexpected Deepseek response format.") from exc
+
+
+@dataclass
+class MistralAdapter(BaseLLMAdapter):
+    """
+    Adapter for Mistral chat completions API (OpenAI-compatible schema).
+    """
+
+    api_key: Optional[str] = None
+    base_url: str = "https://api.mistral.ai/v1/chat/completions"
+    timeout: int = DEFAULT_TIMEOUT
+
+    def __post_init__(self) -> None:
+        self.api_key = self.api_key or os.getenv("MISTRAL_API_KEY")
+
+    def generate(
+        self,
+        model: str,
+        messages: List[Dict[str, str]],
+        temperature: Optional[float],
+        max_tokens: int,
+        run_seed: Optional[int] = None,
+        debug: bool = False,
+        status_label: Optional[str] = None,
+        response_format: Optional[Dict[str, Any]] = None,
+        top_p: Optional[float] = None,
+        presence_penalty: Optional[float] = None,
+        frequency_penalty: Optional[float] = None,
+        n: Optional[int] = None,
+    ) -> str:
+        if not self.api_key:
+            raise AdapterHTTPError("MISTRAL_API_KEY is not set.")
+        headers = {
+            "Authorization": f"Bearer {self.api_key}",
+            "Content-Type": "application/json",
+        }
+        vendor = "mistral"
+        param_payload = _prepare_generation_params(
+            model,
+            vendor,
+            temperature=temperature,
+            top_p=top_p,
+            presence_penalty=presence_penalty,
+            frequency_penalty=frequency_penalty,
+            n=n,
+            debug=debug,
+        )
+        payload = {
+            "model": model,
+            "messages": messages,
+            "max_tokens": max_tokens,
+        }
+        payload.update(param_payload)
+        _ensure_text_response_format(payload, model=model, response_format=response_format, debug=debug)
+        request_timeout = _resolve_timeout_for_model(model, self.timeout)
+        data = _post_json_with_param_retry(
+            self.base_url,
+            headers,
+            payload,
+            model=model,
+            timeout=request_timeout,
+            debug=debug,
+            status_label=status_label,
+        )
+        try:
+            return _extract_message_content(data["choices"][0]["message"])
+        except (KeyError, IndexError, TypeError) as exc:
+            raise AdapterHTTPError("Unexpected Mistral response format.") from exc
+
+
+
 def infer_provider_from_model(model: str) -> str:
     prefix, _ = _split_provider_prefix(model)
     if prefix and prefix in PROVIDER_PREFIX_MAP:
@@ -657,6 +799,10 @@ def infer_provider_from_model(model: str) -> str:
         return "xai"
     if "gemini" in lowered:
         return "google"
+    if "deepseek" in lowered:
+        return "deepseek"
+    if "mistral" in lowered:
+        return "mistral"
     return "mock"
 
 
@@ -684,6 +830,12 @@ class AdapterRegistry:
             self.register("anthropic", AnthropicAdapter())
         if os.getenv("XAI_API_KEY"):
             self.register("xai", XAIAdapter())
+        if os.getenv("DEEPSEEK_API_KEY"):
+            self.register("deepseek", DeepseekAdapter())
+        if os.getenv("MISTRAL_API_KEY"):
+            self.register("mistral", MistralAdapter())
+        if os.getenv("BAIDU_API_KEY") and os.getenv("BAIDU_SECRET_KEY"):
+            self.register("baidu", BaiduErnieAdapter())
 
     def register(self, provider: str, adapter: BaseLLMAdapter) -> None:
         self._adapters[provider] = adapter

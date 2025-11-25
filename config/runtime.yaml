@@ -1,11 +1,13 @@
 defaults:
   probe_model: "gpt-5-nano"
   target_models:
-    - "xai:grok-3"
+    - "xai:grok-4-1-fast-reasoning"
     - "openai:gpt-4.1"
-    - "anthropic:claude-sonnet-4-0"
+    - "anthropic:claude-sonnet-4-5"
+    - "deepseek:deepseek-chat"
+    - "mistral:mistral-large-latest"
   scenario_selection: "all"
-  threads: 6
+  threads: 12
   judge_threads: 6
   followup_turns: 3
   temperature: 0  # fully deterministic outputs for value benchmarking

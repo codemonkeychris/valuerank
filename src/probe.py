@@ -20,7 +20,7 @@ from .config_loader import (
     load_scenarios,
     filter_scenarios_by_status,
 )
-from .llm_adapters import AdapterHTTPError, MockLLMAdapter, REGISTRY, normalize_model_name
+from .llm_adapters import AdapterHTTPError, REGISTRY, normalize_model_name
 from .utils import (
     TranscriptTurn,
     compute_sha256_digest,
@@ -32,6 +32,8 @@ from .utils import (
     turns_to_markdown,
     transcript_path,
 )
+
+MAX_WORKERS_PER_MODEL = 6
 
 
 @dataclass
@@ -123,19 +125,9 @@ def invoke_target_model(
         )
     except AdapterHTTPError as exc:
         print(f"[Probe] !! {caller} adapter error for model {model}: {exc}")
-        print(f"[Probe] !! Falling back to mock response. Consider using --dry-run if this persists.")
-        fallback = MockLLMAdapter()
-        return fallback.generate(
-            model=adapter_model_name,
-            messages=messages,
-            temperature=temperature,
-            max_tokens=max_tokens,
-            run_seed=run_seed,
-            response_format=None,
-            top_p=top_p,
-            presence_penalty=presence_penalty,
-            frequency_penalty=frequency_penalty,
-            n=n,
+        return (
+            f"[Probe Error] Failed to contact {model} for this scenario. "
+            f"The adapter reported: {exc}"
         )
 
 
@@ -412,6 +404,14 @@ def _run_probe_for_file(
             anon_id = f"anon_model_{index:03d}"
             model_mapping[anon_id] = target_model
 
+    allowed_workers = MAX_WORKERS_PER_MODEL * max(1, len(model_mapping))
+    if max_workers > allowed_workers:
+        print(
+            f"[Probe] Limiting worker pool from {max_workers} to {allowed_workers} "
+            f"(max {MAX_WORKERS_PER_MODEL} per target model)."
+        )
+        max_workers = allowed_workers
+
     print(f"[Probe] Starting run {run_id}")
     print(f"[Probe] Target models: {', '.join(runtime_cfg.target_models)}")
     print(
@@ -423,17 +423,16 @@ def _run_probe_for_file(
     # Fully parallel across models and scenarios
     with ThreadPoolExecutor(max_workers=max_workers) as executor:
         futures_map: Dict = {}
-        for anon_id, target_model in model_mapping.items():
-            print(f"[Probe] -> Processing model {target_model} as {anon_id}")
-            for scenario in scenarios_to_run:
-                print(f"[Probe]    -> Queueing scenario {scenario.id} for {anon_id}")
+        for scenario in scenarios_to_run:
+            for anon_id, target_model in model_mapping.items():
+                print(f"[Probe] -> Queueing {scenario.id} for {target_model} ({anon_id})")
                 future = executor.submit(process_scenario, target_model, anon_id, scenario)
-                futures_map[future] = (anon_id, scenario.id)
+                futures_map[future] = (anon_id, scenario.id, target_model)
 
         for future in as_completed(futures_map):
-            anon_id, scenario_id = futures_map[future]
+            anon_id, scenario_id, target_model = futures_map[future]
             _, _, transcript_filename = future.result()
-            print(f"[Probe]    <- Completed {scenario_id} for {anon_id}, wrote {transcript_filename}")
+            print(f"[Probe]    <- Completed {scenario_id} for {anon_id} ({target_model}), wrote {transcript_filename}")
     if write_manifest:
         manifest = create_run_manifest(
             run_id=run_id,

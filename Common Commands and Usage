@@ -7,5 +7,6 @@ python3 -m src.probe \
 Summary
 
 python3 -m src.summary \
+  --run-dir output/<run_id> \
   --scenarios-file scenarios/Building_Planning_Economics_vs_Environment \
   --workers 6
