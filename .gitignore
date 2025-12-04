@@ -26,3 +26,7 @@ debug/
 *.tmp
 *.bak
 *.swp
+
+# Always keep scenario definitions under version control
+!scenarios/
+!scenarios/**

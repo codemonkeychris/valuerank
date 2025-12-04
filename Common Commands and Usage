@@ -9,8 +9,20 @@ python3 -m src.probe \
   --output-dir output
 
 python3 -m src.probe \
+  --scenarios-folder scenarios/Best_Man_Gay_Marriage_Freedom_Tradition_Harmony \
+  --output-dir output
+
+python3 -m src.probe \
   --scenarios-folder scenarios/Skip_Batmitzvah_Freedom_Tradition_Harmony \
   --single-scenario Scenario_002_FreedomBelief2_TraditionBelief4_HarmonyFamily3
+
+  python3 -m src.probe \
+  --scenarios-folder scenarios/Best_Man_Gay_Marriage_Freedom_Tradition_Harmony \
+  --single-scenario scenario_011_FreedomBelief2_TraditionBelief4_HarmonyFamily3
+
+  python3 -m src.probe \
+  --scenarios-folder scenarios/Best_Man_Gay_Marriage_Freedom_Tradition_Harmony \
+  --output-dir output
 
 Summary
 
@@ -35,3 +47,11 @@ python3 -m src.summary \
 python3 -m src.summary \
   --run-dir output/Building_Planning_Economics_EqualOutcome_Environment/2025-12-03.21-20 \
   --scenarios-file scenarios/Building_Planning_Economics_EqualOutcome_Environment 
+
+python3 -m src.summary \
+  --run-dir output/Best_Man_Gay_Marriage_Freedom_Tradition_Harmony/2025-12-04.15-36 \
+  --scenarios-file scenarios/Best_Man_Gay_Marriage_Freedom_Tradition_Harmony
+
+python3 -m src.summary \
+  --run-dir output/Best_Man_Catholic_Marriage_Freedom_Tradition_Harmony/2025-12-04.14-55 \
+  --scenarios-file scenarios/Best_Man_Catholic_Marriage_Freedom_Tradition_Harmony

@@ -6,6 +6,7 @@ from __future__ import annotations
 
 import argparse
 import hashlib
+import time
 from collections import defaultdict
 from dataclasses import dataclass
 from pathlib import Path
@@ -40,12 +41,42 @@ from .utils import (
 
 MAX_WORKERS_PER_MODEL = 6
 MAX_TIMEOUT_RETRIES = 3
+MAX_ADAPTER_ERROR_RETRIES = 3
 TIMEOUT_MARKERS = ("Read timed out", "timed out", "Timeout")
+RATE_LIMIT_MARKERS = ("too many requests", "rate limit", "429")
+RATE_LIMIT_RETRY_DELAY = 30
+ADAPTER_ERROR_RETRY_DELAY = 30
+DRY_RUN_SENTINEL = "[DRY-RUN RESPONSE"
 
 
 def _is_timeout_error(message: str) -> bool:
     lowered = message.lower()
     return any(marker.lower() in lowered for marker in TIMEOUT_MARKERS)
+
+
+def _is_rate_limit_error(message: str) -> bool:
+    lowered = message.lower()
+    return any(marker in lowered for marker in RATE_LIMIT_MARKERS)
+
+
+class DryRunResponseDetected(RuntimeError):
+    """Raised when a dry-run placeholder slips into a non-dry-run execution."""
+
+
+def _ensure_not_dry_run_response(
+    response: str,
+    *,
+    model: str,
+    scenario_id: str,
+    dry_run_enabled: bool,
+) -> None:
+    if dry_run_enabled:
+        return
+    if response and DRY_RUN_SENTINEL in response:
+        raise DryRunResponseDetected(
+            f"[Probe] ERROR: Detected dry-run placeholder from {model} "
+            f"while running {scenario_id}. Aborting run."
+        )
 
 
 @dataclass
@@ -122,25 +153,63 @@ def invoke_target_model(
     if dry_run:
         last_user = next((m for m in reversed(messages) if m.get("role") == "user"), {"content": ""})
         return f"[DRY-RUN RESPONSE for {model}] {last_user.get('content','')[:120]}..."
-    try:
-        return adapter.generate(
-            model=adapter_model_name,
-            messages=messages,
-            temperature=temperature,
-            max_tokens=max_tokens,
-            run_seed=run_seed,
-            response_format=None,
-            top_p=top_p,
-            presence_penalty=presence_penalty,
-            frequency_penalty=frequency_penalty,
-            n=n,
-        )
-    except AdapterHTTPError as exc:
-        print(f"[Probe] !! {caller} adapter error for model {model}: {exc}")
-        return (
-            f"[Probe Error] Failed to contact {model} for this scenario. "
-            f"The adapter reported: {exc}"
-        )
+    rate_limit_attempts = 0
+    timeout_attempts = 0
+    adapter_attempts = 0
+    while adapter_attempts < MAX_ADAPTER_ERROR_RETRIES:
+        try:
+            return adapter.generate(
+                model=adapter_model_name,
+                messages=messages,
+                temperature=temperature,
+                max_tokens=max_tokens,
+                run_seed=run_seed,
+                response_format=None,
+                top_p=top_p,
+                presence_penalty=presence_penalty,
+                frequency_penalty=frequency_penalty,
+                n=n,
+            )
+        except AdapterHTTPError as exc:
+            message = str(exc)
+            if _is_rate_limit_error(message):
+                rate_limit_attempts += 1
+                if rate_limit_attempts > MAX_ADAPTER_ERROR_RETRIES:
+                    print(f"[Probe] Rate limit persisted for {model} after {MAX_ADAPTER_ERROR_RETRIES} retries. Exiting.")
+                    raise SystemExit(1)
+                print(
+                    f"[Probe] Rate limit hit for {model}. "
+                    f"Retrying in {RATE_LIMIT_RETRY_DELAY}s "
+                    f"(attempt {rate_limit_attempts}/{MAX_ADAPTER_ERROR_RETRIES})..."
+                )
+                time.sleep(RATE_LIMIT_RETRY_DELAY)
+                continue
+            if _is_timeout_error(message):
+                timeout_attempts += 1
+                if timeout_attempts < MAX_TIMEOUT_RETRIES:
+                    print(
+                        f"[Probe] Timeout contacting {model} "
+                        f"(attempt {timeout_attempts}/{MAX_TIMEOUT_RETRIES}). Retrying in {ADAPTER_ERROR_RETRY_DELAY}s..."
+                    )
+                    time.sleep(ADAPTER_ERROR_RETRY_DELAY)
+                    continue
+                print(f"[Probe] Timeout persisted for {model} after {MAX_TIMEOUT_RETRIES} retries.")
+                return f"[Probe Error] Timeout contacting {model}: {exc}"
+            adapter_attempts += 1
+            if adapter_attempts < MAX_ADAPTER_ERROR_RETRIES:
+                print(
+                    f"[Probe] {caller} adapter error for model {model}: {exc}. "
+                    f"Retrying in {ADAPTER_ERROR_RETRY_DELAY}s "
+                    f"(attempt {adapter_attempts}/{MAX_ADAPTER_ERROR_RETRIES})..."
+                )
+                time.sleep(ADAPTER_ERROR_RETRY_DELAY)
+                continue
+            print(f"[Probe] Adapter error for model {model} persisted after retries: {exc}")
+            return (
+                f"[Probe Error] Failed to contact {model} after retries. "
+                f"The adapter reported: {exc}"
+            )
+    return f"[Probe Error] Failed to contact {model} after retries."
 
 
 def render_transcript_markdown(
@@ -359,6 +428,12 @@ def _run_probe_for_file(
             n=1,
             caller="Probe",
         ).strip()
+        _ensure_not_dry_run_response(
+            generated,
+            model=probe_model_name,
+            scenario_id=scenario.id,
+            dry_run_enabled=args.dry_run,
+        )
         return generated or base_prompt
 
     def process_scenario(
@@ -399,6 +474,12 @@ def _run_probe_for_file(
                     presence_penalty=target_presence_penalty,
                     frequency_penalty=target_frequency_penalty,
                     n=1,
+                )
+                _ensure_not_dry_run_response(
+                    response,
+                    model=target_model,
+                    scenario_id=scenario.id,
+                    dry_run_enabled=args.dry_run,
                 )
                 conversation = messages + [{"role": "assistant", "content": response}]
                 turns.append(
@@ -466,14 +547,6 @@ def _run_probe_for_file(
         )
         max_workers = allowed_workers
 
-    print(f"[Probe] Starting run {run_id}")
-    print(f"[Probe] Target models: {', '.join(runtime_cfg.target_models)}")
-    print(
-        "[Probe] Scenarios: "
-        + ", ".join(scenario.id for scenario in scenarios_to_run)
-    )
-    print(f"[Probe] Thread workers: {max_workers}")
-
     # Fully parallel across models and scenarios
     with ThreadPoolExecutor(max_workers=max_workers) as executor:
         futures_map: Dict = {}
@@ -482,17 +555,23 @@ def _run_probe_for_file(
         for scenario in scenarios_to_run:
             for anon_id, target_model in model_mapping.items():
                 submitted_tasks += 1
-                task_label = f"{submitted_tasks}/{total_tasks}"
-                print(
-                    f"[Probe] {task_label} -> {scenario.id} - {target_model.split(':')[-1]}"
-                )
                 future = executor.submit(process_scenario, target_model, anon_id, scenario)
                 futures_map[future] = (anon_id, scenario.id, target_model)
 
+        completed_tasks = 0
         for future in as_completed(futures_map):
             _, scenario_id, target_model = futures_map[future]
-            future.result()
-            print(f"[Probe] Completed - {scenario_id} - {target_model.split(':')[-1]}")
+            try:
+                future.result()
+            except DryRunResponseDetected as exc:
+                print(str(exc))
+                executor.shutdown(wait=False, cancel_futures=True)
+                raise SystemExit(1) from exc
+            completed_tasks += 1
+            print(
+                f"[Probe] {completed_tasks}/{total_tasks} Complete - "
+                f"{scenario_id} - {target_model.split(':')[-1]}"
+            )
 
     if cost_usage:
         total_input_tokens = 0

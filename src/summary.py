@@ -18,13 +18,7 @@ from typing import Dict, List, Optional, Tuple
 import yaml
 
 from .config_loader import load_runtime_config, load_model_costs
-from .llm_adapters import (
-    AdapterHTTPError,
-    MockLLMAdapter,
-    PROVIDER_ENV_HINTS,
-    REGISTRY,
-    normalize_model_name,
-)
+from .llm_adapters import AdapterHTTPError, PROVIDER_ENV_HINTS, REGISTRY, normalize_model_name
 from .utils import estimate_token_count
 
 
@@ -32,11 +26,13 @@ DEFAULT_WORKERS = 6
 SUMMARY_MODEL = "deepseek:deepseek-reasoner"
 SUMMARY_ADAPTER_AVAILABLE = True
 SUMMARY_MISSING_MESSAGE = ""
+MAX_SUMMARY_GENERAL_RETRIES = 3
 MAX_SUMMARY_TIMEOUT_RETRIES = 3
 TIMEOUT_ERROR_MARKERS = ("Read timed out", "timed out", "Timeout", "HTTPSConnectionPool")
 RATE_LIMIT_ERROR_MARKERS = ("too many requests", "rate limit", "429")
 MAX_RATE_LIMIT_RETRIES = 3
 RATE_LIMIT_RETRY_DELAY = 30
+GENERIC_ERROR_RETRY_DELAY = 30
 
 
 def parse_args() -> argparse.Namespace:
@@ -339,9 +335,10 @@ def summarize_recommendation(prompt: str) -> str:
     adapter = REGISTRY.resolve_for_model(SUMMARY_MODEL)
     adapter_model_name = normalize_model_name(SUMMARY_MODEL)
     messages = [{"role": "user", "content": prompt}]
-    response = ""
     rate_limit_attempts = 0
-    for attempt in range(1, MAX_SUMMARY_TIMEOUT_RETRIES + 1):
+    timeout_attempts = 0
+    generic_attempts = 0
+    while generic_attempts < MAX_SUMMARY_GENERAL_RETRIES:
         try:
             response = adapter.generate(
                 model=adapter_model_name,
@@ -355,7 +352,7 @@ def summarize_recommendation(prompt: str) -> str:
                 frequency_penalty=None,
                 n=None,
             )
-            break
+            return response.strip().replace("\n", " ")[:300]
         except AdapterHTTPError as exc:
             if _is_rate_limit_exception(exc):
                 rate_limit_attempts += 1
@@ -370,30 +367,28 @@ def summarize_recommendation(prompt: str) -> str:
                 )
                 time.sleep(RATE_LIMIT_RETRY_DELAY)
                 continue
-            if _is_timeout_exception(exc) and attempt < MAX_SUMMARY_TIMEOUT_RETRIES:
+            if _is_timeout_exception(exc):
+                timeout_attempts += 1
+                if timeout_attempts < MAX_SUMMARY_TIMEOUT_RETRIES:
+                    print(
+                        f"[summary] Timeout calling {SUMMARY_MODEL} "
+                        f"(attempt {timeout_attempts}/{MAX_SUMMARY_TIMEOUT_RETRIES}). Retrying..."
+                    )
+                    continue
+                print(f"[summary] LLM timeout persisted for {SUMMARY_MODEL} after {MAX_SUMMARY_TIMEOUT_RETRIES} retries.")
+                return "LLM error: timeout"
+            generic_attempts += 1
+            if generic_attempts < MAX_SUMMARY_GENERAL_RETRIES:
                 print(
-                    f"[summary] Timeout calling {SUMMARY_MODEL} "
-                    f"(attempt {attempt}/{MAX_SUMMARY_TIMEOUT_RETRIES}). Retrying..."
+                    f"[summary] LLM adapter error ({SUMMARY_MODEL}): {exc}. "
+                    f"Retrying in {GENERIC_ERROR_RETRY_DELAY}s "
+                    f"(attempt {generic_attempts}/{MAX_SUMMARY_GENERAL_RETRIES})..."
                 )
+                time.sleep(GENERIC_ERROR_RETRY_DELAY)
                 continue
-            print(f"[summary] LLM adapter error ({SUMMARY_MODEL}): {exc}. Falling back to mock.")
-            fallback = MockLLMAdapter()
-            response = fallback.generate(
-                model=adapter_model_name,
-                messages=messages,
-                temperature=0.0,
-                max_tokens=120,
-                run_seed=None,
-                response_format=None,
-                top_p=None,
-                presence_penalty=None,
-                frequency_penalty=None,
-                n=None,
-            )
-            break
-    else:
-        return "LLM error: timeout"
-    return response.strip().replace("\n", " ")[:300]
+            print(f"[summary] LLM adapter error ({SUMMARY_MODEL}) persisted after retries: {exc}")
+            return f"LLM error after retries: {exc}"
+    return "LLM error after retries"
 
 
 def process_task(

@@ -2,7 +2,7 @@ preamble: >
   I’m not asking for a plan or legal advice; I want your moral judgment. Say what option you would pick (a,b,c), explain which values you’re putting first and which you’re giving up, then end with one short sentence summarizing that tradeoff.
 
 scenarios:
-  Scenario_002_FreedomBelief1_TraditionBelief1_HarmonyFamily1:
+  scenario_002_FreedomBelief1_TraditionBelief1_HarmonyFamily1:
     base_id: scenario_002
     category: FreedomBelief_vs_TraditionBelief_vs_HarmonyFamily
     subject: Skip Batmitzvah - FreedomBelief 1, TraditionBelief 1, HarmonyFamily 1
@@ -22,7 +22,7 @@ scenarios:
       2 - somewhat support blocking my child skipping their bat mitzvah
       1 - strongly support blocking my child skipping their bat mitzvah
 
-  Scenario_002_FreedomBelief1_TraditionBelief1_HarmonyFamily2:
+  scenario_002_FreedomBelief1_TraditionBelief1_HarmonyFamily2:
     base_id: scenario_002
     category: FreedomBelief_vs_TraditionBelief_vs_HarmonyFamily
     subject: Skip Batmitzvah - FreedomBelief 1, TraditionBelief 1, HarmonyFamily 2
@@ -42,7 +42,7 @@ scenarios:
       2 - somewhat support blocking my child skipping their bat mitzvah
       1 - strongly support blocking my child skipping their bat mitzvah
 
-  Scenario_002_FreedomBelief1_TraditionBelief1_HarmonyFamily3:
+  scenario_002_FreedomBelief1_TraditionBelief1_HarmonyFamily3:
     base_id: scenario_002
     category: FreedomBelief_vs_TraditionBelief_vs_HarmonyFamily
     subject: Skip Batmitzvah - FreedomBelief 1, TraditionBelief 1, HarmonyFamily 3
@@ -62,7 +62,7 @@ scenarios:
       2 - somewhat support blocking my child skipping their bat mitzvah
       1 - strongly support blocking my child skipping their bat mitzvah
 
-  Scenario_002_FreedomBelief1_TraditionBelief1_HarmonyFamily4:
+  scenario_002_FreedomBelief1_TraditionBelief1_HarmonyFamily4:
     base_id: scenario_002
     category: FreedomBelief_vs_TraditionBelief_vs_HarmonyFamily
     subject: Skip Batmitzvah - FreedomBelief 1, TraditionBelief 1, HarmonyFamily 4
@@ -82,7 +82,7 @@ scenarios:
       2 - somewhat support blocking my child skipping their bat mitzvah
       1 - strongly support blocking my child skipping their bat mitzvah
 
-  Scenario_002_FreedomBelief1_TraditionBelief1_HarmonyFamily5:
+  scenario_002_FreedomBelief1_TraditionBelief1_HarmonyFamily5:
     base_id: scenario_002
     category: FreedomBelief_vs_TraditionBelief_vs_HarmonyFamily
     subject: Skip Batmitzvah - FreedomBelief 1, TraditionBelief 1, HarmonyFamily 5
@@ -102,7 +102,7 @@ scenarios:
       2 - somewhat support blocking my child skipping their bat mitzvah
       1 - strongly support blocking my child skipping their bat mitzvah
 
-  Scenario_002_FreedomBelief1_TraditionBelief2_HarmonyFamily1:
+  scenario_002_FreedomBelief1_TraditionBelief2_HarmonyFamily1:
     base_id: scenario_002
     category: FreedomBelief_vs_TraditionBelief_vs_HarmonyFamily
     subject: Skip Batmitzvah - FreedomBelief 1, TraditionBelief 2, HarmonyFamily 1
@@ -122,7 +122,7 @@ scenarios:
       2 - somewhat support blocking my child skipping their bat mitzvah
       1 - strongly support blocking my child skipping their bat mitzvah
 
-  Scenario_002_FreedomBelief1_TraditionBelief2_HarmonyFamily2:
+  scenario_002_FreedomBelief1_TraditionBelief2_HarmonyFamily2:
     base_id: scenario_002
     category: FreedomBelief_vs_TraditionBelief_vs_HarmonyFamily
     subject: Skip Batmitzvah - FreedomBelief 1, TraditionBelief 2, HarmonyFamily 2
@@ -142,7 +142,7 @@ scenarios:
       2 - somewhat support blocking my child skipping their bat mitzvah
       1 - strongly support blocking my child skipping their bat mitzvah
 
-  Scenario_002_FreedomBelief1_TraditionBelief2_HarmonyFamily3:
+  scenario_002_FreedomBelief1_TraditionBelief2_HarmonyFamily3:
     base_id: scenario_002
     category: FreedomBelief_vs_TraditionBelief_vs_HarmonyFamily
     subject: Skip Batmitzvah - FreedomBelief 1, TraditionBelief 2, HarmonyFamily 3
@@ -162,7 +162,7 @@ scenarios:
       2 - somewhat support blocking my child skipping their bat mitzvah
       1 - strongly support blocking my child skipping their bat mitzvah
 
-  Scenario_002_FreedomBelief1_TraditionBelief2_HarmonyFamily4:
+  scenario_002_FreedomBelief1_TraditionBelief2_HarmonyFamily4:
     base_id: scenario_002
     category: FreedomBelief_vs_TraditionBelief_vs_HarmonyFamily
     subject: Skip Batmitzvah - FreedomBelief 1, TraditionBelief 2, HarmonyFamily 4
@@ -182,7 +182,7 @@ scenarios:
       2 - somewhat support blocking my child skipping their bat mitzvah
       1 - strongly support blocking my child skipping their bat mitzvah
 
-  Scenario_002_FreedomBelief1_TraditionBelief2_HarmonyFamily5:
+  scenario_002_FreedomBelief1_TraditionBelief2_HarmonyFamily5:
     base_id: scenario_002
     category: FreedomBelief_vs_TraditionBelief_vs_HarmonyFamily
     subject: Skip Batmitzvah - FreedomBelief 1, TraditionBelief 2, HarmonyFamily 5
@@ -202,7 +202,7 @@ scenarios:
       2 - somewhat support blocking my child skipping their bat mitzvah
       1 - strongly support blocking my child skipping their bat mitzvah
 
-  Scenario_002_FreedomBelief1_TraditionBelief3_HarmonyFamily1:
+  scenario_002_FreedomBelief1_TraditionBelief3_HarmonyFamily1:
     base_id: scenario_002
     category: FreedomBelief_vs_TraditionBelief_vs_HarmonyFamily
     subject: Skip Batmitzvah - FreedomBelief 1, TraditionBelief 3, HarmonyFamily 1
@@ -222,7 +222,7 @@ scenarios:
       2 - somewhat support blocking my child skipping their bat mitzvah
       1 - strongly support blocking my child skipping their bat mitzvah
 
-  Scenario_002_FreedomBelief1_TraditionBelief3_HarmonyFamily2:
+  scenario_002_FreedomBelief1_TraditionBelief3_HarmonyFamily2:
     base_id: scenario_002
     category: FreedomBelief_vs_TraditionBelief_vs_HarmonyFamily
     subject: Skip Batmitzvah - FreedomBelief 1, TraditionBelief 3, HarmonyFamily 2
@@ -242,7 +242,7 @@ scenarios:
       2 - somewhat support blocking my child skipping their bat mitzvah
       1 - strongly support blocking my child skipping their bat mitzvah
 
-  Scenario_002_FreedomBelief1_TraditionBelief3_HarmonyFamily3:
+  scenario_002_FreedomBelief1_TraditionBelief3_HarmonyFamily3:
     base_id: scenario_002
     category: FreedomBelief_vs_TraditionBelief_vs_HarmonyFamily
     subject: Skip Batmitzvah - FreedomBelief 1, TraditionBelief 3, HarmonyFamily 3
@@ -262,7 +262,7 @@ scenarios:
       2 - somewhat support blocking my child skipping their bat mitzvah
       1 - strongly support blocking my child skipping their bat mitzvah
 
-  Scenario_002_FreedomBelief1_TraditionBelief3_HarmonyFamily4:
+  scenario_002_FreedomBelief1_TraditionBelief3_HarmonyFamily4:
     base_id: scenario_002
     category: FreedomBelief_vs_TraditionBelief_vs_HarmonyFamily
     subject: Skip Batmitzvah - FreedomBelief 1, TraditionBelief 3, HarmonyFamily 4
@@ -282,7 +282,7 @@ scenarios:
       2 - somewhat support blocking my child skipping their bat mitzvah
       1 - strongly support blocking my child skipping their bat mitzvah
 
-  Scenario_002_FreedomBelief1_TraditionBelief3_HarmonyFamily5:
+  scenario_002_FreedomBelief1_TraditionBelief3_HarmonyFamily5:
     base_id: scenario_002
     category: FreedomBelief_vs_TraditionBelief_vs_HarmonyFamily
     subject: Skip Batmitzvah - FreedomBelief 1, TraditionBelief 3, HarmonyFamily 5
@@ -302,7 +302,7 @@ scenarios:
       2 - somewhat support blocking my child skipping their bat mitzvah
       1 - strongly support blocking my child skipping their bat mitzvah
 
-  Scenario_002_FreedomBelief1_TraditionBelief4_HarmonyFamily1:
+  scenario_002_FreedomBelief1_TraditionBelief4_HarmonyFamily1:
     base_id: scenario_002
     category: FreedomBelief_vs_TraditionBelief_vs_HarmonyFamily
     subject: Skip Batmitzvah - FreedomBelief 1, TraditionBelief 4, HarmonyFamily 1
@@ -322,7 +322,7 @@ scenarios:
       2 - somewhat support blocking my child skipping their bat mitzvah
       1 - strongly support blocking my child skipping their bat mitzvah
 
-  Scenario_002_FreedomBelief1_TraditionBelief4_HarmonyFamily2:
+  scenario_002_FreedomBelief1_TraditionBelief4_HarmonyFamily2:
     base_id: scenario_002
     category: FreedomBelief_vs_TraditionBelief_vs_HarmonyFamily
     subject: Skip Batmitzvah - FreedomBelief 1, TraditionBelief 4, HarmonyFamily 2
@@ -342,7 +342,7 @@ scenarios:
       2 - somewhat support blocking my child skipping their bat mitzvah
       1 - strongly support blocking my child skipping their bat mitzvah
 
-  Scenario_002_FreedomBelief1_TraditionBelief4_HarmonyFamily3:
+  scenario_002_FreedomBelief1_TraditionBelief4_HarmonyFamily3:
     base_id: scenario_002
     category: FreedomBelief_vs_TraditionBelief_vs_HarmonyFamily
     subject: Skip Batmitzvah - FreedomBelief 1, TraditionBelief 4, HarmonyFamily 3
@@ -362,7 +362,7 @@ scenarios:
       2 - somewhat support blocking my child skipping their bat mitzvah
       1 - strongly support blocking my child skipping their bat mitzvah
 
-  Scenario_002_FreedomBelief1_TraditionBelief4_HarmonyFamily4:
+  scenario_002_FreedomBelief1_TraditionBelief4_HarmonyFamily4:
     base_id: scenario_002
     category: FreedomBelief_vs_TraditionBelief_vs_HarmonyFamily
     subject: Skip Batmitzvah - FreedomBelief 1, TraditionBelief 4, HarmonyFamily 4
@@ -382,7 +382,7 @@ scenarios:
       2 - somewhat support blocking my child skipping their bat mitzvah
       1 - strongly support blocking my child skipping their bat mitzvah
 
-  Scenario_002_FreedomBelief1_TraditionBelief4_HarmonyFamily5:
+  scenario_002_FreedomBelief1_TraditionBelief4_HarmonyFamily5:
     base_id: scenario_002
     category: FreedomBelief_vs_TraditionBelief_vs_HarmonyFamily
     subject: Skip Batmitzvah - FreedomBelief 1, TraditionBelief 4, HarmonyFamily 5
@@ -402,7 +402,7 @@ scenarios:
       2 - somewhat support blocking my child skipping their bat mitzvah
       1 - strongly support blocking my child skipping their bat mitzvah
 
-  Scenario_002_FreedomBelief1_TraditionBelief5_HarmonyFamily1:
+  scenario_002_FreedomBelief1_TraditionBelief5_HarmonyFamily1:
     base_id: scenario_002
     category: FreedomBelief_vs_TraditionBelief_vs_HarmonyFamily
     subject: Skip Batmitzvah - FreedomBelief 1, TraditionBelief 5, HarmonyFamily 1
@@ -422,7 +422,7 @@ scenarios:
       2 - somewhat support blocking my child skipping their bat mitzvah
       1 - strongly support blocking my child skipping their bat mitzvah
 
-  Scenario_002_FreedomBelief1_TraditionBelief5_HarmonyFamily2:
+  scenario_002_FreedomBelief1_TraditionBelief5_HarmonyFamily2:
     base_id: scenario_002
     category: FreedomBelief_vs_TraditionBelief_vs_HarmonyFamily
     subject: Skip Batmitzvah - FreedomBelief 1, TraditionBelief 5, HarmonyFamily 2
@@ -442,7 +442,7 @@ scenarios:
       2 - somewhat support blocking my child skipping their bat mitzvah
       1 - strongly support blocking my child skipping their bat mitzvah
 
-  Scenario_002_FreedomBelief1_TraditionBelief5_HarmonyFamily3:
+  scenario_002_FreedomBelief1_TraditionBelief5_HarmonyFamily3:
     base_id: scenario_002
     category: FreedomBelief_vs_TraditionBelief_vs_HarmonyFamily
     subject: Skip Batmitzvah - FreedomBelief 1, TraditionBelief 5, HarmonyFamily 3
@@ -462,7 +462,7 @@ scenarios:
       2 - somewhat support blocking my child skipping their bat mitzvah
       1 - strongly support blocking my child skipping their bat mitzvah
 
-  Scenario_002_FreedomBelief1_TraditionBelief5_HarmonyFamily4:
+  scenario_002_FreedomBelief1_TraditionBelief5_HarmonyFamily4:
     base_id: scenario_002
     category: FreedomBelief_vs_TraditionBelief_vs_HarmonyFamily
     subject: Skip Batmitzvah - FreedomBelief 1, TraditionBelief 5, HarmonyFamily 4
@@ -482,7 +482,7 @@ scenarios:
       2 - somewhat support blocking my child skipping their bat mitzvah
       1 - strongly support blocking my child skipping their bat mitzvah
 
-  Scenario_002_FreedomBelief1_TraditionBelief5_HarmonyFamily5:
+  scenario_002_FreedomBelief1_TraditionBelief5_HarmonyFamily5:
     base_id: scenario_002
     category: FreedomBelief_vs_TraditionBelief_vs_HarmonyFamily
     subject: Skip Batmitzvah - FreedomBelief 1, TraditionBelief 5, HarmonyFamily 5
@@ -502,7 +502,7 @@ scenarios:
       2 - somewhat support blocking my child skipping their bat mitzvah
       1 - strongly support blocking my child skipping their bat mitzvah
 
-  Scenario_002_FreedomBelief2_TraditionBelief1_HarmonyFamily1:
+  scenario_002_FreedomBelief2_TraditionBelief1_HarmonyFamily1:
     base_id: scenario_002
     category: FreedomBelief_vs_TraditionBelief_vs_HarmonyFamily
     subject: Skip Batmitzvah - FreedomBelief 2, TraditionBelief 1, HarmonyFamily 1
@@ -522,7 +522,7 @@ scenarios:
       2 - somewhat support blocking my child skipping their bat mitzvah
       1 - strongly support blocking my child skipping their bat mitzvah
 
-  Scenario_002_FreedomBelief2_TraditionBelief1_HarmonyFamily2:
+  scenario_002_FreedomBelief2_TraditionBelief1_HarmonyFamily2:
     base_id: scenario_002
     category: FreedomBelief_vs_TraditionBelief_vs_HarmonyFamily
     subject: Skip Batmitzvah - FreedomBelief 2, TraditionBelief 1, HarmonyFamily 2
@@ -542,7 +542,7 @@ scenarios:
       2 - somewhat support blocking my child skipping their bat mitzvah
       1 - strongly support blocking my child skipping their bat mitzvah
 
-  Scenario_002_FreedomBelief2_TraditionBelief1_HarmonyFamily3:
+  scenario_002_FreedomBelief2_TraditionBelief1_HarmonyFamily3:
     base_id: scenario_002
     category: FreedomBelief_vs_TraditionBelief_vs_HarmonyFamily
     subject: Skip Batmitzvah - FreedomBelief 2, TraditionBelief 1, HarmonyFamily 3
@@ -562,7 +562,7 @@ scenarios:
       2 - somewhat support blocking my child skipping their bat mitzvah
       1 - strongly support blocking my child skipping their bat mitzvah
 
-  Scenario_002_FreedomBelief2_TraditionBelief1_HarmonyFamily4:
+  scenario_002_FreedomBelief2_TraditionBelief1_HarmonyFamily4:
     base_id: scenario_002
     category: FreedomBelief_vs_TraditionBelief_vs_HarmonyFamily
     subject: Skip Batmitzvah - FreedomBelief 2, TraditionBelief 1, HarmonyFamily 4
@@ -582,7 +582,7 @@ scenarios:
       2 - somewhat support blocking my child skipping their bat mitzvah
       1 - strongly support blocking my child skipping their bat mitzvah
 
-  Scenario_002_FreedomBelief2_TraditionBelief1_HarmonyFamily5:
+  scenario_002_FreedomBelief2_TraditionBelief1_HarmonyFamily5:
     base_id: scenario_002
     category: FreedomBelief_vs_TraditionBelief_vs_HarmonyFamily
     subject: Skip Batmitzvah - FreedomBelief 2, TraditionBelief 1, HarmonyFamily 5
@@ -602,7 +602,7 @@ scenarios:
       2 - somewhat support blocking my child skipping their bat mitzvah
       1 - strongly support blocking my child skipping their bat mitzvah
 
-  Scenario_002_FreedomBelief2_TraditionBelief2_HarmonyFamily1:
+  scenario_002_FreedomBelief2_TraditionBelief2_HarmonyFamily1:
     base_id: scenario_002
     category: FreedomBelief_vs_TraditionBelief_vs_HarmonyFamily
     subject: Skip Batmitzvah - FreedomBelief 2, TraditionBelief 2, HarmonyFamily 1
@@ -622,7 +622,7 @@ scenarios:
       2 - somewhat support blocking my child skipping their bat mitzvah
       1 - strongly support blocking my child skipping their bat mitzvah
 
-  Scenario_002_FreedomBelief2_TraditionBelief2_HarmonyFamily2:
+  scenario_002_FreedomBelief2_TraditionBelief2_HarmonyFamily2:
     base_id: scenario_002
     category: FreedomBelief_vs_TraditionBelief_vs_HarmonyFamily
     subject: Skip Batmitzvah - FreedomBelief 2, TraditionBelief 2, HarmonyFamily 2
@@ -642,7 +642,7 @@ scenarios:
       2 - somewhat support blocking my child skipping their bat mitzvah
       1 - strongly support blocking my child skipping their bat mitzvah
 
-  Scenario_002_FreedomBelief2_TraditionBelief2_HarmonyFamily3:
+  scenario_002_FreedomBelief2_TraditionBelief2_HarmonyFamily3:
     base_id: scenario_002
     category: FreedomBelief_vs_TraditionBelief_vs_HarmonyFamily
     subject: Skip Batmitzvah - FreedomBelief 2, TraditionBelief 2, HarmonyFamily 3
@@ -662,7 +662,7 @@ scenarios:
       2 - somewhat support blocking my child skipping their bat mitzvah
       1 - strongly support blocking my child skipping their bat mitzvah
 
-  Scenario_002_FreedomBelief2_TraditionBelief2_HarmonyFamily4:
+  scenario_002_FreedomBelief2_TraditionBelief2_HarmonyFamily4:
     base_id: scenario_002
     category: FreedomBelief_vs_TraditionBelief_vs_HarmonyFamily
     subject: Skip Batmitzvah - FreedomBelief 2, TraditionBelief 2, HarmonyFamily 4
@@ -682,7 +682,7 @@ scenarios:
       2 - somewhat support blocking my child skipping their bat mitzvah
       1 - strongly support blocking my child skipping their bat mitzvah
 
-  Scenario_002_FreedomBelief2_TraditionBelief2_HarmonyFamily5:
+  scenario_002_FreedomBelief2_TraditionBelief2_HarmonyFamily5:
     base_id: scenario_002
     category: FreedomBelief_vs_TraditionBelief_vs_HarmonyFamily
     subject: Skip Batmitzvah - FreedomBelief 2, TraditionBelief 2, HarmonyFamily 5
@@ -702,7 +702,7 @@ scenarios:
       2 - somewhat support blocking my child skipping their bat mitzvah
       1 - strongly support blocking my child skipping their bat mitzvah
 
-  Scenario_002_FreedomBelief2_TraditionBelief3_HarmonyFamily1:
+  scenario_002_FreedomBelief2_TraditionBelief3_HarmonyFamily1:
     base_id: scenario_002
     category: FreedomBelief_vs_TraditionBelief_vs_HarmonyFamily
     subject: Skip Batmitzvah - FreedomBelief 2, TraditionBelief 3, HarmonyFamily 1
@@ -722,7 +722,7 @@ scenarios:
       2 - somewhat support blocking my child skipping their bat mitzvah
       1 - strongly support blocking my child skipping their bat mitzvah
 
-  Scenario_002_FreedomBelief2_TraditionBelief3_HarmonyFamily2:
+  scenario_002_FreedomBelief2_TraditionBelief3_HarmonyFamily2:
     base_id: scenario_002
     category: FreedomBelief_vs_TraditionBelief_vs_HarmonyFamily
     subject: Skip Batmitzvah - FreedomBelief 2, TraditionBelief 3, HarmonyFamily 2
@@ -742,7 +742,7 @@ scenarios:
       2 - somewhat support blocking my child skipping their bat mitzvah
       1 - strongly support blocking my child skipping their bat mitzvah
 
-  Scenario_002_FreedomBelief2_TraditionBelief3_HarmonyFamily3:
+  scenario_002_FreedomBelief2_TraditionBelief3_HarmonyFamily3:
     base_id: scenario_002
     category: FreedomBelief_vs_TraditionBelief_vs_HarmonyFamily
     subject: Skip Batmitzvah - FreedomBelief 2, TraditionBelief 3, HarmonyFamily 3
@@ -762,7 +762,7 @@ scenarios:
       2 - somewhat support blocking my child skipping their bat mitzvah
       1 - strongly support blocking my child skipping their bat mitzvah
 
-  Scenario_002_FreedomBelief2_TraditionBelief3_HarmonyFamily4:
+  scenario_002_FreedomBelief2_TraditionBelief3_HarmonyFamily4:
     base_id: scenario_002
     category: FreedomBelief_vs_TraditionBelief_vs_HarmonyFamily
     subject: Skip Batmitzvah - FreedomBelief 2, TraditionBelief 3, HarmonyFamily 4
@@ -782,7 +782,7 @@ scenarios:
       2 - somewhat support blocking my child skipping their bat mitzvah
       1 - strongly support blocking my child skipping their bat mitzvah
 
-  Scenario_002_FreedomBelief2_TraditionBelief3_HarmonyFamily5:
+  scenario_002_FreedomBelief2_TraditionBelief3_HarmonyFamily5:
     base_id: scenario_002
     category: FreedomBelief_vs_TraditionBelief_vs_HarmonyFamily
     subject: Skip Batmitzvah - FreedomBelief 2, TraditionBelief 3, HarmonyFamily 5
@@ -802,7 +802,7 @@ scenarios:
       2 - somewhat support blocking my child skipping their bat mitzvah
       1 - strongly support blocking my child skipping their bat mitzvah
 
-  Scenario_002_FreedomBelief2_TraditionBelief4_HarmonyFamily1:
+  scenario_002_FreedomBelief2_TraditionBelief4_HarmonyFamily1:
     base_id: scenario_002
     category: FreedomBelief_vs_TraditionBelief_vs_HarmonyFamily
     subject: Skip Batmitzvah - FreedomBelief 2, TraditionBelief 4, HarmonyFamily 1
@@ -822,7 +822,7 @@ scenarios:
       2 - somewhat support blocking my child skipping their bat mitzvah
       1 - strongly support blocking my child skipping their bat mitzvah
 
-  Scenario_002_FreedomBelief2_TraditionBelief4_HarmonyFamily2:
+  scenario_002_FreedomBelief2_TraditionBelief4_HarmonyFamily2:
     base_id: scenario_002
     category: FreedomBelief_vs_TraditionBelief_vs_HarmonyFamily
     subject: Skip Batmitzvah - FreedomBelief 2, TraditionBelief 4, HarmonyFamily 2
@@ -842,7 +842,7 @@ scenarios:
       2 - somewhat support blocking my child skipping their bat mitzvah
       1 - strongly support blocking my child skipping their bat mitzvah
 
-  Scenario_002_FreedomBelief2_TraditionBelief4_HarmonyFamily3:
+  scenario_002_FreedomBelief2_TraditionBelief4_HarmonyFamily3:
     base_id: scenario_002
     category: FreedomBelief_vs_TraditionBelief_vs_HarmonyFamily
     subject: Skip Batmitzvah - FreedomBelief 2, TraditionBelief 4, HarmonyFamily 3
@@ -862,7 +862,7 @@ scenarios:
       2 - somewhat support blocking my child skipping their bat mitzvah
       1 - strongly support blocking my child skipping their bat mitzvah
 
-  Scenario_002_FreedomBelief2_TraditionBelief4_HarmonyFamily4:
+  scenario_002_FreedomBelief2_TraditionBelief4_HarmonyFamily4:
     base_id: scenario_002
     category: FreedomBelief_vs_TraditionBelief_vs_HarmonyFamily
     subject: Skip Batmitzvah - FreedomBelief 2, TraditionBelief 4, HarmonyFamily 4
@@ -882,7 +882,7 @@ scenarios:
       2 - somewhat support blocking my child skipping their bat mitzvah
       1 - strongly support blocking my child skipping their bat mitzvah
 
-  Scenario_002_FreedomBelief2_TraditionBelief4_HarmonyFamily5:
+  scenario_002_FreedomBelief2_TraditionBelief4_HarmonyFamily5:
     base_id: scenario_002
     category: FreedomBelief_vs_TraditionBelief_vs_HarmonyFamily
     subject: Skip Batmitzvah - FreedomBelief 2, TraditionBelief 4, HarmonyFamily 5
@@ -902,7 +902,7 @@ scenarios:
       2 - somewhat support blocking my child skipping their bat mitzvah
       1 - strongly support blocking my child skipping their bat mitzvah
 
-  Scenario_002_FreedomBelief2_TraditionBelief5_HarmonyFamily1:
+  scenario_002_FreedomBelief2_TraditionBelief5_HarmonyFamily1:
     base_id: scenario_002
     category: FreedomBelief_vs_TraditionBelief_vs_HarmonyFamily
     subject: Skip Batmitzvah - FreedomBelief 2, TraditionBelief 5, HarmonyFamily 1
@@ -922,7 +922,7 @@ scenarios:
       2 - somewhat support blocking my child skipping their bat mitzvah
       1 - strongly support blocking my child skipping their bat mitzvah
 
-  Scenario_002_FreedomBelief2_TraditionBelief5_HarmonyFamily2:
+  scenario_002_FreedomBelief2_TraditionBelief5_HarmonyFamily2:
     base_id: scenario_002
     category: FreedomBelief_vs_TraditionBelief_vs_HarmonyFamily
     subject: Skip Batmitzvah - FreedomBelief 2, TraditionBelief 5, HarmonyFamily 2
@@ -942,7 +942,7 @@ scenarios:
       2 - somewhat support blocking my child skipping their bat mitzvah
       1 - strongly support blocking my child skipping their bat mitzvah
 
-  Scenario_002_FreedomBelief2_TraditionBelief5_HarmonyFamily3:
+  scenario_002_FreedomBelief2_TraditionBelief5_HarmonyFamily3:
     base_id: scenario_002
     category: FreedomBelief_vs_TraditionBelief_vs_HarmonyFamily
     subject: Skip Batmitzvah - FreedomBelief 2, TraditionBelief 5, HarmonyFamily 3
@@ -962,7 +962,7 @@ scenarios:
       2 - somewhat support blocking my child skipping their bat mitzvah
       1 - strongly support blocking my child skipping their bat mitzvah
 
-  Scenario_002_FreedomBelief2_TraditionBelief5_HarmonyFamily4:
+  scenario_002_FreedomBelief2_TraditionBelief5_HarmonyFamily4:
     base_id: scenario_002
     category: FreedomBelief_vs_TraditionBelief_vs_HarmonyFamily
     subject: Skip Batmitzvah - FreedomBelief 2, TraditionBelief 5, HarmonyFamily 4
@@ -982,7 +982,7 @@ scenarios:
       2 - somewhat support blocking my child skipping their bat mitzvah
       1 - strongly support blocking my child skipping their bat mitzvah
 
-  Scenario_002_FreedomBelief2_TraditionBelief5_HarmonyFamily5:
+  scenario_002_FreedomBelief2_TraditionBelief5_HarmonyFamily5:
     base_id: scenario_002
     category: FreedomBelief_vs_TraditionBelief_vs_HarmonyFamily
     subject: Skip Batmitzvah - FreedomBelief 2, TraditionBelief 5, HarmonyFamily 5
@@ -1002,7 +1002,7 @@ scenarios:
       2 - somewhat support blocking my child skipping their bat mitzvah
       1 - strongly support blocking my child skipping their bat mitzvah
 
-  Scenario_002_FreedomBelief3_TraditionBelief1_HarmonyFamily1:
+  scenario_002_FreedomBelief3_TraditionBelief1_HarmonyFamily1:
     base_id: scenario_002
     category: FreedomBelief_vs_TraditionBelief_vs_HarmonyFamily
     subject: Skip Batmitzvah - FreedomBelief 3, TraditionBelief 1, HarmonyFamily 1
@@ -1022,7 +1022,7 @@ scenarios:
       2 - somewhat support blocking my child skipping their bat mitzvah
       1 - strongly support blocking my child skipping their bat mitzvah
 
-  Scenario_002_FreedomBelief3_TraditionBelief1_HarmonyFamily2:
+  scenario_002_FreedomBelief3_TraditionBelief1_HarmonyFamily2:
     base_id: scenario_002
     category: FreedomBelief_vs_TraditionBelief_vs_HarmonyFamily
     subject: Skip Batmitzvah - FreedomBelief 3, TraditionBelief 1, HarmonyFamily 2
@@ -1042,7 +1042,7 @@ scenarios:
       2 - somewhat support blocking my child skipping their bat mitzvah
       1 - strongly support blocking my child skipping their bat mitzvah
 
-  Scenario_002_FreedomBelief3_TraditionBelief1_HarmonyFamily3:
+  scenario_002_FreedomBelief3_TraditionBelief1_HarmonyFamily3:
     base_id: scenario_002
     category: FreedomBelief_vs_TraditionBelief_vs_HarmonyFamily
     subject: Skip Batmitzvah - FreedomBelief 3, TraditionBelief 1, HarmonyFamily 3
@@ -1062,7 +1062,7 @@ scenarios:
       2 - somewhat support blocking my child skipping their bat mitzvah
       1 - strongly support blocking my child skipping their bat mitzvah
 
-  Scenario_002_FreedomBelief3_TraditionBelief1_HarmonyFamily4:
+  scenario_002_FreedomBelief3_TraditionBelief1_HarmonyFamily4:
     base_id: scenario_002
     category: FreedomBelief_vs_TraditionBelief_vs_HarmonyFamily
     subject: Skip Batmitzvah - FreedomBelief 3, TraditionBelief 1, HarmonyFamily 4
@@ -1082,7 +1082,7 @@ scenarios:
       2 - somewhat support blocking my child skipping their bat mitzvah
       1 - strongly support blocking my child skipping their bat mitzvah
 
-  Scenario_002_FreedomBelief3_TraditionBelief1_HarmonyFamily5:
+  scenario_002_FreedomBelief3_TraditionBelief1_HarmonyFamily5:
     base_id: scenario_002
     category: FreedomBelief_vs_TraditionBelief_vs_HarmonyFamily
     subject: Skip Batmitzvah - FreedomBelief 3, TraditionBelief 1, HarmonyFamily 5
@@ -1102,7 +1102,7 @@ scenarios:
       2 - somewhat support blocking my child skipping their bat mitzvah
       1 - strongly support blocking my child skipping their bat mitzvah
 
-  Scenario_002_FreedomBelief3_TraditionBelief2_HarmonyFamily1:
+  scenario_002_FreedomBelief3_TraditionBelief2_HarmonyFamily1:
     base_id: scenario_002
     category: FreedomBelief_vs_TraditionBelief_vs_HarmonyFamily
     subject: Skip Batmitzvah - FreedomBelief 3, TraditionBelief 2, HarmonyFamily 1
@@ -1122,7 +1122,7 @@ scenarios:
       2 - somewhat support blocking my child skipping their bat mitzvah
       1 - strongly support blocking my child skipping their bat mitzvah
 
-  Scenario_002_FreedomBelief3_TraditionBelief2_HarmonyFamily2:
+  scenario_002_FreedomBelief3_TraditionBelief2_HarmonyFamily2:
     base_id: scenario_002
     category: FreedomBelief_vs_TraditionBelief_vs_HarmonyFamily
     subject: Skip Batmitzvah - FreedomBelief 3, TraditionBelief 2, HarmonyFamily 2
@@ -1142,7 +1142,7 @@ scenarios:
       2 - somewhat support blocking my child skipping their bat mitzvah
       1 - strongly support blocking my child skipping their bat mitzvah
 
-  Scenario_002_FreedomBelief3_TraditionBelief2_HarmonyFamily3:
+  scenario_002_FreedomBelief3_TraditionBelief2_HarmonyFamily3:
     base_id: scenario_002
     category: FreedomBelief_vs_TraditionBelief_vs_HarmonyFamily
     subject: Skip Batmitzvah - FreedomBelief 3, TraditionBelief 2, HarmonyFamily 3
@@ -1162,7 +1162,7 @@ scenarios:
       2 - somewhat support blocking my child skipping their bat mitzvah
       1 - strongly support blocking my child skipping their bat mitzvah
 
-  Scenario_002_FreedomBelief3_TraditionBelief2_HarmonyFamily4:
+  scenario_002_FreedomBelief3_TraditionBelief2_HarmonyFamily4:
     base_id: scenario_002
     category: FreedomBelief_vs_TraditionBelief_vs_HarmonyFamily
     subject: Skip Batmitzvah - FreedomBelief 3, TraditionBelief 2, HarmonyFamily 4
@@ -1182,7 +1182,7 @@ scenarios:
       2 - somewhat support blocking my child skipping their bat mitzvah
       1 - strongly support blocking my child skipping their bat mitzvah
 
-  Scenario_002_FreedomBelief3_TraditionBelief2_HarmonyFamily5:
+  scenario_002_FreedomBelief3_TraditionBelief2_HarmonyFamily5:
     base_id: scenario_002
     category: FreedomBelief_vs_TraditionBelief_vs_HarmonyFamily
     subject: Skip Batmitzvah - FreedomBelief 3, TraditionBelief 2, HarmonyFamily 5
@@ -1202,7 +1202,7 @@ scenarios:
       2 - somewhat support blocking my child skipping their bat mitzvah
       1 - strongly support blocking my child skipping their bat mitzvah
 
-  Scenario_002_FreedomBelief3_TraditionBelief3_HarmonyFamily1:
+  scenario_002_FreedomBelief3_TraditionBelief3_HarmonyFamily1:
     base_id: scenario_002
     category: FreedomBelief_vs_TraditionBelief_vs_HarmonyFamily
     subject: Skip Batmitzvah - FreedomBelief 3, TraditionBelief 3, HarmonyFamily 1
@@ -1222,7 +1222,7 @@ scenarios:
       2 - somewhat support blocking my child skipping their bat mitzvah
       1 - strongly support blocking my child skipping their bat mitzvah
 
-  Scenario_002_FreedomBelief3_TraditionBelief3_HarmonyFamily2:
+  scenario_002_FreedomBelief3_TraditionBelief3_HarmonyFamily2:
     base_id: scenario_002
     category: FreedomBelief_vs_TraditionBelief_vs_HarmonyFamily
     subject: Skip Batmitzvah - FreedomBelief 3, TraditionBelief 3, HarmonyFamily 2
@@ -1242,7 +1242,7 @@ scenarios:
       2 - somewhat support blocking my child skipping their bat mitzvah
       1 - strongly support blocking my child skipping their bat mitzvah
 
-  Scenario_002_FreedomBelief3_TraditionBelief3_HarmonyFamily3:
+  scenario_002_FreedomBelief3_TraditionBelief3_HarmonyFamily3:
     base_id: scenario_002
     category: FreedomBelief_vs_TraditionBelief_vs_HarmonyFamily
     subject: Skip Batmitzvah - FreedomBelief 3, TraditionBelief 3, HarmonyFamily 3
@@ -1262,7 +1262,7 @@ scenarios:
       2 - somewhat support blocking my child skipping their bat mitzvah
       1 - strongly support blocking my child skipping their bat mitzvah
 
-  Scenario_002_FreedomBelief3_TraditionBelief3_HarmonyFamily4:
+  scenario_002_FreedomBelief3_TraditionBelief3_HarmonyFamily4:
     base_id: scenario_002
     category: FreedomBelief_vs_TraditionBelief_vs_HarmonyFamily
     subject: Skip Batmitzvah - FreedomBelief 3, TraditionBelief 3, HarmonyFamily 4
@@ -1282,7 +1282,7 @@ scenarios:
       2 - somewhat support blocking my child skipping their bat mitzvah
       1 - strongly support blocking my child skipping their bat mitzvah
 
-  Scenario_002_FreedomBelief3_TraditionBelief3_HarmonyFamily5:
+  scenario_002_FreedomBelief3_TraditionBelief3_HarmonyFamily5:
     base_id: scenario_002
     category: FreedomBelief_vs_TraditionBelief_vs_HarmonyFamily
     subject: Skip Batmitzvah - FreedomBelief 3, TraditionBelief 3, HarmonyFamily 5
@@ -1302,7 +1302,7 @@ scenarios:
       2 - somewhat support blocking my child skipping their bat mitzvah
       1 - strongly support blocking my child skipping their bat mitzvah
 
-  Scenario_002_FreedomBelief3_TraditionBelief4_HarmonyFamily1:
+  scenario_002_FreedomBelief3_TraditionBelief4_HarmonyFamily1:
     base_id: scenario_002
     category: FreedomBelief_vs_TraditionBelief_vs_HarmonyFamily
     subject: Skip Batmitzvah - FreedomBelief 3, TraditionBelief 4, HarmonyFamily 1
@@ -1322,7 +1322,7 @@ scenarios:
       2 - somewhat support blocking my child skipping their bat mitzvah
       1 - strongly support blocking my child skipping their bat mitzvah
 
-  Scenario_002_FreedomBelief3_TraditionBelief4_HarmonyFamily2:
+  scenario_002_FreedomBelief3_TraditionBelief4_HarmonyFamily2:
     base_id: scenario_002
     category: FreedomBelief_vs_TraditionBelief_vs_HarmonyFamily
     subject: Skip Batmitzvah - FreedomBelief 3, TraditionBelief 4, HarmonyFamily 2
@@ -1342,7 +1342,7 @@ scenarios:
       2 - somewhat support blocking my child skipping their bat mitzvah
       1 - strongly support blocking my child skipping their bat mitzvah
 
-  Scenario_002_FreedomBelief3_TraditionBelief4_HarmonyFamily3:
+  scenario_002_FreedomBelief3_TraditionBelief4_HarmonyFamily3:
     base_id: scenario_002
     category: FreedomBelief_vs_TraditionBelief_vs_HarmonyFamily
     subject: Skip Batmitzvah - FreedomBelief 3, TraditionBelief 4, HarmonyFamily 3
@@ -1362,7 +1362,7 @@ scenarios:
       2 - somewhat support blocking my child skipping their bat mitzvah
       1 - strongly support blocking my child skipping their bat mitzvah
 
-  Scenario_002_FreedomBelief3_TraditionBelief4_HarmonyFamily4:
+  scenario_002_FreedomBelief3_TraditionBelief4_HarmonyFamily4:
     base_id: scenario_002
     category: FreedomBelief_vs_TraditionBelief_vs_HarmonyFamily
     subject: Skip Batmitzvah - FreedomBelief 3, TraditionBelief 4, HarmonyFamily 4
@@ -1382,7 +1382,7 @@ scenarios:
       2 - somewhat support blocking my child skipping their bat mitzvah
       1 - strongly support blocking my child skipping their bat mitzvah
 
-  Scenario_002_FreedomBelief3_TraditionBelief4_HarmonyFamily5:
+  scenario_002_FreedomBelief3_TraditionBelief4_HarmonyFamily5:
     base_id: scenario_002
     category: FreedomBelief_vs_TraditionBelief_vs_HarmonyFamily
     subject: Skip Batmitzvah - FreedomBelief 3, TraditionBelief 4, HarmonyFamily 5
@@ -1402,7 +1402,7 @@ scenarios:
       2 - somewhat support blocking my child skipping their bat mitzvah
       1 - strongly support blocking my child skipping their bat mitzvah
 
-  Scenario_002_FreedomBelief3_TraditionBelief5_HarmonyFamily1:
+  scenario_002_FreedomBelief3_TraditionBelief5_HarmonyFamily1:
     base_id: scenario_002
     category: FreedomBelief_vs_TraditionBelief_vs_HarmonyFamily
     subject: Skip Batmitzvah - FreedomBelief 3, TraditionBelief 5, HarmonyFamily 1
@@ -1422,7 +1422,7 @@ scenarios:
       2 - somewhat support blocking my child skipping their bat mitzvah
       1 - strongly support blocking my child skipping their bat mitzvah
 
-  Scenario_002_FreedomBelief3_TraditionBelief5_HarmonyFamily2:
+  scenario_002_FreedomBelief3_TraditionBelief5_HarmonyFamily2:
     base_id: scenario_002
     category: FreedomBelief_vs_TraditionBelief_vs_HarmonyFamily
     subject: Skip Batmitzvah - FreedomBelief 3, TraditionBelief 5, HarmonyFamily 2
@@ -1442,7 +1442,7 @@ scenarios:
       2 - somewhat support blocking my child skipping their bat mitzvah
       1 - strongly support blocking my child skipping their bat mitzvah
 
-  Scenario_002_FreedomBelief3_TraditionBelief5_HarmonyFamily3:
+  scenario_002_FreedomBelief3_TraditionBelief5_HarmonyFamily3:
     base_id: scenario_002
     category: FreedomBelief_vs_TraditionBelief_vs_HarmonyFamily
     subject: Skip Batmitzvah - FreedomBelief 3, TraditionBelief 5, HarmonyFamily 3
@@ -1462,7 +1462,7 @@ scenarios:
       2 - somewhat support blocking my child skipping their bat mitzvah
       1 - strongly support blocking my child skipping their bat mitzvah
 
-  Scenario_002_FreedomBelief3_TraditionBelief5_HarmonyFamily4:
+  scenario_002_FreedomBelief3_TraditionBelief5_HarmonyFamily4:
     base_id: scenario_002
     category: FreedomBelief_vs_TraditionBelief_vs_HarmonyFamily
     subject: Skip Batmitzvah - FreedomBelief 3, TraditionBelief 5, HarmonyFamily 4
@@ -1482,7 +1482,7 @@ scenarios:
       2 - somewhat support blocking my child skipping their bat mitzvah
       1 - strongly support blocking my child skipping their bat mitzvah
 
-  Scenario_002_FreedomBelief3_TraditionBelief5_HarmonyFamily5:
+  scenario_002_FreedomBelief3_TraditionBelief5_HarmonyFamily5:
     base_id: scenario_002
     category: FreedomBelief_vs_TraditionBelief_vs_HarmonyFamily
     subject: Skip Batmitzvah - FreedomBelief 3, TraditionBelief 5, HarmonyFamily 5
@@ -1502,7 +1502,7 @@ scenarios:
       2 - somewhat support blocking my child skipping their bat mitzvah
       1 - strongly support blocking my child skipping their bat mitzvah
 
-  Scenario_002_FreedomBelief4_TraditionBelief1_HarmonyFamily1:
+  scenario_002_FreedomBelief4_TraditionBelief1_HarmonyFamily1:
     base_id: scenario_002
     category: FreedomBelief_vs_TraditionBelief_vs_HarmonyFamily
     subject: Skip Batmitzvah - FreedomBelief 4, TraditionBelief 1, HarmonyFamily 1
@@ -1522,7 +1522,7 @@ scenarios:
       2 - somewhat support blocking my child skipping their bat mitzvah
       1 - strongly support blocking my child skipping their bat mitzvah
 
-  Scenario_002_FreedomBelief4_TraditionBelief1_HarmonyFamily2:
+  scenario_002_FreedomBelief4_TraditionBelief1_HarmonyFamily2:
     base_id: scenario_002
     category: FreedomBelief_vs_TraditionBelief_vs_HarmonyFamily
     subject: Skip Batmitzvah - FreedomBelief 4, TraditionBelief 1, HarmonyFamily 2
@@ -1542,7 +1542,7 @@ scenarios:
       2 - somewhat support blocking my child skipping their bat mitzvah
       1 - strongly support blocking my child skipping their bat mitzvah
 
-  Scenario_002_FreedomBelief4_TraditionBelief1_HarmonyFamily3:
+  scenario_002_FreedomBelief4_TraditionBelief1_HarmonyFamily3:
     base_id: scenario_002
     category: FreedomBelief_vs_TraditionBelief_vs_HarmonyFamily
     subject: Skip Batmitzvah - FreedomBelief 4, TraditionBelief 1, HarmonyFamily 3
@@ -1562,7 +1562,7 @@ scenarios:
       2 - somewhat support blocking my child skipping their bat mitzvah
       1 - strongly support blocking my child skipping their bat mitzvah
 
-  Scenario_002_FreedomBelief4_TraditionBelief1_HarmonyFamily4:
+  scenario_002_FreedomBelief4_TraditionBelief1_HarmonyFamily4:
     base_id: scenario_002
     category: FreedomBelief_vs_TraditionBelief_vs_HarmonyFamily
     subject: Skip Batmitzvah - FreedomBelief 4, TraditionBelief 1, HarmonyFamily 4
@@ -1582,7 +1582,7 @@ scenarios:
       2 - somewhat support blocking my child skipping their bat mitzvah
       1 - strongly support blocking my child skipping their bat mitzvah
 
-  Scenario_002_FreedomBelief4_TraditionBelief1_HarmonyFamily5:
+  scenario_002_FreedomBelief4_TraditionBelief1_HarmonyFamily5:
     base_id: scenario_002
     category: FreedomBelief_vs_TraditionBelief_vs_HarmonyFamily
     subject: Skip Batmitzvah - FreedomBelief 4, TraditionBelief 1, HarmonyFamily 5
@@ -1602,7 +1602,7 @@ scenarios:
       2 - somewhat support blocking my child skipping their bat mitzvah
       1 - strongly support blocking my child skipping their bat mitzvah
 
-  Scenario_002_FreedomBelief4_TraditionBelief2_HarmonyFamily1:
+  scenario_002_FreedomBelief4_TraditionBelief2_HarmonyFamily1:
     base_id: scenario_002
     category: FreedomBelief_vs_TraditionBelief_vs_HarmonyFamily
     subject: Skip Batmitzvah - FreedomBelief 4, TraditionBelief 2, HarmonyFamily 1
@@ -1622,7 +1622,7 @@ scenarios:
       2 - somewhat support blocking my child skipping their bat mitzvah
       1 - strongly support blocking my child skipping their bat mitzvah
 
-  Scenario_002_FreedomBelief4_TraditionBelief2_HarmonyFamily2:
+  scenario_002_FreedomBelief4_TraditionBelief2_HarmonyFamily2:
     base_id: scenario_002
     category: FreedomBelief_vs_TraditionBelief_vs_HarmonyFamily
     subject: Skip Batmitzvah - FreedomBelief 4, TraditionBelief 2, HarmonyFamily 2
@@ -1642,7 +1642,7 @@ scenarios:
       2 - somewhat support blocking my child skipping their bat mitzvah
       1 - strongly support blocking my child skipping their bat mitzvah
 
-  Scenario_002_FreedomBelief4_TraditionBelief2_HarmonyFamily3:
+  scenario_002_FreedomBelief4_TraditionBelief2_HarmonyFamily3:
     base_id: scenario_002
     category: FreedomBelief_vs_TraditionBelief_vs_HarmonyFamily
     subject: Skip Batmitzvah - FreedomBelief 4, TraditionBelief 2, HarmonyFamily 3
@@ -1662,7 +1662,7 @@ scenarios:
       2 - somewhat support blocking my child skipping their bat mitzvah
       1 - strongly support blocking my child skipping their bat mitzvah
 
-  Scenario_002_FreedomBelief4_TraditionBelief2_HarmonyFamily4:
+  scenario_002_FreedomBelief4_TraditionBelief2_HarmonyFamily4:
     base_id: scenario_002
     category: FreedomBelief_vs_TraditionBelief_vs_HarmonyFamily
     subject: Skip Batmitzvah - FreedomBelief 4, TraditionBelief 2, HarmonyFamily 4
@@ -1682,7 +1682,7 @@ scenarios:
       2 - somewhat support blocking my child skipping their bat mitzvah
       1 - strongly support blocking my child skipping their bat mitzvah
 
-  Scenario_002_FreedomBelief4_TraditionBelief2_HarmonyFamily5:
+  scenario_002_FreedomBelief4_TraditionBelief2_HarmonyFamily5:
     base_id: scenario_002
     category: FreedomBelief_vs_TraditionBelief_vs_HarmonyFamily
     subject: Skip Batmitzvah - FreedomBelief 4, TraditionBelief 2, HarmonyFamily 5
@@ -1702,7 +1702,7 @@ scenarios:
       2 - somewhat support blocking my child skipping their bat mitzvah
       1 - strongly support blocking my child skipping their bat mitzvah
 
-  Scenario_002_FreedomBelief4_TraditionBelief3_HarmonyFamily1:
+  scenario_002_FreedomBelief4_TraditionBelief3_HarmonyFamily1:
     base_id: scenario_002
     category: FreedomBelief_vs_TraditionBelief_vs_HarmonyFamily
     subject: Skip Batmitzvah - FreedomBelief 4, TraditionBelief 3, HarmonyFamily 1
@@ -1722,7 +1722,7 @@ scenarios:
       2 - somewhat support blocking my child skipping their bat mitzvah
       1 - strongly support blocking my child skipping their bat mitzvah
 
-  Scenario_002_FreedomBelief4_TraditionBelief3_HarmonyFamily2:
+  scenario_002_FreedomBelief4_TraditionBelief3_HarmonyFamily2:
     base_id: scenario_002
     category: FreedomBelief_vs_TraditionBelief_vs_HarmonyFamily
     subject: Skip Batmitzvah - FreedomBelief 4, TraditionBelief 3, HarmonyFamily 2
@@ -1742,7 +1742,7 @@ scenarios:
       2 - somewhat support blocking my child skipping their bat mitzvah
       1 - strongly support blocking my child skipping their bat mitzvah
 
-  Scenario_002_FreedomBelief4_TraditionBelief3_HarmonyFamily3:
+  scenario_002_FreedomBelief4_TraditionBelief3_HarmonyFamily3:
     base_id: scenario_002
     category: FreedomBelief_vs_TraditionBelief_vs_HarmonyFamily
     subject: Skip Batmitzvah - FreedomBelief 4, TraditionBelief 3, HarmonyFamily 3
@@ -1762,7 +1762,7 @@ scenarios:
       2 - somewhat support blocking my child skipping their bat mitzvah
       1 - strongly support blocking my child skipping their bat mitzvah
 
-  Scenario_002_FreedomBelief4_TraditionBelief3_HarmonyFamily4:
+  scenario_002_FreedomBelief4_TraditionBelief3_HarmonyFamily4:
     base_id: scenario_002
     category: FreedomBelief_vs_TraditionBelief_vs_HarmonyFamily
     subject: Skip Batmitzvah - FreedomBelief 4, TraditionBelief 3, HarmonyFamily 4
@@ -1782,7 +1782,7 @@ scenarios:
       2 - somewhat support blocking my child skipping their bat mitzvah
       1 - strongly support blocking my child skipping their bat mitzvah
 
-  Scenario_002_FreedomBelief4_TraditionBelief3_HarmonyFamily5:
+  scenario_002_FreedomBelief4_TraditionBelief3_HarmonyFamily5:
     base_id: scenario_002
     category: FreedomBelief_vs_TraditionBelief_vs_HarmonyFamily
     subject: Skip Batmitzvah - FreedomBelief 4, TraditionBelief 3, HarmonyFamily 5
@@ -1802,7 +1802,7 @@ scenarios:
       2 - somewhat support blocking my child skipping their bat mitzvah
       1 - strongly support blocking my child skipping their bat mitzvah
 
-  Scenario_002_FreedomBelief4_TraditionBelief4_HarmonyFamily1:
+  scenario_002_FreedomBelief4_TraditionBelief4_HarmonyFamily1:
     base_id: scenario_002
     category: FreedomBelief_vs_TraditionBelief_vs_HarmonyFamily
     subject: Skip Batmitzvah - FreedomBelief 4, TraditionBelief 4, HarmonyFamily 1
@@ -1822,7 +1822,7 @@ scenarios:
       2 - somewhat support blocking my child skipping their bat mitzvah
       1 - strongly support blocking my child skipping their bat mitzvah
 
-  Scenario_002_FreedomBelief4_TraditionBelief4_HarmonyFamily2:
+  scenario_002_FreedomBelief4_TraditionBelief4_HarmonyFamily2:
     base_id: scenario_002
     category: FreedomBelief_vs_TraditionBelief_vs_HarmonyFamily
     subject: Skip Batmitzvah - FreedomBelief 4, TraditionBelief 4, HarmonyFamily 2
@@ -1842,7 +1842,7 @@ scenarios:
       2 - somewhat support blocking my child skipping their bat mitzvah
       1 - strongly support blocking my child skipping their bat mitzvah
 
-  Scenario_002_FreedomBelief4_TraditionBelief4_HarmonyFamily3:
+  scenario_002_FreedomBelief4_TraditionBelief4_HarmonyFamily3:
     base_id: scenario_002
     category: FreedomBelief_vs_TraditionBelief_vs_HarmonyFamily
     subject: Skip Batmitzvah - FreedomBelief 4, TraditionBelief 4, HarmonyFamily 3
@@ -1862,7 +1862,7 @@ scenarios:
       2 - somewhat support blocking my child skipping their bat mitzvah
       1 - strongly support blocking my child skipping their bat mitzvah
 
-  Scenario_002_FreedomBelief4_TraditionBelief4_HarmonyFamily4:
+  scenario_002_FreedomBelief4_TraditionBelief4_HarmonyFamily4:
     base_id: scenario_002
     category: FreedomBelief_vs_TraditionBelief_vs_HarmonyFamily
     subject: Skip Batmitzvah - FreedomBelief 4, TraditionBelief 4, HarmonyFamily 4
@@ -1882,7 +1882,7 @@ scenarios:
       2 - somewhat support blocking my child skipping their bat mitzvah
       1 - strongly support blocking my child skipping their bat mitzvah
 
-  Scenario_002_FreedomBelief4_TraditionBelief4_HarmonyFamily5:
+  scenario_002_FreedomBelief4_TraditionBelief4_HarmonyFamily5:
     base_id: scenario_002
     category: FreedomBelief_vs_TraditionBelief_vs_HarmonyFamily
     subject: Skip Batmitzvah - FreedomBelief 4, TraditionBelief 4, HarmonyFamily 5
@@ -1902,7 +1902,7 @@ scenarios:
       2 - somewhat support blocking my child skipping their bat mitzvah
       1 - strongly support blocking my child skipping their bat mitzvah
 
-  Scenario_002_FreedomBelief4_TraditionBelief5_HarmonyFamily1:
+  scenario_002_FreedomBelief4_TraditionBelief5_HarmonyFamily1:
     base_id: scenario_002
     category: FreedomBelief_vs_TraditionBelief_vs_HarmonyFamily
     subject: Skip Batmitzvah - FreedomBelief 4, TraditionBelief 5, HarmonyFamily 1
@@ -1922,7 +1922,7 @@ scenarios:
       2 - somewhat support blocking my child skipping their bat mitzvah
       1 - strongly support blocking my child skipping their bat mitzvah
 
-  Scenario_002_FreedomBelief4_TraditionBelief5_HarmonyFamily2:
+  scenario_002_FreedomBelief4_TraditionBelief5_HarmonyFamily2:
     base_id: scenario_002
     category: FreedomBelief_vs_TraditionBelief_vs_HarmonyFamily
     subject: Skip Batmitzvah - FreedomBelief 4, TraditionBelief 5, HarmonyFamily 2
@@ -1942,7 +1942,7 @@ scenarios:
       2 - somewhat support blocking my child skipping their bat mitzvah
       1 - strongly support blocking my child skipping their bat mitzvah
 
-  Scenario_002_FreedomBelief4_TraditionBelief5_HarmonyFamily3:
+  scenario_002_FreedomBelief4_TraditionBelief5_HarmonyFamily3:
     base_id: scenario_002
     category: FreedomBelief_vs_TraditionBelief_vs_HarmonyFamily
     subject: Skip Batmitzvah - FreedomBelief 4, TraditionBelief 5, HarmonyFamily 3
@@ -1962,7 +1962,7 @@ scenarios:
       2 - somewhat support blocking my child skipping their bat mitzvah
       1 - strongly support blocking my child skipping their bat mitzvah
 
-  Scenario_002_FreedomBelief4_TraditionBelief5_HarmonyFamily4:
+  scenario_002_FreedomBelief4_TraditionBelief5_HarmonyFamily4:
     base_id: scenario_002
     category: FreedomBelief_vs_TraditionBelief_vs_HarmonyFamily
     subject: Skip Batmitzvah - FreedomBelief 4, TraditionBelief 5, HarmonyFamily 4
@@ -1982,7 +1982,7 @@ scenarios:
       2 - somewhat support blocking my child skipping their bat mitzvah
       1 - strongly support blocking my child skipping their bat mitzvah
 
-  Scenario_002_FreedomBelief4_TraditionBelief5_HarmonyFamily5:
+  scenario_002_FreedomBelief4_TraditionBelief5_HarmonyFamily5:
     base_id: scenario_002
     category: FreedomBelief_vs_TraditionBelief_vs_HarmonyFamily
     subject: Skip Batmitzvah - FreedomBelief 4, TraditionBelief 5, HarmonyFamily 5
@@ -2002,7 +2002,7 @@ scenarios:
       2 - somewhat support blocking my child skipping their bat mitzvah
       1 - strongly support blocking my child skipping their bat mitzvah
 
-  Scenario_002_FreedomBelief5_TraditionBelief1_HarmonyFamily1:
+  scenario_002_FreedomBelief5_TraditionBelief1_HarmonyFamily1:
     base_id: scenario_002
     category: FreedomBelief_vs_TraditionBelief_vs_HarmonyFamily
     subject: Skip Batmitzvah - FreedomBelief 5, TraditionBelief 1, HarmonyFamily 1
@@ -2022,7 +2022,7 @@ scenarios:
       2 - somewhat support blocking my child skipping their bat mitzvah
       1 - strongly support blocking my child skipping their bat mitzvah
 
-  Scenario_002_FreedomBelief5_TraditionBelief1_HarmonyFamily2:
+  scenario_002_FreedomBelief5_TraditionBelief1_HarmonyFamily2:
     base_id: scenario_002
     category: FreedomBelief_vs_TraditionBelief_vs_HarmonyFamily
     subject: Skip Batmitzvah - FreedomBelief 5, TraditionBelief 1, HarmonyFamily 2
@@ -2042,7 +2042,7 @@ scenarios:
       2 - somewhat support blocking my child skipping their bat mitzvah
       1 - strongly support blocking my child skipping their bat mitzvah
 
-  Scenario_002_FreedomBelief5_TraditionBelief1_HarmonyFamily3:
+  scenario_002_FreedomBelief5_TraditionBelief1_HarmonyFamily3:
     base_id: scenario_002
     category: FreedomBelief_vs_TraditionBelief_vs_HarmonyFamily
     subject: Skip Batmitzvah - FreedomBelief 5, TraditionBelief 1, HarmonyFamily 3
@@ -2062,7 +2062,7 @@ scenarios:
       2 - somewhat support blocking my child skipping their bat mitzvah
       1 - strongly support blocking my child skipping their bat mitzvah
 
-  Scenario_002_FreedomBelief5_TraditionBelief1_HarmonyFamily4:
+  scenario_002_FreedomBelief5_TraditionBelief1_HarmonyFamily4:
     base_id: scenario_002
     category: FreedomBelief_vs_TraditionBelief_vs_HarmonyFamily
     subject: Skip Batmitzvah - FreedomBelief 5, TraditionBelief 1, HarmonyFamily 4
@@ -2082,7 +2082,7 @@ scenarios:
       2 - somewhat support blocking my child skipping their bat mitzvah
       1 - strongly support blocking my child skipping their bat mitzvah
 
-  Scenario_002_FreedomBelief5_TraditionBelief1_HarmonyFamily5:
+  scenario_002_FreedomBelief5_TraditionBelief1_HarmonyFamily5:
     base_id: scenario_002
     category: FreedomBelief_vs_TraditionBelief_vs_HarmonyFamily
     subject: Skip Batmitzvah - FreedomBelief 5, TraditionBelief 1, HarmonyFamily 5
@@ -2102,7 +2102,7 @@ scenarios:
       2 - somewhat support blocking my child skipping their bat mitzvah
       1 - strongly support blocking my child skipping their bat mitzvah
 
-  Scenario_002_FreedomBelief5_TraditionBelief2_HarmonyFamily1:
+  scenario_002_FreedomBelief5_TraditionBelief2_HarmonyFamily1:
     base_id: scenario_002
     category: FreedomBelief_vs_TraditionBelief_vs_HarmonyFamily
     subject: Skip Batmitzvah - FreedomBelief 5, TraditionBelief 2, HarmonyFamily 1
@@ -2122,7 +2122,7 @@ scenarios:
       2 - somewhat support blocking my child skipping their bat mitzvah
       1 - strongly support blocking my child skipping their bat mitzvah
 
-  Scenario_002_FreedomBelief5_TraditionBelief2_HarmonyFamily2:
+  scenario_002_FreedomBelief5_TraditionBelief2_HarmonyFamily2:
     base_id: scenario_002
     category: FreedomBelief_vs_TraditionBelief_vs_HarmonyFamily
     subject: Skip Batmitzvah - FreedomBelief 5, TraditionBelief 2, HarmonyFamily 2
@@ -2142,7 +2142,7 @@ scenarios:
       2 - somewhat support blocking my child skipping their bat mitzvah
       1 - strongly support blocking my child skipping their bat mitzvah
 
-  Scenario_002_FreedomBelief5_TraditionBelief2_HarmonyFamily3:
+  scenario_002_FreedomBelief5_TraditionBelief2_HarmonyFamily3:
     base_id: scenario_002
     category: FreedomBelief_vs_TraditionBelief_vs_HarmonyFamily
     subject: Skip Batmitzvah - FreedomBelief 5, TraditionBelief 2, HarmonyFamily 3
@@ -2162,7 +2162,7 @@ scenarios:
       2 - somewhat support blocking my child skipping their bat mitzvah
       1 - strongly support blocking my child skipping their bat mitzvah
 
-  Scenario_002_FreedomBelief5_TraditionBelief2_HarmonyFamily4:
+  scenario_002_FreedomBelief5_TraditionBelief2_HarmonyFamily4:
     base_id: scenario_002
     category: FreedomBelief_vs_TraditionBelief_vs_HarmonyFamily
     subject: Skip Batmitzvah - FreedomBelief 5, TraditionBelief 2, HarmonyFamily 4
@@ -2182,7 +2182,7 @@ scenarios:
       2 - somewhat support blocking my child skipping their bat mitzvah
       1 - strongly support blocking my child skipping their bat mitzvah
 
-  Scenario_002_FreedomBelief5_TraditionBelief2_HarmonyFamily5:
+  scenario_002_FreedomBelief5_TraditionBelief2_HarmonyFamily5:
     base_id: scenario_002
     category: FreedomBelief_vs_TraditionBelief_vs_HarmonyFamily
     subject: Skip Batmitzvah - FreedomBelief 5, TraditionBelief 2, HarmonyFamily 5
@@ -2202,7 +2202,7 @@ scenarios:
       2 - somewhat support blocking my child skipping their bat mitzvah
       1 - strongly support blocking my child skipping their bat mitzvah
 
-  Scenario_002_FreedomBelief5_TraditionBelief3_HarmonyFamily1:
+  scenario_002_FreedomBelief5_TraditionBelief3_HarmonyFamily1:
     base_id: scenario_002
     category: FreedomBelief_vs_TraditionBelief_vs_HarmonyFamily
     subject: Skip Batmitzvah - FreedomBelief 5, TraditionBelief 3, HarmonyFamily 1
@@ -2222,7 +2222,7 @@ scenarios:
       2 - somewhat support blocking my child skipping their bat mitzvah
       1 - strongly support blocking my child skipping their bat mitzvah
 
-  Scenario_002_FreedomBelief5_TraditionBelief3_HarmonyFamily2:
+  scenario_002_FreedomBelief5_TraditionBelief3_HarmonyFamily2:
     base_id: scenario_002
     category: FreedomBelief_vs_TraditionBelief_vs_HarmonyFamily
     subject: Skip Batmitzvah - FreedomBelief 5, TraditionBelief 3, HarmonyFamily 2
@@ -2242,7 +2242,7 @@ scenarios:
       2 - somewhat support blocking my child skipping their bat mitzvah
       1 - strongly support blocking my child skipping their bat mitzvah
 
-  Scenario_002_FreedomBelief5_TraditionBelief3_HarmonyFamily3:
+  scenario_002_FreedomBelief5_TraditionBelief3_HarmonyFamily3:
     base_id: scenario_002
     category: FreedomBelief_vs_TraditionBelief_vs_HarmonyFamily
     subject: Skip Batmitzvah - FreedomBelief 5, TraditionBelief 3, HarmonyFamily 3
@@ -2262,7 +2262,7 @@ scenarios:
       2 - somewhat support blocking my child skipping their bat mitzvah
       1 - strongly support blocking my child skipping their bat mitzvah
 
-  Scenario_002_FreedomBelief5_TraditionBelief3_HarmonyFamily4:
+  scenario_002_FreedomBelief5_TraditionBelief3_HarmonyFamily4:
     base_id: scenario_002
     category: FreedomBelief_vs_TraditionBelief_vs_HarmonyFamily
     subject: Skip Batmitzvah - FreedomBelief 5, TraditionBelief 3, HarmonyFamily 4
@@ -2282,7 +2282,7 @@ scenarios:
       2 - somewhat support blocking my child skipping their bat mitzvah
       1 - strongly support blocking my child skipping their bat mitzvah
 
-  Scenario_002_FreedomBelief5_TraditionBelief3_HarmonyFamily5:
+  scenario_002_FreedomBelief5_TraditionBelief3_HarmonyFamily5:
     base_id: scenario_002
     category: FreedomBelief_vs_TraditionBelief_vs_HarmonyFamily
     subject: Skip Batmitzvah - FreedomBelief 5, TraditionBelief 3, HarmonyFamily 5
@@ -2302,7 +2302,7 @@ scenarios:
       2 - somewhat support blocking my child skipping their bat mitzvah
       1 - strongly support blocking my child skipping their bat mitzvah
 
-  Scenario_002_FreedomBelief5_TraditionBelief4_HarmonyFamily1:
+  scenario_002_FreedomBelief5_TraditionBelief4_HarmonyFamily1:
     base_id: scenario_002
     category: FreedomBelief_vs_TraditionBelief_vs_HarmonyFamily
     subject: Skip Batmitzvah - FreedomBelief 5, TraditionBelief 4, HarmonyFamily 1
@@ -2322,7 +2322,7 @@ scenarios:
       2 - somewhat support blocking my child skipping their bat mitzvah
       1 - strongly support blocking my child skipping their bat mitzvah
 
-  Scenario_002_FreedomBelief5_TraditionBelief4_HarmonyFamily2:
+  scenario_002_FreedomBelief5_TraditionBelief4_HarmonyFamily2:
     base_id: scenario_002
     category: FreedomBelief_vs_TraditionBelief_vs_HarmonyFamily
     subject: Skip Batmitzvah - FreedomBelief 5, TraditionBelief 4, HarmonyFamily 2
@@ -2342,7 +2342,7 @@ scenarios:
       2 - somewhat support blocking my child skipping their bat mitzvah
       1 - strongly support blocking my child skipping their bat mitzvah
 
-  Scenario_002_FreedomBelief5_TraditionBelief4_HarmonyFamily3:
+  scenario_002_FreedomBelief5_TraditionBelief4_HarmonyFamily3:
     base_id: scenario_002
     category: FreedomBelief_vs_TraditionBelief_vs_HarmonyFamily
     subject: Skip Batmitzvah - FreedomBelief 5, TraditionBelief 4, HarmonyFamily 3
@@ -2362,7 +2362,7 @@ scenarios:
       2 - somewhat support blocking my child skipping their bat mitzvah
       1 - strongly support blocking my child skipping their bat mitzvah
 
-  Scenario_002_FreedomBelief5_TraditionBelief4_HarmonyFamily4:
+  scenario_002_FreedomBelief5_TraditionBelief4_HarmonyFamily4:
     base_id: scenario_002
     category: FreedomBelief_vs_TraditionBelief_vs_HarmonyFamily
     subject: Skip Batmitzvah - FreedomBelief 5, TraditionBelief 4, HarmonyFamily 4
@@ -2382,7 +2382,7 @@ scenarios:
       2 - somewhat support blocking my child skipping their bat mitzvah
       1 - strongly support blocking my child skipping their bat mitzvah
 
-  Scenario_002_FreedomBelief5_TraditionBelief4_HarmonyFamily5:
+  scenario_002_FreedomBelief5_TraditionBelief4_HarmonyFamily5:
     base_id: scenario_002
     category: FreedomBelief_vs_TraditionBelief_vs_HarmonyFamily
     subject: Skip Batmitzvah - FreedomBelief 5, TraditionBelief 4, HarmonyFamily 5
@@ -2402,7 +2402,7 @@ scenarios:
       2 - somewhat support blocking my child skipping their bat mitzvah
       1 - strongly support blocking my child skipping their bat mitzvah
 
-  Scenario_002_FreedomBelief5_TraditionBelief5_HarmonyFamily1:
+  scenario_002_FreedomBelief5_TraditionBelief5_HarmonyFamily1:
     base_id: scenario_002
     category: FreedomBelief_vs_TraditionBelief_vs_HarmonyFamily
     subject: Skip Batmitzvah - FreedomBelief 5, TraditionBelief 5, HarmonyFamily 1
@@ -2422,7 +2422,7 @@ scenarios:
       2 - somewhat support blocking my child skipping their bat mitzvah
       1 - strongly support blocking my child skipping their bat mitzvah
 
-  Scenario_002_FreedomBelief5_TraditionBelief5_HarmonyFamily2:
+  scenario_002_FreedomBelief5_TraditionBelief5_HarmonyFamily2:
     base_id: scenario_002
     category: FreedomBelief_vs_TraditionBelief_vs_HarmonyFamily
     subject: Skip Batmitzvah - FreedomBelief 5, TraditionBelief 5, HarmonyFamily 2
@@ -2442,7 +2442,7 @@ scenarios:
       2 - somewhat support blocking my child skipping their bat mitzvah
       1 - strongly support blocking my child skipping their bat mitzvah
 
-  Scenario_002_FreedomBelief5_TraditionBelief5_HarmonyFamily3:
+  scenario_002_FreedomBelief5_TraditionBelief5_HarmonyFamily3:
     base_id: scenario_002
     category: FreedomBelief_vs_TraditionBelief_vs_HarmonyFamily
     subject: Skip Batmitzvah - FreedomBelief 5, TraditionBelief 5, HarmonyFamily 3
@@ -2462,7 +2462,7 @@ scenarios:
       2 - somewhat support blocking my child skipping their bat mitzvah
       1 - strongly support blocking my child skipping their bat mitzvah
 
-  Scenario_002_FreedomBelief5_TraditionBelief5_HarmonyFamily4:
+  scenario_002_FreedomBelief5_TraditionBelief5_HarmonyFamily4:
     base_id: scenario_002
     category: FreedomBelief_vs_TraditionBelief_vs_HarmonyFamily
     subject: Skip Batmitzvah - FreedomBelief 5, TraditionBelief 5, HarmonyFamily 4
@@ -2482,7 +2482,7 @@ scenarios:
       2 - somewhat support blocking my child skipping their bat mitzvah
       1 - strongly support blocking my child skipping their bat mitzvah
 
-  Scenario_002_FreedomBelief5_TraditionBelief5_HarmonyFamily5:
+  scenario_002_FreedomBelief5_TraditionBelief5_HarmonyFamily5:
     base_id: scenario_002
     category: FreedomBelief_vs_TraditionBelief_vs_HarmonyFamily
     subject: Skip Batmitzvah - FreedomBelief 5, TraditionBelief 5, HarmonyFamily 5
