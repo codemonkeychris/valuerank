@@ -307,13 +307,13 @@ We could literally use Git (or libgit2) for definitions:
 
 **Verdict:** PostgreSQL is simpler for our needs. We're not merging definitions, just forking. The DAG structure is straightforward with recursive CTEs.
 
-## Deployment Options
+## Deployment
 
-| Service | Pros | Cons |
-|---------|------|------|
-| **Supabase** | PostgreSQL + Auth + Realtime built-in, generous free tier | Some vendor conventions |
-| **Neon** | Serverless Postgres, branching for dev/prod | Newer, less ecosystem |
-| **Railway** | Simple deployment, good DX | Less Postgres-specific features |
-| **RDS/Cloud SQL** | Full control, enterprise features | More operational overhead |
+**Recommendation:** Railway PostgreSQL
 
-**Recommendation for MVP:** Supabase - gives us PostgreSQL + auth + real-time subscriptions out of the box.
+- Simple deployment, good developer experience
+- Free tier available for MVP
+- No vendor lock-in or special conventions
+- Handle auth separately (API keys or simple JWT)
+
+Since we're using PgBoss for job queues (see [API & Queue System](./api-queue-system.md)), everything runs on a single PostgreSQL instance - no Redis needed.

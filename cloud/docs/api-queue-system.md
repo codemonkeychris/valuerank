@@ -15,7 +15,7 @@ Since the primary workload is **long-running AI tasks** (minutes to hours), we n
 
 | Component | Technology | Rationale |
 |-----------|------------|-----------|
-| **Queue** | BullMQ (Redis) or AWS SQS | Mature, pausable, priority support |
+| **Queue** | PgBoss (PostgreSQL) | Same DB as app data, no Redis needed, transactional |
 | **Workers** | Node.js or Python workers | Match existing LLM adapter code |
 | **API** | Express or Fastify | Lightweight, WebSocket support |
 | **Real-time** | WebSockets or SSE | Progress updates to UI |
@@ -23,23 +23,23 @@ Since the primary workload is **long-running AI tasks** (minutes to hours), we n
 ## Architecture
 
 ```
-┌─────────────┐     ┌─────────────┐     ┌─────────────┐
-│   Frontend  │────▶│   API       │────▶│   Queue     │
-│   (React)   │◀────│   Server    │◀────│   (Redis)   │
-└─────────────┘     └─────────────┘     └─────────────┘
-                           │                    │
-                           │              ┌─────┴─────┐
-                           │              ▼           ▼
-                           │        ┌─────────┐ ┌─────────┐
-                           │        │ Worker  │ │ Worker  │
-                           │        │   1     │ │   2     │
-                           └───────▶└─────────┘ └─────────┘
-                         (status)         │           │
-                                          ▼           ▼
-                                    ┌─────────────────────┐
-                                    │   LLM Providers     │
-                                    │ (OpenAI, Anthropic) │
-                                    └─────────────────────┘
+┌─────────────┐     ┌─────────────┐
+│   Frontend  │────▶│   API       │
+│   (React)   │◀────│   Server    │
+└─────────────┘     └──────┬──────┘
+                           │
+            ┌──────────────┼──────────────┐
+            ▼              ▼              ▼
+      ┌───────────┐  ┌─────────┐    ┌─────────┐
+      │ PostgreSQL│  │ Worker  │    │ Worker  │
+      │ + PgBoss  │◀─│   1     │    │   2     │
+      └───────────┘  └────┬────┘    └────┬────┘
+                          │              │
+                          ▼              ▼
+                    ┌─────────────────────┐
+                    │   LLM Providers     │
+                    │ (OpenAI, Anthropic) │
+                    └─────────────────────┘
 ```
 
 ## Job Types
@@ -76,40 +76,57 @@ ws://api/runs/:id/progress
   → { type: "run_complete" }
 ```
 
-## BullMQ Implementation
+## PgBoss Implementation
 
-BullMQ provides:
+PgBoss provides:
+- **PostgreSQL-backed**: Uses same database as application data
+- **Transactional**: Job creation can be part of a transaction with other data
 - **Pause/Resume**: Built-in queue pause without losing jobs
 - **Priority**: Run urgent jobs first
-- **Retry**: Configurable retry with backoff
-- **Rate Limiting**: Respect LLM provider limits
-- **Progress**: Job-level progress tracking
-- **Events**: Real-time job lifecycle events
+- **Retry**: Configurable retry with exponential backoff
+- **Scheduling**: Delayed jobs, cron-like scheduling
+- **Events**: Job lifecycle events via polling or pub/sub
 
 ```javascript
-// Example: Creating a run
-const queue = new Queue('valuerank');
+import PgBoss from 'pg-boss';
 
+const boss = new PgBoss(process.env.DATABASE_URL);
+await boss.start();
+
+// Example: Creating a run
 async function startRun(runConfig) {
   const run = await db.runs.insert(runConfig);
 
   for (const scenario of scenarios) {
     for (const model of runConfig.target_models) {
-      await queue.add('probe:scenario', {
+      await boss.send('probe:scenario', {
         run_id: run.id,
         scenario_id: scenario.id,
         model: model
       }, {
         priority: 1,
-        attempts: 3,
-        backoff: { type: 'exponential', delay: 2000 }
+        retryLimit: 3,
+        retryBackoff: true,
+        retryDelay: 2
       });
     }
   }
 
   return run;
 }
+
+// Worker subscribes to job type
+await boss.work('probe:scenario', async (job) => {
+  const { run_id, scenario_id, model } = job.data;
+  // ... call LLM, save transcript
+});
 ```
+
+**Why PgBoss over Redis/BullMQ?**
+- One less service to manage (no Redis)
+- Job data is transactionally consistent with application data
+- Easier to query job history with SQL
+- For hundreds to low thousands of jobs, PostgreSQL handles it easily
 
 ---
 

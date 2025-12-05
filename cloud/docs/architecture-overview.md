@@ -26,18 +26,18 @@ Cloud ValueRank is a cloud-native version of the ValueRank AI moral values evalu
 │  │   (React)    │     │  (Express)   │     │  (AI Agent Access)   ││
 │  └──────────────┘     └──────┬───────┘     └──────────────────────┘│
 │                              │                                       │
-│         ┌────────────────────┼────────────────────┐                 │
-│         ▼                    ▼                    ▼                 │
-│  ┌──────────────┐     ┌──────────────┐     ┌──────────────┐        │
-│  │  PostgreSQL  │     │    Redis     │     │   Workers    │        │
-│  │  (Supabase)  │     │   (Queue)    │     │  (Python)    │        │
-│  └──────────────┘     └──────────────┘     └──────┬───────┘        │
-│                                                    │                 │
-│                                                    ▼                 │
-│                                            ┌──────────────┐         │
-│                                            │ LLM Providers│         │
-│                                            │ (OpenAI, etc)│         │
-│                                            └──────────────┘         │
+│              ┌───────────────┴───────────────┐                      │
+│              ▼                               ▼                      │
+│       ┌──────────────┐                ┌──────────────┐              │
+│       │  PostgreSQL  │                │   Workers    │              │
+│       │  (Railway)   │◀───────────────│  (Python)    │              │
+│       │  + PgBoss    │    queue       └──────┬───────┘              │
+│       └──────────────┘                       │                      │
+│                                              ▼                      │
+│                                       ┌──────────────┐              │
+│                                       │ LLM Providers│              │
+│                                       │ (OpenAI, etc)│              │
+│                                       └──────────────┘              │
 └─────────────────────────────────────────────────────────────────────┘
 ```
 
@@ -49,12 +49,14 @@ Cloud ValueRank is a cloud-native version of the ValueRank AI moral values evalu
 - **Why**: Definition versioning requires DAG queries (ancestry, descendants)
 - **Recursive CTEs** handle version trees efficiently
 - **JSONB columns** provide schema flexibility without migrations
+- **Hosting**: Railway PostgreSQL (self-hosted, simple)
 - See: [Database Design](./database-design.md)
 
-### Queue: BullMQ (Redis)
+### Queue: PgBoss (PostgreSQL-backed)
 - **Why**: Long-running AI tasks need pause/resume/cancel
-- Built-in retry, rate limiting, priority queues
-- Real-time progress via WebSocket
+- Uses same PostgreSQL database - no Redis needed
+- Built-in retry, scheduling, priority queues
+- Simpler stack, transactional with application data
 - See: [API & Queue System](./api-queue-system.md)
 
 ### MCP Interface

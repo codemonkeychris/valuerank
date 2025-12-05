@@ -6,17 +6,18 @@
 
 | Component | Service | Cost Model |
 |-----------|---------|------------|
-| Database | Supabase (PostgreSQL + Auth + Realtime) | Free tier → $25/mo |
-| Queue | Upstash Redis (serverless) | Pay-per-request |
-| API | Vercel or Railway | Free tier available |
-| Workers | Railway or Render | ~$7/mo per worker |
-| Frontend | Vercel | Free tier |
+| Database + Queue | Railway PostgreSQL + PgBoss | Free tier → $5/mo |
+| API | Railway | Free tier available |
+| Workers | Railway | ~$7/mo per worker |
+| Frontend | Railway or Vercel | Free tier |
+
+**Key simplification:** PgBoss uses PostgreSQL for job queues, eliminating the need for Redis. One database handles both application data and job queue.
 
 ## Scaling Path
 
-1. **MVP**: Single worker, shared Redis, free database tier
-2. **Growth**: Multiple workers, dedicated Redis, larger DB
-3. **Scale**: Kubernetes workers, Redis cluster, sharded DB
+1. **MVP**: Single worker, free PostgreSQL tier
+2. **Growth**: Multiple workers, larger PostgreSQL instance
+3. **Scale**: Read replicas, connection pooling, dedicated compute
 
 ---
 
@@ -134,9 +135,9 @@ For 100 runs/month with ~50 scenarios × 6 models each:
 
 ## Next Steps
 
-1. **Supabase Setup**: Create project, define initial schema with versioning tables
-2. **Queue Prototype**: Build BullMQ proof-of-concept with single worker
+1. **Railway Setup**: Create project, provision PostgreSQL, define initial schema with versioning tables
+2. **PgBoss Prototype**: Build queue proof-of-concept with single worker
 3. **Version Tree UI**: Design component for visualizing definition lineage
 4. **API Schema**: Define OpenAPI spec for all endpoints (including fork/version operations)
-5. **Auth Strategy**: Leverage Supabase Auth or add Clerk/Auth0
+5. **Auth Strategy**: Simple API keys for MVP, JWT or external auth provider later
 6. **DevTool Migration**: Identify components to reuse vs rewrite
