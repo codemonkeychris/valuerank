@@ -55,3 +55,6 @@ python3 -m src.summary \
 python3 -m src.summary \
   --run-dir output/Best_Man_Catholic_Marriage_Freedom_Tradition_Harmony/2025-12-04.14-55 \
   --scenarios-file scenarios/Best_Man_Catholic_Marriage_Freedom_Tradition_Harmony
+
+  adding for fun.
+  
