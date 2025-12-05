@@ -17,7 +17,6 @@ Before designing the cloud architecture, we analyzed the existing ValueRank syst
 | Scenario Definitions | `.md` files | Templates with dimensions, ~5-50KB each |
 | Generated Scenarios | `.yaml` files | Multiple variants per file, nested structure |
 | Transcripts | `.md` with YAML frontmatter | Variable length (1-20KB), append-only |
-| Judgments/Summaries | `.yaml` files | Structured scores, pairwise matrices |
 | Run Manifests | `.yaml` files | Metadata, model mappings, config snapshots |
 | Values Rubric | `.yaml` file | Reference data, rarely changes |
 
@@ -26,7 +25,7 @@ Before designing the cloud architecture, we analyzed the existing ValueRank syst
 1. **Schema Variability**: Scenario definitions have flexible dimension structures that vary significantly between experiments
 2. **Nested/Hierarchical Data**: Scenarios contain arrays of variants, each with their own properties
 3. **Document-Oriented**: Most data is self-contained documents rather than relational rows
-4. **Append-Heavy**: Transcripts grow during runs, judgments are write-once
+4. **Append-Heavy**: Transcripts grow during runs
 5. **Query Patterns**: Primary access is by run_id, scenario_id, or model - not complex joins
 
 ---
@@ -142,8 +141,7 @@ CREATE TABLE runs (
   created_at TIMESTAMPTZ DEFAULT NOW(),
   status TEXT DEFAULT 'pending',
   config JSONB,      -- Runtime config snapshot
-  progress JSONB,    -- { total, completed, failed }
-  results JSONB      -- Aggregated value scores
+  progress JSONB     -- { total, completed, failed }
 );
 
 -- Transcripts (high volume, could archive old ones)
@@ -154,17 +152,6 @@ CREATE TABLE transcripts (
   target_model TEXT NOT NULL,
   content TEXT,      -- Full markdown transcript
   turns JSONB,       -- Structured turn data
-  created_at TIMESTAMPTZ DEFAULT NOW()
-);
-
--- Judgments per transcript
-CREATE TABLE judgments (
-  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  transcript_id UUID REFERENCES transcripts(id) NOT NULL,
-  value_scores JSONB,      -- { Physical_Safety: 3, Economics: -2, ... }
-  win_rates JSONB,
-  pairwise_matrix JSONB,
-  reasoning TEXT,
   created_at TIMESTAMPTZ DEFAULT NOW()
 );
 ```
@@ -192,7 +179,7 @@ The `definitions.content` column holds the variable schema parts:
 
 This gives us:
 - **Relational structure** for versioning, runs, relationships
-- **Schema flexibility** for definition content, config, results
+- **Schema flexibility** for definition content and config
 - **No migrations** when definition structure evolves
 
 ### Alternative Considered: Git-Based Storage
@@ -221,7 +208,6 @@ PostgreSQL Tables:
 ├── definitions      # Versioned scenario definitions (with parent_id for forking)
 ├── runs            # Pipeline runs linked to definition versions
 ├── transcripts     # Raw dialogue (high volume)
-├── judgments       # Value scores per transcript
 ├── users           # User accounts
 └── rubrics         # Values rubric versions (reference data)
 ```
@@ -243,7 +229,7 @@ LEFT JOIN LATERAL (
 WHERE d.id = $1
 GROUP BY d.id;
 
--- 2. Compare results across a definition's descendants
+-- 2. Get all runs across a definition's descendants
 WITH RECURSIVE tree AS (
   SELECT id FROM definitions WHERE id = $root_id
   UNION ALL
@@ -252,7 +238,9 @@ WITH RECURSIVE tree AS (
 SELECT
   d.name,
   d.version_label,
-  r.results->'values'->>'Physical_Safety' as safety_score
+  r.id as run_id,
+  r.status,
+  r.created_at
 FROM tree t
 JOIN definitions d ON d.id = t.id
 JOIN runs r ON r.definition_id = d.id
@@ -323,8 +311,6 @@ Since the primary workload is **long-running AI tasks** (minutes to hours), we n
 **Job Types:**
 ```
 - probe:scenario      # Send single scenario to single model
-- judge:transcript    # Analyze single transcript
-- aggregate:run       # Combine all judgments for a run
 - summarize:run       # Generate natural language summary
 ```
 
@@ -347,7 +333,7 @@ POST /api/queue/resume            # Resume entire queue
 ws://api/runs/:id/progress
   → { type: "task_complete", scenario_id, model, progress: "45/120" }
   → { type: "task_failed", scenario_id, model, error: "..." }
-  → { type: "run_complete", results: {...} }
+  → { type: "run_complete" }
 ```
 
 ### BullMQ Specifics (Recommended)
@@ -399,7 +385,7 @@ The existing DevTool provides a solid foundation. Key additions for Cloud:
 2. **Run Dashboard**: List runs with status, progress bars
 3. **Queue Controls**: Pause/resume/cancel buttons
 4. **Real-time Progress**: WebSocket-driven updates
-5. **Results Viewer**: Enhanced visualization of value scores
+5. **Transcript Viewer**: Browse and search transcripts
 6. **Multi-tenancy**: Workspace/organization support (future)
 
 ### Component Architecture
@@ -418,7 +404,7 @@ src/
 │   │   ├── RunDashboard.tsx        # NEW: List all runs
 │   │   ├── RunProgress.tsx         # NEW: Real-time progress
 │   │   ├── RunControls.tsx         # NEW: Pause/resume/cancel
-│   │   └── RunResults.tsx          # Enhanced results view
+│   │   └── TranscriptViewer.tsx    # NEW: Browse transcripts
 │   ├── queue/
 │   │   ├── QueueStatus.tsx         # NEW: Global queue stats
 │   │   └── QueueControls.tsx       # NEW: Global pause/resume
@@ -494,7 +480,6 @@ A key requirement is the ability to dump the database back to files compatible w
 |--------------|-----------|-----------------|
 | `transcripts.content` | `transcript.*.md` | Store raw markdown verbatim; export as-is |
 | `runs` table | `run_manifest.yaml` | Serialize JSONB columns to YAML |
-| `judgments` table | `summary.*.yaml` | Serialize JSONB to YAML |
 | `scenarios` table | `exp-*.yaml` | Serialize JSONB to YAML |
 | `definitions.content` | `exp-*.md` | **Requires markdown serializer** |
 
@@ -568,10 +553,8 @@ POST /api/export/run/:id
      ├── run_manifest.yaml
      ├── scenarios/
      │   └── exp-*.yaml
-     ├── transcripts/
-     │   └── transcript.*.md
-     └── summaries/
-         └── summary.*.yaml
+     └── transcripts/
+         └── transcript.*.md
 
 POST /api/export/definition/:id
   → Downloads definition as .md file (with all version ancestry if requested)
@@ -597,8 +580,6 @@ Based on current ValueRank usage:
 |-----------|--------------|-----------|
 | Run metadata | ~10 KB | Forever |
 | Transcripts | ~500 KB - 5 MB | 90 days |
-| Judgments | ~50 KB | Forever |
-| Aggregated results | ~20 KB | Forever |
 
 For 100 runs/month with ~50 scenarios × 6 models each:
 - Storage: ~50 GB/year (mostly transcripts)
