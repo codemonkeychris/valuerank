@@ -661,6 +661,300 @@ For real-time updates and complex state, consider:
 
 ---
 
+## Tier 4: MCP Interface (AI Agent Access)
+
+### Design Philosophy
+
+Expose processed/aggregated data via MCP so external AI agents can:
+- Query runs, experiments, and analysis results
+- Perform their own reasoning on top of our computed metrics
+- Avoid being swamped with raw transcript tokens
+
+**Key Principle**: Return summaries and statistics, not raw data. The cloud has already done the heavy processing—give agents the distilled insights.
+
+### MCP Server Architecture
+
+```
+┌─────────────────────────────────────────────────────────────┐
+│                    External AI Agent                         │
+│              (Claude, GPT, custom agent)                     │
+└─────────────────────┬───────────────────────────────────────┘
+                      │ MCP Protocol
+                      ▼
+┌─────────────────────────────────────────────────────────────┐
+│                  MCP Server (TypeScript)                     │
+│  ┌─────────────┐  ┌─────────────┐  ┌─────────────────────┐ │
+│  │   Tools     │  │  Resources  │  │   Prompts           │ │
+│  │ (actions)   │  │ (data)      │  │ (templates)         │ │
+│  └─────────────┘  └─────────────┘  └─────────────────────┘ │
+└─────────────────────┬───────────────────────────────────────┘
+                      │ Internal API
+                      ▼
+┌─────────────────────────────────────────────────────────────┐
+│                  Cloud ValueRank API                         │
+│            (same backend as web frontend)                    │
+└─────────────────────────────────────────────────────────────┘
+```
+
+### MCP Tools (Actions)
+
+Tools allow agents to query and interact with the system:
+
+```typescript
+// List available tools
+const tools = [
+  {
+    name: "list_definitions",
+    description: "List all scenario definitions with version info",
+    parameters: {
+      folder: { type: "string", optional: true },
+      include_children: { type: "boolean", default: false }
+    },
+    returns: "Array of {id, name, version_label, parent_id, created_at}"
+  },
+
+  {
+    name: "list_runs",
+    description: "List runs with status and summary metrics",
+    parameters: {
+      definition_id: { type: "string", optional: true },
+      experiment_id: { type: "string", optional: true },
+      status: { type: "string", enum: ["pending", "running", "completed", "failed"] },
+      limit: { type: "number", default: 20 }
+    },
+    returns: "Array of {id, status, models, scenario_count, sample_percentage, created_at}"
+  },
+
+  {
+    name: "get_run_summary",
+    description: "Get aggregated analysis for a run (NOT raw transcripts)",
+    parameters: {
+      run_id: { type: "string", required: true },
+      include_insights: { type: "boolean", default: true }
+    },
+    returns: {
+      basic_stats: "Per-model mean/std/min/max scores",
+      model_agreement: "Pairwise correlation between models",
+      outlier_models: "Models flagged by outlier detection",
+      most_contested_scenarios: "Top 5 scenarios with highest variance",
+      insights: "Auto-generated findings (if requested)",
+      llm_summary: "Natural language summary (if available)"
+    }
+  },
+
+  {
+    name: "get_dimension_analysis",
+    description: "Which scenario dimensions drive the most model divergence",
+    parameters: {
+      run_id: { type: "string", required: true }
+    },
+    returns: {
+      ranked_dimensions: "Dimensions sorted by variance impact",
+      correlations: "How each dimension correlates with model scores",
+      most_divisive: "Dimensions where models disagree most"
+    }
+  },
+
+  {
+    name: "compare_runs",
+    description: "Delta analysis between two runs",
+    parameters: {
+      baseline_run_id: { type: "string", required: true },
+      comparison_run_id: { type: "string", required: true }
+    },
+    returns: {
+      delta_by_model: "Score changes per model",
+      most_changed_scenarios: "Scenarios with biggest shifts",
+      statistical_significance: "p-values for observed differences",
+      what_changed: "Definition/model/config differences between runs"
+    }
+  },
+
+  {
+    name: "get_experiment",
+    description: "Get experiment with all associated runs and comparisons",
+    parameters: {
+      experiment_id: { type: "string", required: true }
+    },
+    returns: {
+      hypothesis: "What we're testing",
+      controlled_variables: "What stayed constant",
+      independent_variable: "What we changed",
+      runs: "All runs in this experiment with summaries",
+      conclusion: "Auto-generated finding (if available)"
+    }
+  },
+
+  {
+    name: "get_model_profile",
+    description: "Aggregate behavior profile for a specific AI model across all runs",
+    parameters: {
+      model: { type: "string", required: true },
+      definition_id: { type: "string", optional: true }
+    },
+    returns: {
+      runs_count: "Number of runs involving this model",
+      average_scores: "Mean scores across scenarios",
+      consistency: "How consistent is this model across runs",
+      outlier_frequency: "How often flagged as outlier",
+      strongest_correlations: "Which dimensions most affect this model"
+    }
+  },
+
+  {
+    name: "search_scenarios",
+    description: "Find scenarios matching criteria (returns metadata, not full text)",
+    parameters: {
+      query: { type: "string", description: "Search in scenario subjects/categories" },
+      category: { type: "string", optional: true },
+      has_high_variance: { type: "boolean", optional: true }
+    },
+    returns: "Array of {scenario_id, subject, category, avg_variance}"
+  },
+
+  {
+    name: "get_transcript_summary",
+    description: "Get summary of a specific transcript (NOT full text)",
+    parameters: {
+      run_id: { type: "string", required: true },
+      scenario_id: { type: "string", required: true },
+      model: { type: "string", required: true }
+    },
+    returns: {
+      turn_count: "Number of dialogue turns",
+      decision: "Final decision/score if applicable",
+      key_reasoning: "Extracted key points (LLM-summarized)",
+      word_count: "Approximate length"
+    }
+  }
+];
+```
+
+### MCP Resources (Data Access)
+
+Resources provide read-only access to reference data:
+
+```typescript
+const resources = [
+  {
+    uri: "valuerank://rubric/values",
+    name: "Values Rubric",
+    description: "The 14 canonical moral values with definitions",
+    mimeType: "application/json"
+  },
+
+  {
+    uri: "valuerank://rubric/disambiguation",
+    name: "Value Disambiguation Rules",
+    description: "How to distinguish similar values",
+    mimeType: "application/json"
+  },
+
+  {
+    uri: "valuerank://models/supported",
+    name: "Supported AI Models",
+    description: "List of AI models that can be evaluated",
+    mimeType: "application/json"
+  },
+
+  {
+    uri: "valuerank://definitions/{id}",
+    name: "Scenario Definition",
+    description: "Full definition content (template, dimensions)",
+    mimeType: "application/json"
+  }
+];
+```
+
+### What NOT to Expose via MCP
+
+To avoid overwhelming agent context windows:
+
+| Data Type | Expose? | Reason |
+|-----------|---------|--------|
+| Raw transcripts | ❌ No | Too large (1-20KB each), already processed |
+| Full scenario bodies | ❌ No | Use summaries instead |
+| Individual turn text | ❌ No | Summarize key reasoning only |
+| Correlation matrices (full) | ⚠️ Paginated | Can be large, return top N |
+| PCA coordinates | ✅ Yes | Small, useful for visualization |
+| Insights list | ✅ Yes | Pre-digested, high signal |
+| Statistical summaries | ✅ Yes | Aggregated metrics |
+
+### Token Budget Guidelines
+
+Design responses to fit typical agent context budgets:
+
+| Tool Response | Target Size | Strategy |
+|---------------|-------------|----------|
+| `list_runs` | < 2KB | Pagination, summary fields only |
+| `get_run_summary` | < 5KB | Pre-computed aggregates |
+| `compare_runs` | < 3KB | Top N differences only |
+| `get_dimension_analysis` | < 2KB | Ranked list, not full matrix |
+| `get_transcript_summary` | < 1KB | Key points extraction |
+
+### Authentication & Rate Limiting
+
+```typescript
+// MCP server config
+const mcpConfig = {
+  // Auth via API key in connection params
+  auth: {
+    type: "api_key",
+    header: "X-ValueRank-API-Key"
+  },
+
+  // Rate limits per API key
+  rateLimits: {
+    requests_per_minute: 60,
+    tokens_per_minute: 100000  // Rough output token budget
+  },
+
+  // Audit logging
+  logging: {
+    log_tool_calls: true,
+    log_resource_access: true
+  }
+};
+```
+
+### Example Agent Interactions
+
+**Agent asks**: "Which AI models are most consistent in their moral reasoning?"
+
+```
+Agent → MCP: list_runs(status="completed", limit=50)
+Agent → MCP: get_run_summary(run_id="...") × N
+Agent: [Analyzes model_agreement and consistency metrics]
+Agent: "Based on 50 runs, Claude-3 shows the highest consistency
+        (σ=0.3) while GPT-4 has more variance (σ=0.7)..."
+```
+
+**Agent asks**: "Did changing the scenario framing affect safety scores?"
+
+```
+Agent → MCP: get_experiment(experiment_id="framing-test")
+Agent → MCP: compare_runs(baseline="run_a", comparison="run_b")
+Agent: [Analyzes delta_by_model and statistical_significance]
+Agent: "The framing change caused a statistically significant
+        shift (p<0.05) in Physical_Safety scores..."
+```
+
+### Implementation Notes
+
+**Tech Stack:**
+- MCP SDK (TypeScript): `@modelcontextprotocol/sdk`
+- Deploy alongside API server or as separate service
+- Share database connection with main API
+
+**Deployment Options:**
+1. **Embedded**: MCP server runs in same process as API
+2. **Sidecar**: Separate container, same network
+3. **Standalone**: Independent service with its own scaling
+
+**Recommended**: Start embedded, extract to sidecar if MCP traffic grows significantly.
+
+---
+
 ## Deployment Considerations
 
 ### Recommended Stack for MVP
