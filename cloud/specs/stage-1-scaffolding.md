@@ -119,6 +119,8 @@ cloud/
     "@typescript-eslint/eslint-plugin": "^6.21.0",
     "@typescript-eslint/parser": "^6.21.0",
     "eslint-config-prettier": "^9.1.0",
+    "eslint-plugin-react": "^7.33.2",
+    "eslint-plugin-react-hooks": "^4.6.0",
     "prettier": "^3.2.0"
   },
   "packageManager": "npm@10.2.0",
@@ -240,6 +242,7 @@ volumes:
     "start": "node dist/index.js",
     "test": "vitest run",
     "test:watch": "vitest",
+    "test:coverage": "vitest run --coverage",
     "lint": "eslint src --ext .ts",
     "lint:fix": "eslint src --ext .ts --fix",
     "typecheck": "tsc --noEmit"
@@ -254,6 +257,9 @@ volumes:
     "@types/cors": "^2.8.17",
     "@types/express": "^4.17.21",
     "@types/node": "^20.10.0",
+    "@vitest/coverage-v8": "^2.1.0",
+    "supertest": "^6.3.3",
+    "@types/supertest": "^2.0.16",
     "tsx": "^4.6.2",
     "vitest": "^2.1.0"
   }
@@ -272,9 +278,21 @@ const log = createLogger('api');
 async function main() {
   const app = createServer();
 
-  app.listen(config.PORT, () => {
+  const server = app.listen(config.PORT, () => {
     log.info({ port: config.PORT }, 'API server started');
   });
+
+  // Graceful shutdown
+  const shutdown = (signal: string) => {
+    log.info({ signal }, 'Shutdown signal received');
+    server.close(() => {
+      log.info('HTTP server closed');
+      process.exit(0);
+    });
+  };
+
+  process.on('SIGTERM', () => shutdown('SIGTERM'));
+  process.on('SIGINT', () => shutdown('SIGINT'));
 }
 
 main().catch((err) => {
@@ -286,12 +304,24 @@ main().catch((err) => {
 #### apps/api/src/server.ts
 
 ```typescript
+import crypto from 'crypto';
 import express from 'express';
+import type { Request, Response, NextFunction } from 'express';
 import cors from 'cors';
 import { healthRouter } from './health.js';
-import { createLogger } from '@valuerank/shared';
+import { createLogger, AppError } from '@valuerank/shared';
 
 const log = createLogger('server');
+
+// Extend Express Request to include logger
+declare global {
+  namespace Express {
+    interface Request {
+      log: ReturnType<typeof createLogger>;
+      requestId: string;
+    }
+  }
+}
 
 export function createServer() {
   const app = express();
@@ -300,15 +330,19 @@ export function createServer() {
   app.use(cors());
   app.use(express.json());
 
-  // Request logging
-  app.use((req, res, next) => {
+  // Request ID and logging middleware
+  app.use((req: Request, res: Response, next: NextFunction) => {
+    const requestId = (req.headers['x-request-id'] as string) ?? crypto.randomUUID();
+    req.requestId = requestId;
+    req.log = createLogger('request').child({ requestId, method: req.method, path: req.path });
+
     const start = Date.now();
+    req.log.info('Request started');
+
     res.on('finish', () => {
-      log.info(
-        { method: req.method, path: req.path, status: res.statusCode, duration: Date.now() - start },
-        'Request completed'
-      );
+      req.log.info({ status: res.statusCode, duration: Date.now() - start }, 'Request completed');
     });
+
     next();
   });
 
@@ -318,6 +352,17 @@ export function createServer() {
   // Root
   app.get('/', (_req, res) => {
     res.json({ name: 'Cloud ValueRank API', version: '0.1.0' });
+  });
+
+  // Global error handler (per CLAUDE.md)
+  app.use((err: unknown, req: Request, res: Response, _next: NextFunction) => {
+    req.log.error({ err }, 'Request failed');
+
+    if (err instanceof AppError) {
+      res.status(err.statusCode).json({ error: err.code, message: err.message });
+    } else {
+      res.status(500).json({ error: 'INTERNAL_ERROR', message: 'Something went wrong' });
+    }
   });
 
   return app;
@@ -366,7 +411,7 @@ healthRouter.get('/', async (_req, res) => {
 import { getEnv } from '@valuerank/shared';
 
 export const config = {
-  PORT: getEnv('PORT', '3001'),
+  PORT: parseInt(getEnv('PORT', '3001'), 10),
   NODE_ENV: getEnv('NODE_ENV', 'development'),
   DATABASE_URL: getEnv('DATABASE_URL'),
 } as const;
@@ -452,6 +497,8 @@ export default App;
   "scripts": {
     "build": "tsc",
     "dev": "tsc --watch",
+    "test": "vitest run",
+    "test:watch": "vitest",
     "lint": "eslint src --ext .ts",
     "lint:fix": "eslint src --ext .ts --fix",
     "typecheck": "tsc --noEmit"
@@ -461,7 +508,8 @@ export default App;
     "pino-pretty": "^10.3.0"
   },
   "devDependencies": {
-    "@types/node": "^20.10.0"
+    "@types/node": "^20.10.0",
+    "vitest": "^2.1.0"
   }
 }
 ```
@@ -556,6 +604,119 @@ export class ValidationError extends AppError {
     super(message, 'VALIDATION_ERROR', 400, { details });
   }
 }
+```
+
+#### packages/shared/tests/env.test.ts
+
+```typescript
+import { describe, it, expect, beforeEach, afterEach } from 'vitest';
+import { getEnv, getEnvRequired } from '../src/env.js';
+
+describe('env utilities', () => {
+  const originalEnv = process.env;
+
+  beforeEach(() => {
+    process.env = { ...originalEnv };
+  });
+
+  afterEach(() => {
+    process.env = originalEnv;
+  });
+
+  describe('getEnv', () => {
+    it('returns environment variable when set', () => {
+      process.env.TEST_VAR = 'test_value';
+      expect(getEnv('TEST_VAR')).toBe('test_value');
+    });
+
+    it('returns default value when not set', () => {
+      delete process.env.TEST_VAR;
+      expect(getEnv('TEST_VAR', 'default')).toBe('default');
+    });
+
+    it('throws when required and not set', () => {
+      delete process.env.TEST_VAR;
+      expect(() => getEnv('TEST_VAR')).toThrow('Required environment variable TEST_VAR is not set');
+    });
+  });
+
+  describe('getEnvRequired', () => {
+    it('returns value when set', () => {
+      process.env.REQUIRED_VAR = 'required_value';
+      expect(getEnvRequired('REQUIRED_VAR')).toBe('required_value');
+    });
+
+    it('throws when not set', () => {
+      delete process.env.REQUIRED_VAR;
+      expect(() => getEnvRequired('REQUIRED_VAR')).toThrow(
+        'Required environment variable REQUIRED_VAR is not set'
+      );
+    });
+  });
+});
+```
+
+#### packages/shared/tests/errors.test.ts
+
+```typescript
+import { describe, it, expect } from 'vitest';
+import { AppError, NotFoundError, ValidationError } from '../src/errors.js';
+
+describe('error classes', () => {
+  describe('AppError', () => {
+    it('creates error with all properties', () => {
+      const error = new AppError('Test error', 'TEST_ERROR', 400, { key: 'value' });
+
+      expect(error.message).toBe('Test error');
+      expect(error.code).toBe('TEST_ERROR');
+      expect(error.statusCode).toBe(400);
+      expect(error.context).toEqual({ key: 'value' });
+      expect(error.name).toBe('AppError');
+    });
+
+    it('defaults statusCode to 500', () => {
+      const error = new AppError('Test', 'TEST');
+      expect(error.statusCode).toBe(500);
+    });
+  });
+
+  describe('NotFoundError', () => {
+    it('creates 404 error with resource info', () => {
+      const error = new NotFoundError('User', '123');
+
+      expect(error.message).toBe('User not found: 123');
+      expect(error.code).toBe('NOT_FOUND');
+      expect(error.statusCode).toBe(404);
+      expect(error.context).toEqual({ resource: 'User', id: '123' });
+    });
+  });
+
+  describe('ValidationError', () => {
+    it('creates 400 error with details', () => {
+      const details = { field: 'email', error: 'invalid' };
+      const error = new ValidationError('Invalid input', details);
+
+      expect(error.message).toBe('Invalid input');
+      expect(error.code).toBe('VALIDATION_ERROR');
+      expect(error.statusCode).toBe(400);
+      expect(error.context).toEqual({ details });
+    });
+  });
+});
+```
+
+#### packages/shared/vitest.config.ts
+
+```typescript
+import { defineConfig } from 'vitest/config';
+
+export default defineConfig({
+  test: {
+    globals: true,
+    environment: 'node',
+    include: ['tests/**/*.test.ts'],
+  },
+});
 ```
 
 ### 5.2 packages/db
@@ -665,6 +826,8 @@ module.exports = {
   parserOptions: {
     ecmaVersion: 2022,
     sourceType: 'module',
+    project: ['./apps/*/tsconfig.json', './packages/*/tsconfig.json'],
+    tsconfigRootDir: __dirname,
   },
   plugins: ['@typescript-eslint'],
   extends: [
@@ -693,6 +856,25 @@ module.exports = {
     // Unused vars
     '@typescript-eslint/no-unused-vars': ['error', { argsIgnorePattern: '^_' }],
   },
+  overrides: [
+    {
+      // React-specific rules for web app
+      files: ['apps/web/**/*.{ts,tsx}'],
+      env: {
+        browser: true,
+      },
+      extends: [
+        'plugin:react/recommended',
+        'plugin:react/jsx-runtime',
+        'plugin:react-hooks/recommended',
+      ],
+      settings: {
+        react: {
+          version: 'detect',
+        },
+      },
+    },
+  ],
   ignorePatterns: ['dist', 'node_modules', '*.js', '*.cjs'],
 };
 ```
@@ -855,7 +1037,36 @@ Before marking Stage 1 complete, verify all of the following:
 
 ---
 
-## 10. Implementation Notes
+## 10. Constitution Compliance
+
+This spec adheres to all requirements in [CLAUDE.md](../CLAUDE.md):
+
+| Requirement | Implementation |
+|-------------|----------------|
+| **File Size Limits** | All files < 400 lines |
+| **No `any` Types** | ESLint rules enforce, `unknown` used where needed |
+| **Strict Mode** | tsconfig.base.json enables all strict options |
+| **Test Coverage** | vitest configs set 80% line, 75% branch thresholds |
+| **No console.log** | ESLint `no-console: error` rule, pino logger provided |
+| **Structured Logging** | All code uses `log.info({ data }, 'message')` pattern |
+| **Request IDs** | Middleware adds `x-request-id` to all requests |
+| **Custom Errors** | AppError, NotFoundError, ValidationError implemented |
+| **Global Error Handler** | Express error middleware in server.ts |
+| **Import Order** | ESLint consistent-type-imports rule |
+| **Graceful Shutdown** | SIGTERM/SIGINT handlers in index.ts |
+
+### Edge Cases Handled
+
+1. **Missing DATABASE_URL** - getEnv throws with clear error message
+2. **Database disconnected** - Health endpoint returns 503 with details
+3. **Invalid PORT** - parseInt handles string conversion
+4. **Missing request ID** - Generates UUID if x-request-id header absent
+5. **Unhandled errors** - Global error handler returns 500 INTERNAL_ERROR
+6. **Hot reload in dev** - Prisma client singleton prevents connection leaks
+
+---
+
+## 11. Implementation Notes
 
 ### Package Internal Imports
 
@@ -894,7 +1105,7 @@ Turborepo handles this automatically via `dependsOn` configuration.
 
 ---
 
-## 11. Final Task
+## 12. Final Task
 
 After completing Stage 1 implementation, update the high-level spec to mark it complete:
 

@@ -57,6 +57,16 @@
 - [ ] **2.5** Create `packages/shared/src/index.ts`
   - Re-export logger, env, errors
 
+- [ ] **2.5a** Create `packages/shared/vitest.config.ts`
+  - Node environment
+
+- [ ] **2.5b** Create `packages/shared/tests/env.test.ts`
+  - Test getEnv with/without defaults
+  - Test getEnvRequired throws when missing
+
+- [ ] **2.5c** Create `packages/shared/tests/errors.test.ts`
+  - Test AppError, NotFoundError, ValidationError
+
 ### packages/db
 
 - [ ] **2.6** Create `packages/db/package.json` + `tsconfig.json`
@@ -186,12 +196,12 @@
 | Phase | Tasks | Status |
 |-------|-------|--------|
 | 1. Root Infrastructure | 6 | ⬜ |
-| 2. Shared Packages | 8 | ⬜ |
+| 2. Shared Packages | 11 | ⬜ |
 | 3. API Application | 7 | ⬜ |
 | 4. Web Application | 6 | ⬜ |
 | 5. Verification | 7 | ⬜ |
 | 6. Completion | 1 | ⬜ |
-| **Total** | **35** | |
+| **Total** | **38** | |
 
 ---
 

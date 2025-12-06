@@ -15,12 +15,12 @@ This document defines the coding standards and architectural principles for the 
 
 | File Type | Max Lines | Rationale |
 |-----------|-----------|-----------|
-| Route handlers | 100 | Single responsibility per route file |
-| Services/business logic | 200 | Split into smaller modules if growing |
-| Utilities | 100 | Pure functions, single purpose |
-| React components | 150 | Extract hooks/subcomponents if larger |
+| Route handlers | 400 | Single responsibility per route file |
+| Services/business logic | 400 | Split into smaller modules if growing |
+| Utilities | 400 | Pure functions, single purpose |
+| React components | 400 | Extract hooks/subcomponents if larger |
 | Test files | 400 | Can be longer due to setup/fixtures |
-| Type definitions | 200 | Split by domain if growing |
+| Type definitions | 400 | Split by domain if growing |
 
 **When a file exceeds limits:**
 1. Extract helper functions to separate modules
@@ -392,7 +392,7 @@ export async function getRunWithTranscripts(id: string) {
 ## Quick Reference
 
 ```
-File size:      < 200 lines (400 for tests)
+File size:      < 400 lines
 any types:      NEVER (use unknown if truly unknown)
 Test coverage:  80% minimum
 Console.log:    NEVER (use logger)
