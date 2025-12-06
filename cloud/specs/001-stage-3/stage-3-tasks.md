@@ -29,16 +29,16 @@
 
 ⚠️ **CRITICAL**: No user story work can begin until this phase is complete
 
-- [ ] T005 Create Pothos builder configuration in apps/api/src/graphql/builder.ts
-- [ ] T006 [P] Create DateTime and JSON scalars in apps/api/src/graphql/types/scalars.ts
-- [ ] T007 [P] Create RunStatus and AnalysisStatus enums in apps/api/src/graphql/types/enums.ts
-- [ ] T008 Create context type with DataLoader placeholders in apps/api/src/graphql/context.ts
-- [ ] T009 Create GraphQL Yoga server setup in apps/api/src/graphql/index.ts
-- [ ] T010 Create types/index.ts re-export file
-- [ ] T011 [P] Create queries/index.ts re-export file
-- [ ] T012 [P] Create mutations/index.ts re-export file
-- [ ] T013 [P] Create dataloaders/index.ts factory file
-- [ ] T014 Mount GraphQL middleware in apps/api/src/server.ts at /graphql route
+- [X] T005 Create Pothos builder configuration in apps/api/src/graphql/builder.ts
+- [X] T006 [P] Create DateTime and JSON scalars in apps/api/src/graphql/types/scalars.ts
+- [X] T007 [P] Create RunStatus and AnalysisStatus enums in apps/api/src/graphql/types/enums.ts
+- [X] T008 Create context type with DataLoader placeholders in apps/api/src/graphql/context.ts
+- [X] T009 Create GraphQL Yoga server setup in apps/api/src/graphql/index.ts
+- [X] T010 Create types/index.ts re-export file
+- [X] T011 [P] Create queries/index.ts re-export file
+- [X] T012 [P] Create mutations/index.ts re-export file
+- [X] T013 [P] Create dataloaders/index.ts factory file
+- [X] T014 Mount GraphQL middleware in apps/api/src/server.ts at /graphql route
 
 **Checkpoint**: Foundation ready - GraphQL endpoint responds to introspection queries
 

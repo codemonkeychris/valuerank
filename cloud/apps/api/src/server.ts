@@ -3,6 +3,7 @@ import express from 'express';
 import type { Request, Response, NextFunction } from 'express';
 import cors from 'cors';
 import { healthRouter } from './health.js';
+import { yoga } from './graphql/index.js';
 import { createLogger, AppError } from '@valuerank/shared';
 
 // Extend Express Request to include logger
@@ -41,6 +42,11 @@ export function createServer() {
 
   // Routes
   app.use('/health', healthRouter);
+
+  // GraphQL endpoint
+  app.all('/graphql', (req, res) => {
+    yoga.handle(req, res);
+  });
 
   // Root
   app.get('/', (_req, res) => {
