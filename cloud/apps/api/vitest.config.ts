@@ -5,6 +5,10 @@ export default defineConfig({
     globals: true,
     environment: 'node',
     include: ['tests/**/*.test.ts'],
+    reporters: ['default', 'json'],
+    outputFile: {
+      json: 'coverage/test-results.json',
+    },
     coverage: {
       provider: 'v8',
       reporter: ['text', 'json', 'html'],
