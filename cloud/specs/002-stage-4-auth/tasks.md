@@ -66,13 +66,13 @@ This phase creates the shared auth types, error classes, and service foundations
 
 ### Implementation for User Story 2
 
-- [ ] T016 [US2] Create `apps/api/src/routes/auth.ts` - Express router for auth endpoints
-- [ ] T017 [US2] Implement POST `/api/auth/login` endpoint in routes/auth.ts
-- [ ] T018 [US2] Add case-insensitive email lookup (normalize to lowercase)
-- [ ] T019 [US2] Update `last_login_at` on successful login
-- [ ] T020 [US2] Return generic "Invalid credentials" for both wrong password and non-existent email
-- [ ] T021 [US2] Mount auth routes in `apps/api/src/server.ts`
-- [ ] T022 [US2] Write integration tests in `apps/api/tests/routes/auth.test.ts`
+- [X] T016 [US2] Create `apps/api/src/routes/auth.ts` - Express router for auth endpoints
+- [X] T017 [US2] Implement POST `/api/auth/login` endpoint in routes/auth.ts
+- [X] T018 [US2] Add case-insensitive email lookup (normalize to lowercase)
+- [X] T019 [US2] Update `last_login_at` on successful login
+- [X] T020 [US2] Return generic "Invalid credentials" for both wrong password and non-existent email
+- [X] T021 [US2] Mount auth routes in `apps/api/src/server.ts`
+- [X] T022 [US2] Write integration tests in `apps/api/tests/routes/auth.test.ts`
 
 **Checkpoint**: User Story 2 complete - users can login and receive JWT
 

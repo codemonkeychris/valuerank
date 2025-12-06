@@ -3,6 +3,7 @@ import express from 'express';
 import type { Request, Response, NextFunction } from 'express';
 import cors from 'cors';
 import { healthRouter } from './health.js';
+import { authRouter } from './routes/auth.js';
 import { yoga } from './graphql/index.js';
 import { createLogger, AppError } from '@valuerank/shared';
 
@@ -42,6 +43,7 @@ export function createServer() {
 
   // Routes
   app.use('/health', healthRouter);
+  app.use('/api/auth', authRouter);
 
   // GraphQL endpoint
   app.all('/graphql', (req, res) => {
