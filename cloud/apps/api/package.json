@@ -12,7 +12,8 @@
     "test:coverage": "vitest run --coverage",
     "lint": "eslint src --ext .ts",
     "lint:fix": "eslint src --ext .ts --fix",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "create-user": "tsx --env-file=../../.env src/cli/create-user.ts"
   },
   "dependencies": {
     "@pothos/core": "^3.41.0",

@@ -47,12 +47,12 @@ This phase creates the shared auth types, error classes, and service foundations
 
 ### Implementation for User Story 1
 
-- [ ] T010 [US1] Create `apps/api/src/cli/create-user.ts` - CLI script with commander for user creation
-- [ ] T011 [US1] Add email validation (format check) in CLI
-- [ ] T012 [US1] Add password validation (min 8 chars) in CLI
-- [ ] T013 [US1] Implement duplicate email check in CLI
-- [ ] T014 [US1] Add `create-user` script to `apps/api/package.json`
-- [ ] T015 [US1] Write unit tests in `apps/api/tests/cli/create-user.test.ts`
+- [X] T010 [US1] Create `apps/api/src/cli/create-user.ts` - CLI script with commander for user creation
+- [X] T011 [US1] Add email validation (format check) in CLI
+- [X] T012 [US1] Add password validation (min 8 chars) in CLI
+- [X] T013 [US1] Implement duplicate email check in CLI
+- [X] T014 [US1] Add `create-user` script to `apps/api/package.json`
+- [X] T015 [US1] Write unit tests in `apps/api/tests/cli/create-user.test.ts`
 
 **Checkpoint**: User Story 1 complete - users can be created via CLI
 
