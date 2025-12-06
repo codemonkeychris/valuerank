@@ -92,19 +92,19 @@
 
 ### Implementation for User Story 3
 
-- [ ] T029 [US3] Create Run DataLoader in apps/api/src/graphql/dataloaders/run.ts
-- [ ] T030 [P] [US3] Create Transcript DataLoader (by run) in apps/api/src/graphql/dataloaders/transcript.ts
-- [ ] T031 [P] [US3] Create Scenario DataLoader in apps/api/src/graphql/dataloaders/scenario.ts
-- [ ] T032 [US3] Create Run type with scalar fields in apps/api/src/graphql/types/run.ts
-- [ ] T033 [US3] Add definition field resolver using DataLoader in apps/api/src/graphql/types/run.ts
-- [ ] T034 [US3] Add experiment field resolver in apps/api/src/graphql/types/run.ts
-- [ ] T035 [US3] Add transcripts field resolver with model filter arg in apps/api/src/graphql/types/run.ts
-- [ ] T036 [US3] Create Transcript type with all fields in apps/api/src/graphql/types/transcript.ts
-- [ ] T037 [P] [US3] Create Scenario type with all fields in apps/api/src/graphql/types/scenario.ts
-- [ ] T038 [P] [US3] Create Experiment type with all fields in apps/api/src/graphql/types/experiment.ts
-- [ ] T039 [US3] Create run(id) query in apps/api/src/graphql/queries/run.ts
-- [ ] T040 [US3] Write unit tests for Run/Transcript DataLoaders in apps/api/tests/graphql/dataloaders/run.test.ts
-- [ ] T041 [US3] Write integration test for run query in apps/api/tests/graphql/queries/run.test.ts
+- [X] T029 [US3] Create Run DataLoader in apps/api/src/graphql/dataloaders/run.ts
+- [X] T030 [P] [US3] Create Transcript DataLoader (by run) in apps/api/src/graphql/dataloaders/transcript.ts
+- [X] T031 [P] [US3] Create Scenario DataLoader in apps/api/src/graphql/dataloaders/scenario.ts
+- [X] T032 [US3] Create Run type with scalar fields in apps/api/src/graphql/types/run.ts
+- [X] T033 [US3] Add definition field resolver using DataLoader in apps/api/src/graphql/types/run.ts
+- [X] T034 [US3] Add experiment field resolver in apps/api/src/graphql/types/run.ts
+- [X] T035 [US3] Add transcripts field resolver with model filter arg in apps/api/src/graphql/types/run.ts
+- [X] T036 [US3] Create Transcript type with all fields in apps/api/src/graphql/types/transcript.ts
+- [X] T037 [P] [US3] Create Scenario type with all fields in apps/api/src/graphql/types/scenario.ts
+- [X] T038 [P] [US3] Create Experiment type with all fields in apps/api/src/graphql/types/experiment.ts
+- [X] T039 [US3] Create run(id) query in apps/api/src/graphql/queries/run.ts
+- [X] T040 [US3] Write unit tests for Run/Transcript DataLoaders in apps/api/tests/graphql/dataloaders/run.test.ts
+- [X] T041 [US3] Write integration test for run query in apps/api/tests/graphql/queries/run.test.ts
 
 **Checkpoint**: US3 complete - Can query single run with nested transcripts
 

@@ -4,12 +4,12 @@
 import './scalars.js';
 import './enums.js';
 
-// Entity types - must import in dependency order
-// Run and Scenario are imported first since Definition references them
+// Object references - must be imported first to avoid circular deps
+import './refs.js';
+
+// Entity types - order no longer matters since refs are defined centrally
+import './definition.js';
 import './run.js';
 import './scenario.js';
-import './definition.js';
-
-// Types to be added in later phases
-// import './transcript.js';
-// import './experiment.js';
+import './transcript.js';
+import './experiment.js';

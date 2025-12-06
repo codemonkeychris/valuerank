@@ -2,6 +2,4 @@
 // Queries are registered as a side effect of importing
 
 import './definition.js';
-
-// Query files to be added in later phases
-// import './run.js';
+import './run.js';

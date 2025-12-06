@@ -1,10 +1,9 @@
 import { builder } from '../builder.js';
-import { db, type Definition } from '@valuerank/db';
-import { RunRef } from './run.js';
-import { ScenarioRef } from './scenario.js';
+import { db } from '@valuerank/db';
+import { DefinitionRef, RunRef, ScenarioRef } from './refs.js';
 
-// Definition GraphQL object type
-export const DefinitionRef = builder.objectRef<Definition>('Definition');
+// Re-export for backward compatibility
+export { DefinitionRef };
 
 builder.objectType(DefinitionRef, {
   description: 'A scenario definition that can be versioned through parent-child relationships',

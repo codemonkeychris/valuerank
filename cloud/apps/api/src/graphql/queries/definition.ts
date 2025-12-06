@@ -1,10 +1,14 @@
 import { builder } from '../builder.js';
 import { db } from '@valuerank/db';
-import type { Prisma } from '@valuerank/db';
 import { DefinitionRef } from '../types/definition.js';
 
 const MAX_LIMIT = 100;
 const DEFAULT_LIMIT = 20;
+
+// Type for where clause
+type DefinitionWhereInput = {
+  parentId?: string | null;
+};
 
 // Query: definition(id: ID!) - Fetch single definition by ID
 builder.queryField('definition', (t) =>
@@ -60,7 +64,7 @@ builder.queryField('definitions', (t) =>
       ctx.log.debug({ rootOnly: args.rootOnly, limit, offset }, 'Listing definitions');
 
       // Build where clause
-      const where: Prisma.DefinitionWhereInput = {};
+      const where: DefinitionWhereInput = {};
       if (args.rootOnly) {
         where.parentId = null;
       }
