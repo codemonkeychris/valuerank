@@ -1,13 +1,13 @@
 /**
  * GraphQL mutations for API key management
  *
- * Provides createApiKey mutation for generating secure API keys.
- * Keys are stored as SHA-256 hashes - the full key is only returned once.
+ * Provides createApiKey and revokeApiKey mutations.
+ * Keys are stored as SHA-256 hashes - the full key is only returned once at creation.
  */
 
 import { builder } from '../builder.js';
 import { db } from '@valuerank/db';
-import { AuthenticationError } from '@valuerank/shared';
+import { AuthenticationError, NotFoundError } from '@valuerank/shared';
 import { generateApiKey, hashApiKey, getKeyPrefix } from '../../auth/api-keys.js';
 import { CreateApiKeyResultRef } from '../types/api-key.js';
 
@@ -87,6 +87,55 @@ builder.mutationField('createApiKey', (t) =>
         },
         key: fullKey,
       };
+    },
+  })
+);
+
+// Mutation: revokeApiKey
+builder.mutationField('revokeApiKey', (t) =>
+  t.boolean({
+    description: `
+      Revoke (delete) an API key.
+      Requires authentication and ownership of the key.
+
+      Returns true if the key was successfully revoked.
+      Throws NotFoundError if the key doesn't exist or belongs to another user.
+    `,
+    args: {
+      id: t.arg.id({ required: true, description: 'ID of the API key to revoke' }),
+    },
+    resolve: async (_root, args, ctx) => {
+      // Require authentication
+      if (!ctx.user) {
+        throw new AuthenticationError('Authentication required');
+      }
+
+      const userId = ctx.user.id;
+      const apiKeyId = args.id;
+
+      ctx.log.debug({ userId, apiKeyId }, 'Revoking API key');
+
+      // Find the API key
+      const apiKey = await db.apiKey.findUnique({
+        where: { id: apiKeyId },
+      });
+
+      // Check if key exists and belongs to current user
+      if (!apiKey || apiKey.userId !== userId) {
+        throw new NotFoundError('ApiKey', apiKeyId);
+      }
+
+      // Delete the key
+      await db.apiKey.delete({
+        where: { id: apiKeyId },
+      });
+
+      ctx.log.info(
+        { userId, apiKeyId, keyPrefix: apiKey.keyPrefix },
+        'API key revoked'
+      );
+
+      return true;
     },
   })
 );

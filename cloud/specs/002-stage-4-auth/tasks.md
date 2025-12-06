@@ -147,10 +147,10 @@ This phase creates the shared auth types, error classes, and service foundations
 
 ### Implementation for User Story 6
 
-- [ ] T045 [US6] Add revokeApiKey mutation to `apps/api/src/graphql/mutations/api-key.ts`
-- [ ] T046 [US6] Verify key belongs to current user before deletion
-- [ ] T047 [US6] Return NotFoundError if key doesn't exist or belongs to another user
-- [ ] T048 [US6] Write revoke tests in `apps/api/tests/graphql/mutations/api-key.test.ts`
+- [X] T045 [US6] Add revokeApiKey mutation to `apps/api/src/graphql/mutations/api-key.ts`
+- [X] T046 [US6] Verify key belongs to current user before deletion
+- [X] T047 [US6] Return NotFoundError if key doesn't exist or belongs to another user
+- [X] T048 [US6] Write revoke tests in `apps/api/tests/graphql/mutations/api-key.test.ts`
 
 **Checkpoint**: User Story 6 complete - API keys can be revoked
 

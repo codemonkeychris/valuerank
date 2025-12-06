@@ -283,4 +283,141 @@ describe('GraphQL API Key Mutations', () => {
       expect(response.body.data.createApiKey.apiKey.name).toBe(maxName);
     });
   });
+
+  describe('revokeApiKey', () => {
+    it('revokes an API key owned by the current user', async () => {
+      // First create an API key
+      const createMutation = `
+        mutation CreateApiKey($input: CreateApiKeyInput!) {
+          createApiKey(input: $input) {
+            apiKey { id }
+            key
+          }
+        }
+      `;
+
+      const createResponse = await request(app)
+        .post('/graphql')
+        .set('Authorization', authHeader)
+        .send({
+          query: createMutation,
+          variables: { input: { name: 'Key to Revoke' } },
+        })
+        .expect(200);
+
+      const keyId = createResponse.body.data.createApiKey.apiKey.id;
+      const fullKey = createResponse.body.data.createApiKey.key;
+
+      // Revoke the key
+      const revokeMutation = `
+        mutation RevokeApiKey($id: ID!) {
+          revokeApiKey(id: $id)
+        }
+      `;
+
+      const revokeResponse = await request(app)
+        .post('/graphql')
+        .set('Authorization', authHeader)
+        .send({
+          query: revokeMutation,
+          variables: { id: keyId },
+        })
+        .expect(200);
+
+      expect(revokeResponse.body.errors).toBeUndefined();
+      expect(revokeResponse.body.data.revokeApiKey).toBe(true);
+
+      // Verify the key no longer exists
+      const dbKey = await db.apiKey.findUnique({ where: { id: keyId } });
+      expect(dbKey).toBeNull();
+
+      // Verify the key can no longer be used for auth
+      const authResponse = await request(app)
+        .post('/graphql')
+        .set('X-API-Key', fullKey)
+        .send({ query: '{ definitions { id } }' });
+
+      expect(authResponse.status).toBe(401);
+    });
+
+    it('returns error for non-existent key', async () => {
+      const mutation = `
+        mutation RevokeApiKey($id: ID!) {
+          revokeApiKey(id: $id)
+        }
+      `;
+
+      const response = await request(app)
+        .post('/graphql')
+        .set('Authorization', authHeader)
+        .send({
+          query: mutation,
+          variables: { id: 'nonexistent-key-id' },
+        })
+        .expect(200);
+
+      expect(response.body.errors).toBeDefined();
+      expect(response.body.errors[0].message).toContain('ApiKey not found');
+    });
+
+    it('returns error when trying to revoke another user\'s key', async () => {
+      // Create another user and their API key
+      const otherUser = await db.user.create({
+        data: {
+          email: 'other-user@example.com',
+          passwordHash: 'test-hash',
+        },
+      });
+
+      const otherKey = await db.apiKey.create({
+        data: {
+          userId: otherUser.id,
+          name: 'Other User Key',
+          keyHash: 'other-key-hash',
+          keyPrefix: 'vr_other12',
+        },
+      });
+
+      // Try to revoke the other user's key
+      const mutation = `
+        mutation RevokeApiKey($id: ID!) {
+          revokeApiKey(id: $id)
+        }
+      `;
+
+      const response = await request(app)
+        .post('/graphql')
+        .set('Authorization', authHeader) // Our test user's auth
+        .send({
+          query: mutation,
+          variables: { id: otherKey.id },
+        })
+        .expect(200);
+
+      expect(response.body.errors).toBeDefined();
+      expect(response.body.errors[0].message).toContain('ApiKey not found');
+
+      // Clean up
+      await db.apiKey.delete({ where: { id: otherKey.id } });
+      await db.user.delete({ where: { id: otherUser.id } });
+    });
+
+    it('requires authentication', async () => {
+      const mutation = `
+        mutation RevokeApiKey($id: ID!) {
+          revokeApiKey(id: $id)
+        }
+      `;
+
+      const response = await request(app)
+        .post('/graphql')
+        // No auth header
+        .send({
+          query: mutation,
+          variables: { id: 'some-key-id' },
+        });
+
+      expect(response.status).toBe(401);
+    });
+  });
 });
