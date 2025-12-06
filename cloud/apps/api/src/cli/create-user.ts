@@ -9,6 +9,7 @@
  */
 
 import * as readline from 'readline';
+import { fileURLToPath } from 'url';
 
 import { db } from '@valuerank/db';
 import { createLogger, ValidationError } from '@valuerank/shared';
@@ -18,15 +19,15 @@ import { hashPassword } from '../auth/index.js';
 const log = createLogger('cli:create-user');
 
 /** Minimum password length */
-const MIN_PASSWORD_LENGTH = 8;
+export const MIN_PASSWORD_LENGTH = 8;
 
 /** Email format regex */
-const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+export const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 /**
  * Validate email format
  */
-function validateEmail(email: string): void {
+export function validateEmail(email: string): void {
   if (!email || !EMAIL_REGEX.test(email)) {
     throw new ValidationError('Invalid email format');
   }
@@ -35,7 +36,7 @@ function validateEmail(email: string): void {
 /**
  * Validate password meets requirements
  */
-function validatePassword(password: string): void {
+export function validatePassword(password: string): void {
   if (!password || password.length < MIN_PASSWORD_LENGTH) {
     throw new ValidationError(
       `Password must be at least ${MIN_PASSWORD_LENGTH} characters`
@@ -46,7 +47,7 @@ function validatePassword(password: string): void {
 /**
  * Check if email already exists in database
  */
-async function checkDuplicateEmail(email: string): Promise<void> {
+export async function checkDuplicateEmail(email: string): Promise<void> {
   const existing = await db.user.findUnique({
     where: { email: email.toLowerCase() },
   });
@@ -59,7 +60,7 @@ async function checkDuplicateEmail(email: string): Promise<void> {
 /**
  * Create a new user in the database
  */
-async function createUser(
+export async function createUser(
   email: string,
   password: string,
   name?: string
@@ -148,8 +149,11 @@ async function main(): Promise<void> {
   }
 }
 
-// Run CLI
-main().catch((err) => {
-  console.error('Fatal error:', err);
-  process.exit(1);
-});
+// Run CLI only when executed directly (not when imported for testing)
+const isMainModule = process.argv[1] === fileURLToPath(import.meta.url);
+if (isMainModule) {
+  main().catch((err) => {
+    console.error('Fatal error:', err);
+    process.exit(1);
+  });
+}

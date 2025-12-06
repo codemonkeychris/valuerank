@@ -104,6 +104,39 @@ describe('GraphQL User Queries', () => {
       // Should return 401 since GraphQL auth middleware requires auth
       expect(response.status).toBe(401);
     });
+
+    it('returns null when user is deleted after authentication', async () => {
+      // Create a temporary user
+      const tempUser = await db.user.create({
+        data: {
+          email: 'deleted-user-test@example.com',
+          passwordHash: 'test-hash',
+        },
+      });
+      const tempAuthHeader = `Bearer ${signToken({ id: tempUser.id, email: tempUser.email })}`;
+
+      // Delete the user before making the query
+      await db.user.delete({ where: { id: tempUser.id } });
+
+      const query = `
+        query Me {
+          me {
+            id
+            email
+          }
+        }
+      `;
+
+      const response = await request(app)
+        .post('/graphql')
+        .set('Authorization', tempAuthHeader)
+        .send({ query })
+        .expect(200);
+
+      // Should return null for me since user no longer exists in database
+      expect(response.body.errors).toBeUndefined();
+      expect(response.body.data.me).toBeNull();
+    });
   });
 
   describe('apiKeys query', () => {
