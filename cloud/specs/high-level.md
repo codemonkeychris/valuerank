@@ -7,7 +7,7 @@
 
 ---
 
-## Stage 1: Project Scaffolding & Infrastructure [ ]
+## Stage 1: Project Scaffolding & Infrastructure [x]
 
 > **Spec:** [stage-1-scaffolding.md](./stage-1-scaffolding.md) | **Plan:** [stage-1-plan.md](./stage-1-plan.md) | **Tasks:** [stage-1-tasks.md](./stage-1-tasks.md)
 
