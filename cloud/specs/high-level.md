@@ -7,7 +7,9 @@
 
 ---
 
-## Stage 1: Project Scaffolding & Infrastructure
+## Stage 1: Project Scaffolding & Infrastructure [ ]
+
+> **Spec:** [stage-1-scaffolding.md](./stage-1-scaffolding.md) | **Plan:** [stage-1-plan.md](./stage-1-plan.md) | **Tasks:** [stage-1-tasks.md](./stage-1-tasks.md)
 
 **Goal:** Establish the foundational project structure, build system, and local development environment.
 
@@ -28,7 +30,7 @@
 
 ---
 
-## Stage 2: Database Schema & Migrations
+## Stage 2: Database Schema & Migrations [ ]
 
 **Goal:** Implement the core PostgreSQL schema with Prisma, including all tables needed for MVP.
 
@@ -52,7 +54,7 @@
 
 ---
 
-## Stage 3: GraphQL API Foundation
+## Stage 3: GraphQL API Foundation [ ]
 
 **Goal:** Set up the GraphQL server with Pothos (code-first), core types, and basic CRUD operations.
 
@@ -73,7 +75,7 @@
 
 ---
 
-## Stage 4: Authentication System
+## Stage 4: Authentication System [ ]
 
 **Goal:** Implement simple JWT-based auth for web and API key auth for MCP.
 
@@ -94,7 +96,7 @@
 
 ---
 
-## Stage 5: Queue System & Job Infrastructure
+## Stage 5: Queue System & Job Infrastructure [ ]
 
 **Goal:** Set up PgBoss queue with TypeScript orchestrator and job lifecycle management.
 
@@ -115,7 +117,7 @@
 
 ---
 
-## Stage 6: Python Worker Integration
+## Stage 6: Python Worker Integration [ ]
 
 **Goal:** Connect existing Python pipeline code to the TypeScript orchestrator.
 
@@ -135,7 +137,7 @@
 
 ---
 
-## Stage 7: Frontend Foundation
+## Stage 7: Frontend Foundation [ ]
 
 **Goal:** Set up React frontend with auth, navigation shell, and core layout.
 
@@ -156,7 +158,7 @@
 
 ---
 
-## Stage 8: Definition Management UI
+## Stage 8: Definition Management UI [ ]
 
 **Goal:** Build the definition library, editor, and version tree visualization.
 
@@ -176,7 +178,7 @@
 
 ---
 
-## Stage 9: Run Execution Pipeline
+## Stage 9: Run Execution Pipeline [ ]
 
 **Goal:** Complete end-to-end run execution from UI to results.
 
@@ -198,7 +200,7 @@
 
 ---
 
-## Stage 10: Analysis System (Tier 1 & Tier 2)
+## Stage 10: Analysis System (Tier 1 & Tier 2) [ ]
 
 **Goal:** Implement analysis pipeline with auto-triggered basic stats and on-demand correlations.
 
@@ -219,7 +221,7 @@
 
 ---
 
-## Stage 11: Run Comparison & Experiments
+## Stage 11: Run Comparison & Experiments [ ]
 
 **Goal:** Enable side-by-side comparison and experiment framework for hypothesis testing.
 
@@ -240,7 +242,7 @@
 
 ---
 
-## Stage 12: MCP Interface
+## Stage 12: MCP Interface [ ]
 
 **Goal:** Expose data and authoring tools for AI agents via MCP protocol.
 
@@ -261,7 +263,7 @@
 
 ---
 
-## Stage 13: Data Export & CLI Compatibility
+## Stage 13: Data Export & CLI Compatibility [ ]
 
 **Goal:** Enable bulk data export and maintain CLI tool compatibility.
 
@@ -281,7 +283,7 @@
 
 ---
 
-## Stage 14: Production Deployment
+## Stage 14: Production Deployment [ ]
 
 **Goal:** Deploy to Railway with proper configuration, monitoring, and CI/CD.
 
