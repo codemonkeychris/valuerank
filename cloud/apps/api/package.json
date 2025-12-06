@@ -15,11 +15,18 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
+    "@pothos/core": "^3.41.0",
+    "@pothos/plugin-prisma": "^3.65.0",
+    "@pothos/plugin-validation": "^3.10.1",
     "@valuerank/db": "*",
     "@valuerank/shared": "*",
     "cors": "^2.8.5",
+    "dataloader": "^2.2.2",
     "dotenv": "^17.2.3",
-    "express": "^4.18.2"
+    "express": "^4.18.2",
+    "graphql": "^16.8.1",
+    "graphql-yoga": "^5.1.1",
+    "zod": "^3.22.4"
   },
   "devDependencies": {
     "@types/cors": "^2.8.17",
