@@ -20,12 +20,20 @@
     "studio": "prisma studio",
     "lint": "eslint src --ext .ts",
     "lint:fix": "eslint src --ext .ts --fix",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "test:watch": "vitest"
   },
   "dependencies": {
-    "@prisma/client": "^5.7.0"
+    "@prisma/client": "^5.7.0",
+    "@valuerank/shared": "*"
   },
   "devDependencies": {
-    "prisma": "^5.7.0"
+    "prisma": "^5.7.0",
+    "tsx": "^4.7.0",
+    "vitest": "^2.1.0"
+  },
+  "prisma": {
+    "seed": "tsx prisma/seed.ts"
   }
 }

@@ -30,7 +30,7 @@
 
 ---
 
-## Stage 2: Database Schema & Migrations [ ]
+## Stage 2: Database Schema & Migrations [x]
 
 > **Spec:** [stage-2-database.md](./stage-2-database.md) | **Plan:** [stage-2-plan.md](./stage-2-plan.md) | **Tasks:** [stage-2-tasks.md](./stage-2-tasks.md)
 
