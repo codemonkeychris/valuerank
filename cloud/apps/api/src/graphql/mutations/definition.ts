@@ -90,3 +90,79 @@ builder.mutationField('createDefinition', (t) =>
     },
   })
 );
+
+// Input type for forking a definition
+const ForkDefinitionInput = builder.inputType('ForkDefinitionInput', {
+  fields: (t) => ({
+    parentId: t.string({
+      required: true,
+      description: 'ID of the definition to fork from',
+    }),
+    name: t.string({
+      required: true,
+      description: 'Name for the forked definition',
+      validate: {
+        minLength: [1, { message: 'Name is required' }],
+        maxLength: [255, { message: 'Name must be 255 characters or less' }],
+      },
+    }),
+    content: t.field({
+      type: 'JSON',
+      required: false,
+      description: 'Optional content override. If not provided, inherits from parent.',
+    }),
+  }),
+});
+
+// Mutation: forkDefinition
+builder.mutationField('forkDefinition', (t) =>
+  t.field({
+    type: DefinitionRef,
+    description: 'Fork an existing definition. Inherits content from parent if not provided.',
+    args: {
+      input: t.arg({ type: ForkDefinitionInput, required: true }),
+    },
+    resolve: async (_root, args, ctx) => {
+      const { parentId, name, content } = args.input;
+
+      ctx.log.debug({ parentId, name }, 'Forking definition');
+
+      // Fetch parent - required for fork
+      const parent = await db.definition.findUnique({
+        where: { id: parentId },
+      });
+
+      if (!parent) {
+        throw new Error(`Parent definition not found: ${parentId}`);
+      }
+
+      // Determine content: use provided content or inherit from parent
+      let finalContent: Record<string, unknown>;
+
+      if (content !== null && content !== undefined) {
+        // Validate provided content
+        if (typeof content !== 'object' || Array.isArray(content)) {
+          throw new Error('Content must be a JSON object');
+        }
+        finalContent = ensureSchemaVersion(content);
+      } else {
+        // Inherit from parent
+        finalContent = parent.content as Record<string, unknown>;
+      }
+
+      const definition = await db.definition.create({
+        data: {
+          name,
+          content: finalContent,
+          parentId,
+        },
+      });
+
+      ctx.log.info(
+        { definitionId: definition.id, name, parentId },
+        'Definition forked'
+      );
+      return definition;
+    },
+  })
+);

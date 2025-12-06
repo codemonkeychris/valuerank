@@ -316,23 +316,24 @@ describe('GraphQL Definition Query', () => {
         }
       `;
 
-      // Get all definitions first
-      const allResponse = await request(app)
+      // Get first 3 definitions
+      const firstThreeResponse = await request(app)
         .post('/graphql')
-        .send({ query, variables: { limit: 100, offset: 0 } })
+        .send({ query, variables: { limit: 3, offset: 0 } })
         .expect(200);
 
-      // Get with offset
+      // Get with offset 1 (skip first)
       const offsetResponse = await request(app)
         .post('/graphql')
-        .send({ query, variables: { limit: 100, offset: 1 } })
+        .send({ query, variables: { limit: 3, offset: 1 } })
         .expect(200);
 
       expect(offsetResponse.body.errors).toBeUndefined();
-      // Offset should skip at least one result (may vary due to parallel tests)
-      if (allResponse.body.data.definitions.length > 1) {
-        expect(offsetResponse.body.data.definitions.length).toBeLessThan(
-          allResponse.body.data.definitions.length
+      // If we have at least 2 definitions, the second one from first query
+      // should be the first one in offset query
+      if (firstThreeResponse.body.data.definitions.length >= 2) {
+        expect(offsetResponse.body.data.definitions[0].id).toBe(
+          firstThreeResponse.body.data.definitions[1].id
         );
       }
     });

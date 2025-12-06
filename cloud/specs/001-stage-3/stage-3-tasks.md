@@ -157,14 +157,14 @@
 
 ### Implementation for User Story 6
 
-- [ ] T055 [US6] Create ForkDefinitionInput input type in apps/api/src/graphql/mutations/definition.ts
-- [ ] T056 [US6] Create forkDefinition mutation in apps/api/src/graphql/mutations/definition.ts
-- [ ] T057 [US6] Implement parent existence check with NotFoundError in apps/api/src/graphql/mutations/definition.ts
-- [ ] T058 [US6] Implement content inheritance (copy from parent if not provided) in apps/api/src/graphql/mutations/definition.ts
-- [ ] T059 [US6] Write integration test for forkDefinition mutation in apps/api/tests/graphql/mutations/definition.test.ts
-- [ ] T060 [US6] Test content inheritance from parent in apps/api/tests/graphql/mutations/definition.test.ts
-- [ ] T061 [US6] Test NotFoundError for invalid parentId in apps/api/tests/graphql/mutations/definition.test.ts
-- [ ] T062 [US6] Test fork appears in parent.children query in apps/api/tests/graphql/mutations/definition.test.ts
+- [X] T055 [US6] Create ForkDefinitionInput input type in apps/api/src/graphql/mutations/definition.ts
+- [X] T056 [US6] Create forkDefinition mutation in apps/api/src/graphql/mutations/definition.ts
+- [X] T057 [US6] Implement parent existence check with NotFoundError in apps/api/src/graphql/mutations/definition.ts
+- [X] T058 [US6] Implement content inheritance (copy from parent if not provided) in apps/api/src/graphql/mutations/definition.ts
+- [X] T059 [US6] Write integration test for forkDefinition mutation in apps/api/tests/graphql/mutations/definition.test.ts
+- [X] T060 [US6] Test content inheritance from parent in apps/api/tests/graphql/mutations/definition.test.ts
+- [X] T061 [US6] Test NotFoundError for invalid parentId in apps/api/tests/graphql/mutations/definition.test.ts
+- [X] T062 [US6] Test fork appears in parent.children query in apps/api/tests/graphql/mutations/definition.test.ts
 
 **Checkpoint**: US6 complete - Can fork definitions via GraphQL
 

@@ -278,4 +278,230 @@ describe('GraphQL Definition Mutations', () => {
       expect(response.body.errors[0].message).toContain('Content must be');
     });
   });
+
+  describe('forkDefinition', () => {
+    it('forks a definition with inherited content', async () => {
+      // Create parent
+      const parent = await db.definition.create({
+        data: {
+          name: 'Parent to Fork',
+          content: { schema_version: 1, preamble: 'Parent preamble', template: 'Parent template' },
+        },
+      });
+      createdDefinitionIds.push(parent.id);
+
+      const mutation = `
+        mutation ForkDefinition($input: ForkDefinitionInput!) {
+          forkDefinition(input: $input) {
+            id
+            name
+            content
+            parentId
+            parent {
+              id
+              name
+            }
+          }
+        }
+      `;
+
+      const response = await request(app)
+        .post('/graphql')
+        .send({
+          query: mutation,
+          variables: {
+            input: {
+              parentId: parent.id,
+              name: 'Forked Definition',
+            },
+          },
+        });
+
+      if (response.status !== 200 || response.body.errors) {
+        console.log('Response:', JSON.stringify(response.body, null, 2));
+      }
+      expect(response.status).toBe(200);
+      expect(response.body.errors).toBeUndefined();
+
+      const fork = response.body.data.forkDefinition;
+      createdDefinitionIds.push(fork.id);
+
+      expect(fork.name).toBe('Forked Definition');
+      expect(fork.parentId).toBe(parent.id);
+      expect(fork.parent.id).toBe(parent.id);
+      // Should inherit content from parent
+      expect(fork.content.preamble).toBe('Parent preamble');
+      expect(fork.content.template).toBe('Parent template');
+      expect(fork.content.schema_version).toBe(1);
+    });
+
+    it('forks with custom content override', async () => {
+      // Create parent
+      const parent = await db.definition.create({
+        data: {
+          name: 'Parent for Override',
+          content: { schema_version: 1, preamble: 'Original', template: 'Original template' },
+        },
+      });
+      createdDefinitionIds.push(parent.id);
+
+      const mutation = `
+        mutation ForkDefinition($input: ForkDefinitionInput!) {
+          forkDefinition(input: $input) {
+            id
+            name
+            content
+          }
+        }
+      `;
+
+      const response = await request(app)
+        .post('/graphql')
+        .send({
+          query: mutation,
+          variables: {
+            input: {
+              parentId: parent.id,
+              name: 'Fork with Override',
+              content: { preamble: 'New preamble', newField: 'added' },
+            },
+          },
+        })
+        .expect(200);
+
+      expect(response.body.errors).toBeUndefined();
+
+      const fork = response.body.data.forkDefinition;
+      createdDefinitionIds.push(fork.id);
+
+      // Should use provided content, not inherited
+      expect(fork.content.preamble).toBe('New preamble');
+      expect(fork.content.newField).toBe('added');
+      expect(fork.content.schema_version).toBe(1); // Auto-added
+      expect(fork.content.template).toBeUndefined(); // Not inherited
+    });
+
+    it('returns error for non-existent parent', async () => {
+      const mutation = `
+        mutation ForkDefinition($input: ForkDefinitionInput!) {
+          forkDefinition(input: $input) {
+            id
+          }
+        }
+      `;
+
+      const response = await request(app)
+        .post('/graphql')
+        .send({
+          query: mutation,
+          variables: {
+            input: {
+              parentId: 'nonexistent-parent-id',
+              name: 'Orphan Fork',
+            },
+          },
+        })
+        .expect(200);
+
+      expect(response.body.errors).toBeDefined();
+      expect(response.body.errors[0].message).toContain('Parent definition not found');
+    });
+
+    it('fork appears in parent.children query', async () => {
+      // Create parent
+      const parent = await db.definition.create({
+        data: {
+          name: 'Parent for Children Test',
+          content: { schema_version: 1, preamble: 'Parent' },
+        },
+      });
+      createdDefinitionIds.push(parent.id);
+
+      // Fork it
+      const forkMutation = `
+        mutation ForkDefinition($input: ForkDefinitionInput!) {
+          forkDefinition(input: $input) {
+            id
+            name
+          }
+        }
+      `;
+
+      const forkResponse = await request(app)
+        .post('/graphql')
+        .send({
+          query: forkMutation,
+          variables: {
+            input: {
+              parentId: parent.id,
+              name: 'Child Fork',
+            },
+          },
+        })
+        .expect(200);
+
+      expect(forkResponse.body.errors).toBeUndefined();
+      const fork = forkResponse.body.data.forkDefinition;
+      createdDefinitionIds.push(fork.id);
+
+      // Query parent and check children
+      const childrenQuery = `
+        query GetDefinitionWithChildren($id: ID!) {
+          definition(id: $id) {
+            id
+            children {
+              id
+              name
+            }
+          }
+        }
+      `;
+
+      const response = await request(app)
+        .post('/graphql')
+        .send({ query: childrenQuery, variables: { id: parent.id } })
+        .expect(200);
+
+      expect(response.body.errors).toBeUndefined();
+      expect(response.body.data.definition.children).toContainEqual({
+        id: fork.id,
+        name: 'Child Fork',
+      });
+    });
+
+    it('returns error for empty fork name', async () => {
+      // Create parent
+      const parent = await db.definition.create({
+        data: {
+          name: 'Parent for Name Test',
+          content: { schema_version: 1, preamble: 'Parent' },
+        },
+      });
+      createdDefinitionIds.push(parent.id);
+
+      const mutation = `
+        mutation ForkDefinition($input: ForkDefinitionInput!) {
+          forkDefinition(input: $input) {
+            id
+          }
+        }
+      `;
+
+      const response = await request(app)
+        .post('/graphql')
+        .send({
+          query: mutation,
+          variables: {
+            input: {
+              parentId: parent.id,
+              name: '',
+            },
+          },
+        })
+        .expect(200);
+
+      expect(response.body.errors).toBeDefined();
+      expect(response.body.errors[0].message).toContain('Name is required');
+    });
+  });
 });
