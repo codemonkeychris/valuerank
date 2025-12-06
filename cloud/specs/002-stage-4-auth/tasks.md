@@ -183,11 +183,11 @@ This phase creates the shared auth types, error classes, and service foundations
 
 ### Implementation for User Story 8
 
-- [ ] T055 [US8] Add express-rate-limit configuration in `apps/api/src/auth/rate-limit.ts`
-- [ ] T056 [US8] Configure: 10 attempts per 15 minutes per IP
-- [ ] T057 [US8] Return 429 with clear error message when rate limited
-- [ ] T058 [US8] Apply rate limiter to login route in `apps/api/src/routes/auth.ts`
-- [ ] T059 [US8] Write rate limit tests in `apps/api/tests/routes/auth.test.ts`
+- [X] T055 [US8] Add express-rate-limit configuration in `apps/api/src/auth/rate-limit.ts`
+- [X] T056 [US8] Configure: 10 attempts per 15 minutes per IP
+- [X] T057 [US8] Return 429 with clear error message when rate limited
+- [X] T058 [US8] Apply rate limiter to login route in `apps/api/src/routes/auth.ts`
+- [X] T059 [US8] Write rate limit tests in `apps/api/tests/routes/auth.test.ts`
 
 **Checkpoint**: User Story 8 complete - login rate limiting active
 

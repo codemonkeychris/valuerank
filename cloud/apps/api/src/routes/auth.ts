@@ -15,6 +15,7 @@ import {
 } from '@valuerank/shared';
 
 import { verifyPassword, signToken } from '../auth/index.js';
+import { loginRateLimiter } from '../auth/rate-limit.js';
 import type { LoginRequest, LoginResponse } from '../auth/index.js';
 
 const log = createLogger('auth');
@@ -26,9 +27,12 @@ export const authRouter = Router();
  *
  * Authenticate user with email and password
  * Returns JWT token on success
+ *
+ * Rate limited: 10 attempts per 15 minutes per IP
  */
 authRouter.post(
   '/login',
+  loginRateLimiter,
   async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
       const { email, password } = req.body as LoginRequest;
