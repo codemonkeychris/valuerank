@@ -238,41 +238,6 @@ PgBoss provides:
 - **Scheduling**: Delayed jobs, cron-like scheduling
 - **Events**: Job lifecycle events via polling or pub/sub
 
-```javascript
-import PgBoss from 'pg-boss';
-
-const boss = new PgBoss(process.env.DATABASE_URL);
-await boss.start();
-
-// Example: Creating a run
-async function startRun(runConfig) {
-  const run = await db.runs.insert(runConfig);
-
-  for (const scenario of scenarios) {
-    for (const model of runConfig.target_models) {
-      await boss.send('probe:scenario', {
-        run_id: run.id,
-        scenario_id: scenario.id,
-        model: model
-      }, {
-        priority: 1,
-        retryLimit: 3,
-        retryBackoff: true,
-        retryDelay: 2
-      });
-    }
-  }
-
-  return run;
-}
-
-// Worker subscribes to job type
-await boss.work('probe:scenario', async (job) => {
-  const { run_id, scenario_id, model } = job.data;
-  // ... call LLM, save transcript
-});
-```
-
 **Why PgBoss over Redis/BullMQ?**
 - One less service to manage (no Redis)
 - Job data is transactionally consistent with application data
@@ -281,14 +246,170 @@ await boss.work('probe:scenario', async (job) => {
 
 ---
 
+## Worker Architecture: TypeScript Orchestrator + Python
+
+TypeScript manages the queue (native PgBoss), spawns Python for heavy computation.
+
+```
+┌─────────────────────────────────────────────────────────────────┐
+│                    TypeScript Orchestrator                       │
+│                    (runs in API process or separate)             │
+├─────────────────────────────────────────────────────────────────┤
+│                                                                  │
+│   ┌──────────────┐     ┌──────────────┐     ┌──────────────┐   │
+│   │ PgBoss       │     │ Job Handler  │     │ Job Handler  │   │
+│   │ .work()      │────▶│ probe:scenario────▶│ analyze:run  │   │
+│   └──────────────┘     └──────┬───────┘     └──────┬───────┘   │
+│                               │                     │           │
+│                               ▼                     ▼           │
+│                        ┌─────────────────────────────────┐      │
+│                        │     spawnPython(script, input)  │      │
+│                        │     - JSON via stdin            │      │
+│                        │     - JSON result via stdout    │      │
+│                        └─────────────────────────────────┘      │
+└─────────────────────────────────────────────────────────────────┘
+                                    │
+                                    ▼
+┌─────────────────────────────────────────────────────────────────┐
+│                    Python Worker Scripts                         │
+│                    (stateless, fast startup)                     │
+├─────────────────────────────────────────────────────────────────┤
+│                                                                  │
+│   workers/                                                       │
+│   ├── probe.py          # Send scenario to LLM, return response │
+│   ├── analyze_basic.py  # Tier 1: win rates, basic stats        │
+│   ├── analyze_deep.py   # Tier 2+: correlations, PCA            │
+│   └── common/                                                    │
+│       ├── llm_adapters.py   # Shared LLM provider logic         │
+│       └── config.py         # Read shared provider config       │
+└─────────────────────────────────────────────────────────────────┘
+```
+
+### TypeScript Orchestrator Code
+
+```typescript
+import PgBoss from 'pg-boss';
+import { spawnPython } from './spawn';
+
+const boss = new PgBoss(process.env.DATABASE_URL);
+await boss.start();
+
+// Register job handlers
+await boss.work('probe:scenario', async (job) => {
+  const result = await spawnPython('workers/probe.py', job.data);
+
+  // Save transcript to database
+  await db.transcripts.create({
+    run_id: job.data.run_id,
+    scenario_id: job.data.scenario_id,
+    model: job.data.model,
+    content: result.transcript,
+    turns: result.turns,
+    turn_count: result.turn_count,
+  });
+
+  // Update run progress
+  await db.runs.incrementProgress(job.data.run_id);
+});
+
+await boss.work('analyze:basic', async (job) => {
+  const result = await spawnPython('workers/analyze_basic.py', job.data);
+  await db.analysis_results.upsert({
+    run_id: job.data.run_id,
+    analysis_type: 'basic',
+    basic_stats: result.basic_stats,
+    // ...
+  });
+});
+```
+
+### Python Script Contract
+
+```python
+# workers/probe.py
+import json
+import sys
+from common.llm_adapters import get_adapter
+
+def main():
+    # Read input from stdin
+    input_data = json.load(sys.stdin)
+
+    # Do the work
+    adapter = get_adapter(input_data['model'])
+    response = adapter.send_scenario(
+        scenario=input_data['scenario'],
+        config=input_data['config']
+    )
+
+    # Write result to stdout
+    result = {
+        'transcript': response.transcript,
+        'turns': response.turns,
+        'turn_count': len(response.turns),
+    }
+    json.dump(result, sys.stdout)
+
+if __name__ == '__main__':
+    main()
+```
+
+### spawnPython Utility
+
+```typescript
+// spawn.ts
+import { spawn } from 'child_process';
+
+export async function spawnPython<T>(
+  script: string,
+  input: unknown
+): Promise<T> {
+  return new Promise((resolve, reject) => {
+    const proc = spawn('python3', [script]);
+
+    let stdout = '';
+    let stderr = '';
+
+    proc.stdout.on('data', (data) => stdout += data);
+    proc.stderr.on('data', (data) => stderr += data);
+
+    proc.on('close', (code) => {
+      if (code !== 0) {
+        reject(new Error(`Python exited ${code}: ${stderr}`));
+      } else {
+        resolve(JSON.parse(stdout));
+      }
+    });
+
+    // Send input
+    proc.stdin.write(JSON.stringify(input));
+    proc.stdin.end();
+  });
+}
+```
+
+### Benefits of This Pattern
+
+| Benefit | Explanation |
+|---------|-------------|
+| Native PgBoss | TypeScript gets full PgBoss API (retries, backoff, events) |
+| Python ecosystem | Keep numpy, pandas, scipy for analysis |
+| Flexible | Can add TypeScript-only workers for lightweight tasks |
+| Debuggable | JSON in/out is easy to inspect and test |
+| Stateless Python | Scripts are simple, no daemon management |
+| Single queue impl | No duplicate queue logic in Python |
+
+---
+
 ## Analysis Processing
 
-The deep analysis is computationally heavy (10-30s) and includes:
-- PCA for model positioning
-- Outlier detection (Mahalanobis, Isolation Forest, Jackknife)
-- Pearson correlations across dimensions
-- Inter-model agreement matrices
-- LLM-generated narrative summaries
+Analysis is split into tiers with different trigger strategies:
+
+| Tier | Contents | Trigger | Latency |
+|------|----------|---------|---------|
+| **Tier 1 (Basic)** | Win rates, per-model scores, basic stats | Auto on run complete | ~1s |
+| **Tier 2 (Correlations)** | Inter-model agreement, dimension impact | On-demand when viewed | ~5s |
+| **Tier 3 (Deep)** | PCA, outlier detection, LLM summaries | On-demand, queued job | ~30s |
 
 ### Analysis Pipeline
 
@@ -297,28 +418,46 @@ The deep analysis is computationally heavy (10-30s) and includes:
 │                      Analysis Pipeline                       │
 ├─────────────────────────────────────────────────────────────┤
 │                                                              │
-│   ┌──────────┐    ┌──────────┐    ┌──────────────────────┐ │
-│   │ Basic    │───▶│ Cache    │───▶│ Return cached result │ │
-│   │ Analysis │    │ Check    │    └──────────────────────┘ │
-│   │ Request  │    └────┬─────┘                              │
-│   └──────────┘         │ miss                               │
-│                        ▼                                     │
-│   ┌──────────┐    ┌──────────┐    ┌──────────────────────┐ │
-│   │ Deep     │───▶│ Queue    │───▶│ Python Worker        │ │
-│   │ Analysis │    │ Job      │    │ (dedicated compute)  │ │
-│   │ Request  │    └──────────┘    └──────────┬───────────┘ │
-│   └──────────┘                               │              │
-│                                              ▼              │
-│                                    ┌──────────────────────┐ │
-│                                    │ Store in analysis    │ │
-│                                    │ results table        │ │
-│                                    └──────────────────────┘ │
+│   RUN COMPLETES                                              │
+│        │                                                     │
+│        ▼                                                     │
+│   ┌──────────────────────────────────────────────────────┐  │
+│   │ Tier 1: Auto-triggered                                │  │
+│   │ - analyze:basic job queued immediately               │  │
+│   │ - Results ready within seconds                       │  │
+│   └──────────────────────────────────────────────────────┘  │
+│                                                              │
+│   USER VIEWS ANALYSIS                                        │
+│        │                                                     │
+│        ▼                                                     │
+│   ┌──────────────────────────────────────────────────────┐  │
+│   │ Tier 2: On-demand                                     │  │
+│   │ - Check cache (input_hash)                           │  │
+│   │ - If miss: compute inline or queue analyze:deep      │  │
+│   │ - Return loading state, poll for completion          │  │
+│   └──────────────────────────────────────────────────────┘  │
+│                                                              │
+│   USER REQUESTS DEEP ANALYSIS                                │
+│        │                                                     │
+│        ▼                                                     │
+│   ┌──────────────────────────────────────────────────────┐  │
+│   │ Tier 3: Queued job                                    │  │
+│   │ - analyze:deep job with lower priority               │  │
+│   │ - PCA, outliers, LLM summary                         │  │
+│   │ - User sees "Analysis in progress..."                │  │
+│   └──────────────────────────────────────────────────────┘  │
 └─────────────────────────────────────────────────────────────┘
 ```
 
+### Why Hybrid Triggers?
+
+- **Sets user expectations**: Some results are instant, some require waiting
+- **Controls compute costs**: Heavy analysis only runs when needed
+- **Prepares for future**: As we add more expensive analysis, the pattern scales
+
 ### Caching Strategy
 
-- Hash transcript content to detect changes
+- Hash transcript content to detect changes (`input_hash`)
 - Return cached results if hash matches
 - Auto-invalidate when new transcripts added to run
 - Allow manual re-analysis trigger

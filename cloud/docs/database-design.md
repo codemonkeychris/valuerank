@@ -260,10 +260,13 @@ PostgreSQL Tables:
 
 ### JSONB for Flexible Parts
 
-The `definitions.content` column holds the variable schema parts:
+The `definitions.content` column holds the variable schema parts.
+
+**All JSONB payloads include `schema_version` for future migrations:**
 
 ```json
 {
+  "schema_version": 1,
   "preamble": "You are being asked to reason about...",
   "template": "A café owner faces [situation] where [severity]...",
   "dimensions": [
@@ -279,10 +282,37 @@ The `definitions.content` column holds the variable schema parts:
 }
 ```
 
+### Schema Versioning Strategy
+
+```typescript
+// At read time, transform old schemas to current format
+function loadDefinitionContent(raw: unknown): DefinitionContent {
+  const data = raw as { schema_version?: number; [key: string]: unknown };
+
+  switch (data.schema_version ?? 0) {
+    case 0:
+      // Legacy data without version - migrate inline
+      return migrateV0toV1(data);
+    case 1:
+      // Current version
+      return data as DefinitionContent;
+    default:
+      throw new Error(`Unknown schema version: ${data.schema_version}`);
+  }
+}
+```
+
+**Why schema versioning?**
+- JavaScript/TypeScript is flexible for schema evolution
+- Most changes are additive (new optional fields)
+- But we reserve the ability to transform old data if needed
+- Migrations happen at read time, not as batch jobs
+
 This gives us:
 - **Relational structure** for versioning, runs, relationships
 - **Schema flexibility** for definition content and config
-- **No migrations** when definition structure evolves
+- **No migrations** when definition structure evolves (usually)
+- **Escape hatch** for breaking changes via `schema_version`
 
 ## Key Queries
 

@@ -84,10 +84,25 @@ Monorepo (Turborepo):
 - Simpler stack, transactional with application data
 - See: [API & Queue System](./api-queue-system.md)
 
+### Workers: TypeScript Orchestrator + Python
+- **Why**: Best of both worlds - native PgBoss + Python data science
+- TypeScript subscribes to queue, manages job lifecycle
+- Spawns stateless Python scripts for heavy work (LLM calls, analysis)
+- Communication via JSON stdin/stdout (simple, debuggable)
+- Can add TypeScript-only workers for lightweight tasks
+- See: [API & Queue System](./api-queue-system.md#worker-architecture-typescript-orchestrator--python)
+
+### LLM Provider Configuration: Shared Source of Truth
+- **Why**: Provider/model list changes frequently, single source prevents drift
+- Database table or config file readable by both API and Python workers
+- API exposes available models via GraphQL
+- Workers read same config for adapter selection
+
 ### MCP Interface
 - **Why**: Enable external AI agents to query and author scenarios
 - Expose processed data (summaries, stats), not raw transcripts
 - Token-budget-aware responses (<5KB per tool)
+- `graphql_query` tool for ad-hoc flexible queries
 - See: [MCP Interface](./mcp-interface.md)
 
 ### Authentication (Simplified for Internal Team)

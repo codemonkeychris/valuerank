@@ -177,14 +177,64 @@ Use polling (5-second intervals) instead of GraphQL subscriptions for progress u
 
 **Rationale:** Simpler implementation, sufficient for our use case. Can add subscriptions later if UX demands it.
 
-### Python Workers
+### Worker Architecture: TypeScript Orchestrator + Python
 
-Heavy analysis and LLM calls run in Python workers (separate container).
+Use a hybrid worker model: TypeScript manages the queue, Python does the heavy lifting.
 
-**Integration:**
-- Workers communicate via PostgreSQL + PgBoss queue
-- Enables reuse of existing Python analysis code
-- Keeps option open for Python-based AI tooling
+```
+TypeScript Orchestrator          Python Scripts
+├── Subscribes to PgBoss    →    ├── probe.py (LLM calls)
+├── Manages job lifecycle        ├── analyze.py (statistics)
+├── Spawns Python processes      └── (stateless, JSON in/out)
+└── Handles retries/errors
+```
+
+**Rationale:**
+- Native PgBoss support (TypeScript side)
+- Keep Python data science ecosystem (numpy, pandas, scipy)
+- Can add TypeScript-only workers later for lightweight tasks
+- Single queue implementation, best of both worlds
+
+**Communication:** JSON via stdin/stdout (simple, debuggable)
+
+### LLM Provider Configuration: Shared Source of Truth
+
+LLM provider/model configuration lives in one place, accessible to both TypeScript API and Python workers.
+
+**Rationale:** Provider list and model availability changes frequently. Single source prevents drift.
+
+**Implementation:** Database table or shared config file that both API and workers read.
+
+### GraphQL: Code-First (Pothos)
+
+Use code-first GraphQL schema generation (Pothos or similar).
+
+**Rationale:** TypeScript-native, types flow from resolvers to schema, better IDE support than schema-first.
+
+### JSONB Schema Versioning
+
+All JSONB payloads include a `schema_version` field for future migrations.
+
+```json
+{
+  "schema_version": 1,
+  "preamble": "...",
+  "template": "...",
+  "dimensions": [...]
+}
+```
+
+**Rationale:** JavaScript is flexible for schema evolution, but we reserve the ability to transform old data if needed.
+
+### Analysis: Hybrid Trigger (Auto + On-Demand)
+
+| Analysis Type | Trigger | Latency |
+|---------------|---------|---------|
+| Basic stats (Tier 1) | Auto on run complete | Fast (~1s) |
+| Correlations (Tier 2) | On-demand when viewed | Medium (~5s) |
+| Deep analysis (future) | On-demand, queued job | Slow (~30s) |
+
+**Rationale:** Sets user expectation that some results are instant, some require waiting. Prepares for heavier analysis later.
 
 ### CLI Compatibility
 
@@ -253,3 +303,8 @@ Maintain ability to export data in CLI-compatible format.
 | Dec 2025 | Python workers | Reuse existing code, AI tooling |
 | Dec 2025 | CLI compatibility | Business continuity |
 | Dec 2025 | GraphQL over REST | LLM schema introspection, flexible MCP queries, avoid migration pain |
+| Dec 2025 | TypeScript orchestrator + Python workers | Native PgBoss, keep Python ecosystem, flexibility for future |
+| Dec 2025 | Shared LLM provider config | Single source of truth, prevents drift between API and workers |
+| Dec 2025 | Code-first GraphQL (Pothos) | TypeScript-native, better IDE support |
+| Dec 2025 | JSONB schema versioning | Reserve ability to transform old data |
+| Dec 2025 | Hybrid analysis trigger | Auto for basic, on-demand for heavy - sets user expectations |
