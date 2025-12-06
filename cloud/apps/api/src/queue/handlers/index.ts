@@ -31,30 +31,30 @@ type HandlerRegistration = {
 
 const handlerRegistrations: HandlerRegistration[] = [
   {
-    name: 'probe:scenario',
+    name: 'probe_scenario',
     register: async (boss, batchSize) => {
       await boss.work<ProbeScenarioJobData>(
-        'probe:scenario',
+        'probe_scenario',
         { batchSize },
         createProbeScenarioHandler()
       );
     },
   },
   {
-    name: 'analyze:basic',
+    name: 'analyze_basic',
     register: async (boss, batchSize) => {
       await boss.work<AnalyzeBasicJobData>(
-        'analyze:basic',
+        'analyze_basic',
         { batchSize },
         createAnalyzeBasicHandler()
       );
     },
   },
   {
-    name: 'analyze:deep',
+    name: 'analyze_deep',
     register: async (boss, batchSize) => {
       await boss.work<AnalyzeDeepJobData>(
-        'analyze:deep',
+        'analyze_deep',
         { batchSize },
         createAnalyzeDeepHandler()
       );

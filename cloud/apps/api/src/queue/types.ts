@@ -5,7 +5,7 @@
  */
 
 // Job type union
-export type JobType = 'probe:scenario' | 'analyze:basic' | 'analyze:deep';
+export type JobType = 'probe_scenario' | 'analyze_basic' | 'analyze_deep';
 
 // Job data interfaces
 export type ProbeScenarioJobData = {
@@ -44,19 +44,19 @@ export type JobOptions = {
 
 // Default job options per type
 export const DEFAULT_JOB_OPTIONS: Record<JobType, JobOptions> = {
-  'probe:scenario': {
+  'probe_scenario': {
     retryLimit: 3,
     retryDelay: 5,
     retryBackoff: true,
     expireInSeconds: 300, // 5 minutes
   },
-  'analyze:basic': {
+  'analyze_basic': {
     retryLimit: 3,
     retryDelay: 10,
     retryBackoff: true,
     expireInSeconds: 600, // 10 minutes
   },
-  'analyze:deep': {
+  'analyze_deep': {
     retryLimit: 2,
     retryDelay: 30,
     retryBackoff: true,

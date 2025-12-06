@@ -1,7 +1,7 @@
 /**
  * Start Run Service
  *
- * Creates a new run and queues probe:scenario jobs for each model-scenario pair.
+ * Creates a new run and queues probe_scenario jobs for each model-scenario pair.
  */
 
 import { db } from '@valuerank/db';
@@ -88,7 +88,7 @@ function sampleScenarios(
  * 2. Creates a Run record with PENDING status
  * 3. Samples scenarios if samplePercentage < 100
  * 4. Creates RunScenarioSelection records
- * 5. Queues probe:scenario jobs for each model-scenario pair
+ * 5. Queues probe_scenario jobs for each model-scenario pair
  * 6. Initializes progress tracking
  */
 export async function startRun(input: StartRunInput): Promise<StartRunResult> {
@@ -209,7 +209,7 @@ export async function startRun(input: StartRunInput): Promise<StartRunResult> {
   const boss = getBoss();
   const priorityValue = PRIORITY_VALUES[priority as PriorityLevel];
   const jobOptions = {
-    ...DEFAULT_JOB_OPTIONS['probe:scenario'],
+    ...DEFAULT_JOB_OPTIONS['probe_scenario'],
     priority: priorityValue,
   };
 
@@ -219,7 +219,7 @@ export async function startRun(input: StartRunInput): Promise<StartRunResult> {
   for (const modelId of models) {
     for (const scenarioId of selectedScenarioIds) {
       jobs.push({
-        name: 'probe:scenario',
+        name: 'probe_scenario',
         data: {
           runId: run.id,
           scenarioId,

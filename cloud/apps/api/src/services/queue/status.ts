@@ -45,7 +45,7 @@ export async function getQueueStatus(): Promise<QueueStatus> {
     }>>`
       SELECT name, state, COUNT(*) as count
       FROM pgboss.job
-      WHERE name IN ('probe:scenario', 'analyze:basic', 'analyze:deep')
+      WHERE name IN ('probe_scenario', 'analyze_basic', 'analyze_deep')
       GROUP BY name, state
     `;
 
@@ -57,14 +57,14 @@ export async function getQueueStatus(): Promise<QueueStatus> {
     }>>`
       SELECT name, state, COUNT(*) as count
       FROM pgboss.archive
-      WHERE name IN ('probe:scenario', 'analyze:basic', 'analyze:deep')
+      WHERE name IN ('probe_scenario', 'analyze_basic', 'analyze_deep')
         AND archivedon > NOW() - INTERVAL '24 hours'
       GROUP BY name, state
     `;
 
     // Combine and organize by job type
     const jobTypeMap = new Map<string, JobTypeStatus>();
-    const knownTypes = ['probe:scenario', 'analyze:basic', 'analyze:deep'];
+    const knownTypes = ['probe_scenario', 'analyze_basic', 'analyze_deep'];
 
     // Initialize all known types
     for (const type of knownTypes) {
@@ -144,9 +144,9 @@ export async function getQueueStatus(): Promise<QueueStatus> {
       isRunning: state.isRunning,
       isPaused: state.isPaused,
       jobTypes: [
-        { type: 'probe:scenario', pending: 0, active: 0, completed: 0, failed: 0 },
-        { type: 'analyze:basic', pending: 0, active: 0, completed: 0, failed: 0 },
-        { type: 'analyze:deep', pending: 0, active: 0, completed: 0, failed: 0 },
+        { type: 'probe_scenario', pending: 0, active: 0, completed: 0, failed: 0 },
+        { type: 'analyze_basic', pending: 0, active: 0, completed: 0, failed: 0 },
+        { type: 'analyze_deep', pending: 0, active: 0, completed: 0, failed: 0 },
       ],
       totals: { pending: 0, active: 0, completed: 0, failed: 0 },
     };

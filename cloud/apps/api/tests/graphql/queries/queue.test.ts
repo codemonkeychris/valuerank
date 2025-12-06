@@ -78,9 +78,9 @@ describe('Queue Status Query', () => {
     const jobTypes = response.body.data.queueStatus.jobTypes;
     const typeNames = jobTypes.map((jt: { type: string }) => jt.type);
 
-    expect(typeNames).toContain('probe:scenario');
-    expect(typeNames).toContain('analyze:basic');
-    expect(typeNames).toContain('analyze:deep');
+    expect(typeNames).toContain('probe_scenario');
+    expect(typeNames).toContain('analyze_basic');
+    expect(typeNames).toContain('analyze_deep');
   });
 
   it('returns zero counts when queue is empty', async () => {

@@ -17,7 +17,7 @@ export const JobTypeStatus = builder.objectRef<{
   description: 'Job counts for a specific job type',
   fields: (t) => ({
     type: t.exposeString('type', {
-      description: 'Job type name (e.g., probe:scenario)',
+      description: 'Job type name (e.g., probe_scenario)',
     }),
     pending: t.exposeInt('pending', {
       description: 'Number of jobs waiting to be processed',

@@ -1,7 +1,7 @@
 /**
  * Probe Scenario Handler (Stub)
  *
- * Handles probe:scenario jobs. Currently a stub that simulates work.
+ * Handles probe_scenario jobs. Currently a stub that simulates work.
  * Real Python execution will be added in Stage 6.
  */
 
@@ -20,7 +20,7 @@ const STUB_DELAY_MS = parseInt(process.env.STUB_JOB_DELAY_MS ?? '100', 10);
 const FAIL_MODEL_ID = process.env.FAIL_MODEL_ID ?? 'fail-test-model';
 
 // Retry limit from job options (default 3)
-const RETRY_LIMIT = DEFAULT_JOB_OPTIONS['probe:scenario'].retryLimit ?? 3;
+const RETRY_LIMIT = DEFAULT_JOB_OPTIONS['probe_scenario'].retryLimit ?? 3;
 
 /**
  * Checks if an error is retryable.
@@ -90,7 +90,7 @@ export function isRetryableError(error: unknown): boolean {
 }
 
 /**
- * Creates a handler for probe:scenario jobs.
+ * Creates a handler for probe_scenario jobs.
  * Returns a function that processes a batch of jobs.
  */
 export function createProbeScenarioHandler(): PgBoss.WorkHandler<ProbeScenarioJobData> {
@@ -101,7 +101,7 @@ export function createProbeScenarioHandler(): PgBoss.WorkHandler<ProbeScenarioJo
 
       log.info(
         { jobId, runId, scenarioId, modelId, config },
-        'Processing probe:scenario job'
+        'Processing probe_scenario job'
       );
 
       try {

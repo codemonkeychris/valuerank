@@ -1,7 +1,7 @@
 /**
  * Analyze Deep Handler (Stub)
  *
- * Handles analyze:deep jobs. Currently a stub that simulates work.
+ * Handles analyze_deep jobs. Currently a stub that simulates work.
  * Real analysis will be added in Stage 11.
  */
 
@@ -15,7 +15,7 @@ const log = createLogger('queue:analyze-deep');
 const STUB_DELAY_MS = parseInt(process.env.STUB_JOB_DELAY_MS ?? '100', 10);
 
 /**
- * Creates a handler for analyze:deep jobs.
+ * Creates a handler for analyze_deep jobs.
  * Returns a function that processes a batch of jobs.
  */
 export function createAnalyzeDeepHandler(): PgBoss.WorkHandler<AnalyzeDeepJobData> {
@@ -26,7 +26,7 @@ export function createAnalyzeDeepHandler(): PgBoss.WorkHandler<AnalyzeDeepJobDat
 
       log.info(
         { jobId, runId, analysisType },
-        'Processing analyze:deep job'
+        'Processing analyze_deep job'
       );
 
       // Simulate work

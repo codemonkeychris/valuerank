@@ -79,7 +79,7 @@ builder.objectType(RunRef, {
           }>>`
             SELECT id, data, state, completedon, output
             FROM pgboss.archive
-            WHERE name = 'probe:scenario'
+            WHERE name = 'probe_scenario'
               AND data->>'runId' = ${run.id}
               AND state IN ('completed', 'failed')
             ORDER BY completedon DESC NULLS LAST

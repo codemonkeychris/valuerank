@@ -65,7 +65,7 @@ builder.mutationField('startRun', (t) =>
     description: `
       Start a new evaluation run.
 
-      Creates a run record and queues probe:scenario jobs for each model-scenario combination.
+      Creates a run record and queues probe_scenario jobs for each model-scenario combination.
       Requires authentication.
 
       Returns the created run and the number of jobs queued.

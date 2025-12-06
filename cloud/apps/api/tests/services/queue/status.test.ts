@@ -53,13 +53,13 @@ describe('Queue Status Service', () => {
     it('counts pending jobs from created state', async () => {
       vi.mocked(db.$queryRaw)
         .mockResolvedValueOnce([
-          { name: 'probe:scenario', state: 'created', count: BigInt(5) },
+          { name: 'probe_scenario', state: 'created', count: BigInt(5) },
         ])
         .mockResolvedValueOnce([]);
 
       const status = await getQueueStatus();
 
-      const probeType = status.jobTypes.find((jt) => jt.type === 'probe:scenario');
+      const probeType = status.jobTypes.find((jt) => jt.type === 'probe_scenario');
       expect(probeType?.pending).toBe(5);
       expect(status.totals.pending).toBe(5);
     });
@@ -67,26 +67,26 @@ describe('Queue Status Service', () => {
     it('counts pending jobs from retry state', async () => {
       vi.mocked(db.$queryRaw)
         .mockResolvedValueOnce([
-          { name: 'probe:scenario', state: 'retry', count: BigInt(3) },
+          { name: 'probe_scenario', state: 'retry', count: BigInt(3) },
         ])
         .mockResolvedValueOnce([]);
 
       const status = await getQueueStatus();
 
-      const probeType = status.jobTypes.find((jt) => jt.type === 'probe:scenario');
+      const probeType = status.jobTypes.find((jt) => jt.type === 'probe_scenario');
       expect(probeType?.pending).toBe(3);
     });
 
     it('counts active jobs', async () => {
       vi.mocked(db.$queryRaw)
         .mockResolvedValueOnce([
-          { name: 'analyze:basic', state: 'active', count: BigInt(2) },
+          { name: 'analyze_basic', state: 'active', count: BigInt(2) },
         ])
         .mockResolvedValueOnce([]);
 
       const status = await getQueueStatus();
 
-      const basicType = status.jobTypes.find((jt) => jt.type === 'analyze:basic');
+      const basicType = status.jobTypes.find((jt) => jt.type === 'analyze_basic');
       expect(basicType?.active).toBe(2);
       expect(status.totals.active).toBe(2);
     });
@@ -94,13 +94,13 @@ describe('Queue Status Service', () => {
     it('counts completed jobs from job table', async () => {
       vi.mocked(db.$queryRaw)
         .mockResolvedValueOnce([
-          { name: 'analyze:deep', state: 'completed', count: BigInt(10) },
+          { name: 'analyze_deep', state: 'completed', count: BigInt(10) },
         ])
         .mockResolvedValueOnce([]);
 
       const status = await getQueueStatus();
 
-      const deepType = status.jobTypes.find((jt) => jt.type === 'analyze:deep');
+      const deepType = status.jobTypes.find((jt) => jt.type === 'analyze_deep');
       expect(deepType?.completed).toBe(10);
       expect(status.totals.completed).toBe(10);
     });
@@ -108,13 +108,13 @@ describe('Queue Status Service', () => {
     it('counts failed jobs from failed state', async () => {
       vi.mocked(db.$queryRaw)
         .mockResolvedValueOnce([
-          { name: 'probe:scenario', state: 'failed', count: BigInt(2) },
+          { name: 'probe_scenario', state: 'failed', count: BigInt(2) },
         ])
         .mockResolvedValueOnce([]);
 
       const status = await getQueueStatus();
 
-      const probeType = status.jobTypes.find((jt) => jt.type === 'probe:scenario');
+      const probeType = status.jobTypes.find((jt) => jt.type === 'probe_scenario');
       expect(probeType?.failed).toBe(2);
       expect(status.totals.failed).toBe(2);
     });
@@ -122,26 +122,26 @@ describe('Queue Status Service', () => {
     it('counts expired jobs as failed', async () => {
       vi.mocked(db.$queryRaw)
         .mockResolvedValueOnce([
-          { name: 'probe:scenario', state: 'expired', count: BigInt(1) },
+          { name: 'probe_scenario', state: 'expired', count: BigInt(1) },
         ])
         .mockResolvedValueOnce([]);
 
       const status = await getQueueStatus();
 
-      const probeType = status.jobTypes.find((jt) => jt.type === 'probe:scenario');
+      const probeType = status.jobTypes.find((jt) => jt.type === 'probe_scenario');
       expect(probeType?.failed).toBe(1);
     });
 
     it('counts cancelled jobs as failed', async () => {
       vi.mocked(db.$queryRaw)
         .mockResolvedValueOnce([
-          { name: 'analyze:basic', state: 'cancelled', count: BigInt(4) },
+          { name: 'analyze_basic', state: 'cancelled', count: BigInt(4) },
         ])
         .mockResolvedValueOnce([]);
 
       const status = await getQueueStatus();
 
-      const basicType = status.jobTypes.find((jt) => jt.type === 'analyze:basic');
+      const basicType = status.jobTypes.find((jt) => jt.type === 'analyze_basic');
       expect(basicType?.failed).toBe(4);
     });
 
@@ -149,12 +149,12 @@ describe('Queue Status Service', () => {
       vi.mocked(db.$queryRaw)
         .mockResolvedValueOnce([])
         .mockResolvedValueOnce([
-          { name: 'probe:scenario', state: 'completed', count: BigInt(100) },
+          { name: 'probe_scenario', state: 'completed', count: BigInt(100) },
         ]);
 
       const status = await getQueueStatus();
 
-      const probeType = status.jobTypes.find((jt) => jt.type === 'probe:scenario');
+      const probeType = status.jobTypes.find((jt) => jt.type === 'probe_scenario');
       expect(probeType?.completed).toBe(100);
     });
 
@@ -162,30 +162,30 @@ describe('Queue Status Service', () => {
       vi.mocked(db.$queryRaw)
         .mockResolvedValueOnce([])
         .mockResolvedValueOnce([
-          { name: 'analyze:deep', state: 'failed', count: BigInt(5) },
+          { name: 'analyze_deep', state: 'failed', count: BigInt(5) },
         ]);
 
       const status = await getQueueStatus();
 
-      const deepType = status.jobTypes.find((jt) => jt.type === 'analyze:deep');
+      const deepType = status.jobTypes.find((jt) => jt.type === 'analyze_deep');
       expect(deepType?.failed).toBe(5);
     });
 
     it('combines job and archive counts', async () => {
       vi.mocked(db.$queryRaw)
         .mockResolvedValueOnce([
-          { name: 'probe:scenario', state: 'created', count: BigInt(10) },
-          { name: 'probe:scenario', state: 'active', count: BigInt(3) },
-          { name: 'probe:scenario', state: 'completed', count: BigInt(50) },
+          { name: 'probe_scenario', state: 'created', count: BigInt(10) },
+          { name: 'probe_scenario', state: 'active', count: BigInt(3) },
+          { name: 'probe_scenario', state: 'completed', count: BigInt(50) },
         ])
         .mockResolvedValueOnce([
-          { name: 'probe:scenario', state: 'completed', count: BigInt(200) },
-          { name: 'probe:scenario', state: 'failed', count: BigInt(5) },
+          { name: 'probe_scenario', state: 'completed', count: BigInt(200) },
+          { name: 'probe_scenario', state: 'failed', count: BigInt(5) },
         ]);
 
       const status = await getQueueStatus();
 
-      const probeType = status.jobTypes.find((jt) => jt.type === 'probe:scenario');
+      const probeType = status.jobTypes.find((jt) => jt.type === 'probe_scenario');
       expect(probeType?.pending).toBe(10);
       expect(probeType?.active).toBe(3);
       expect(probeType?.completed).toBe(250); // 50 + 200
@@ -195,12 +195,12 @@ describe('Queue Status Service', () => {
     it('aggregates counts across all job types', async () => {
       vi.mocked(db.$queryRaw)
         .mockResolvedValueOnce([
-          { name: 'probe:scenario', state: 'created', count: BigInt(5) },
-          { name: 'analyze:basic', state: 'active', count: BigInt(2) },
-          { name: 'analyze:deep', state: 'completed', count: BigInt(10) },
+          { name: 'probe_scenario', state: 'created', count: BigInt(5) },
+          { name: 'analyze_basic', state: 'active', count: BigInt(2) },
+          { name: 'analyze_deep', state: 'completed', count: BigInt(10) },
         ])
         .mockResolvedValueOnce([
-          { name: 'probe:scenario', state: 'failed', count: BigInt(1) },
+          { name: 'probe_scenario', state: 'failed', count: BigInt(1) },
         ]);
 
       const status = await getQueueStatus();

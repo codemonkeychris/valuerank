@@ -1,7 +1,7 @@
 /**
  * Analyze Basic Handler (Stub)
  *
- * Handles analyze:basic jobs. Currently a stub that simulates work.
+ * Handles analyze_basic jobs. Currently a stub that simulates work.
  * Real analysis will be added in Stage 11.
  */
 
@@ -15,7 +15,7 @@ const log = createLogger('queue:analyze-basic');
 const STUB_DELAY_MS = parseInt(process.env.STUB_JOB_DELAY_MS ?? '100', 10);
 
 /**
- * Creates a handler for analyze:basic jobs.
+ * Creates a handler for analyze_basic jobs.
  * Returns a function that processes a batch of jobs.
  */
 export function createAnalyzeBasicHandler(): PgBoss.WorkHandler<AnalyzeBasicJobData> {
@@ -26,7 +26,7 @@ export function createAnalyzeBasicHandler(): PgBoss.WorkHandler<AnalyzeBasicJobD
 
       log.info(
         { jobId, runId, transcriptCount: transcriptIds.length },
-        'Processing analyze:basic job'
+        'Processing analyze_basic job'
       );
 
       // Simulate work
