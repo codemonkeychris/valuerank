@@ -2,6 +2,7 @@ import { describe, it, expect } from 'vitest';
 import request from 'supertest';
 import { createServer } from '../../../src/server.js';
 import { db } from '@valuerank/db';
+import { getAuthHeader } from '../../test-utils.js';
 
 const app = createServer();
 
@@ -28,6 +29,7 @@ describe('GraphQL Scalar Types', () => {
 
         const response = await request(app)
           .post('/graphql')
+          .set('Authorization', getAuthHeader())
           .send({ query, variables: { id: definition.id } })
           .expect(200);
 
@@ -57,6 +59,7 @@ describe('GraphQL Scalar Types', () => {
 
       const response = await request(app)
         .post('/graphql')
+        .set('Authorization', getAuthHeader())
         .send({ query })
         .expect(200);
 
@@ -95,6 +98,7 @@ describe('GraphQL Scalar Types', () => {
 
         const response = await request(app)
           .post('/graphql')
+          .set('Authorization', getAuthHeader())
           .send({ query, variables: { id: definition.id } })
           .expect(200);
 
@@ -133,6 +137,7 @@ describe('GraphQL Scalar Types', () => {
 
       const response = await request(app)
         .post('/graphql')
+        .set('Authorization', getAuthHeader())
         .send({
           query: mutation,
           variables: {

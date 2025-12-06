@@ -33,3 +33,11 @@ export {
   getKeyPrefix,
   isValidApiKeyFormat,
 } from './api-keys.js';
+
+// Middleware
+export {
+  authMiddleware,
+  requireAuth,
+  graphqlAuthMiddleware,
+  isIntrospectionQuery,
+} from './middleware.js';

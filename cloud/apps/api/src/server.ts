@@ -4,6 +4,7 @@ import type { Request, Response, NextFunction } from 'express';
 import cors from 'cors';
 import { healthRouter } from './health.js';
 import { authRouter } from './routes/auth.js';
+import { authMiddleware, graphqlAuthMiddleware } from './auth/index.js';
 import { yoga } from './graphql/index.js';
 import { createLogger, AppError } from '@valuerank/shared';
 
@@ -41,12 +42,18 @@ export function createServer() {
     next();
   });
 
+  // Auth middleware - extracts JWT/API key and populates req.user
+  // Applied globally so auth info is available everywhere
+  app.use(authMiddleware);
+
   // Routes
   app.use('/health', healthRouter);
   app.use('/api/auth', authRouter);
 
-  // GraphQL endpoint
-  app.all('/graphql', (req, res) => {
+  // GraphQL endpoint with auth check
+  // - Allows introspection queries without auth
+  // - Requires auth for all other operations
+  app.all('/graphql', graphqlAuthMiddleware, (req, res) => {
     void yoga.handle(req, res);
   });
 

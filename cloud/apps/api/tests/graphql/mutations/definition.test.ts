@@ -2,6 +2,7 @@ import { describe, it, expect, afterEach } from 'vitest';
 import request from 'supertest';
 import { createServer } from '../../../src/server.js';
 import { db } from '@valuerank/db';
+import { getAuthHeader } from '../../test-utils.js';
 
 const app = createServer();
 
@@ -34,6 +35,7 @@ describe('GraphQL Definition Mutations', () => {
 
       const response = await request(app)
         .post('/graphql')
+        .set('Authorization', getAuthHeader())
         .send({
           query: mutation,
           variables: {
@@ -72,6 +74,7 @@ describe('GraphQL Definition Mutations', () => {
 
       const response = await request(app)
         .post('/graphql')
+        .set('Authorization', getAuthHeader())
         .send({
           query: mutation,
           variables: {
@@ -105,6 +108,7 @@ describe('GraphQL Definition Mutations', () => {
 
       const response = await request(app)
         .post('/graphql')
+        .set('Authorization', getAuthHeader())
         .send({
           query: mutation,
           variables: {
@@ -151,6 +155,7 @@ describe('GraphQL Definition Mutations', () => {
 
       const response = await request(app)
         .post('/graphql')
+        .set('Authorization', getAuthHeader())
         .send({
           query: mutation,
           variables: {
@@ -184,6 +189,7 @@ describe('GraphQL Definition Mutations', () => {
 
       const response = await request(app)
         .post('/graphql')
+        .set('Authorization', getAuthHeader())
         .send({
           query: mutation,
           variables: {
@@ -211,6 +217,7 @@ describe('GraphQL Definition Mutations', () => {
 
       const response = await request(app)
         .post('/graphql')
+        .set('Authorization', getAuthHeader())
         .send({
           query: mutation,
           variables: {
@@ -237,6 +244,7 @@ describe('GraphQL Definition Mutations', () => {
 
       const response = await request(app)
         .post('/graphql')
+        .set('Authorization', getAuthHeader())
         .send({
           query: mutation,
           variables: {
@@ -263,6 +271,7 @@ describe('GraphQL Definition Mutations', () => {
 
       const response = await request(app)
         .post('/graphql')
+        .set('Authorization', getAuthHeader())
         .send({
           query: mutation,
           variables: {
@@ -307,6 +316,7 @@ describe('GraphQL Definition Mutations', () => {
 
       const response = await request(app)
         .post('/graphql')
+        .set('Authorization', getAuthHeader())
         .send({
           query: mutation,
           variables: {
@@ -357,6 +367,7 @@ describe('GraphQL Definition Mutations', () => {
 
       const response = await request(app)
         .post('/graphql')
+        .set('Authorization', getAuthHeader())
         .send({
           query: mutation,
           variables: {
@@ -392,6 +403,7 @@ describe('GraphQL Definition Mutations', () => {
 
       const response = await request(app)
         .post('/graphql')
+        .set('Authorization', getAuthHeader())
         .send({
           query: mutation,
           variables: {
@@ -429,6 +441,7 @@ describe('GraphQL Definition Mutations', () => {
 
       const forkResponse = await request(app)
         .post('/graphql')
+        .set('Authorization', getAuthHeader())
         .send({
           query: forkMutation,
           variables: {
@@ -459,6 +472,7 @@ describe('GraphQL Definition Mutations', () => {
 
       const response = await request(app)
         .post('/graphql')
+        .set('Authorization', getAuthHeader())
         .send({ query: childrenQuery, variables: { id: parent.id } })
         .expect(200);
 
@@ -489,6 +503,7 @@ describe('GraphQL Definition Mutations', () => {
 
       const response = await request(app)
         .post('/graphql')
+        .set('Authorization', getAuthHeader())
         .send({
           query: mutation,
           variables: {

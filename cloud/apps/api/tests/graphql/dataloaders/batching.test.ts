@@ -3,6 +3,7 @@ import request from 'supertest';
 import { createServer } from '../../../src/server.js';
 import { db } from '@valuerank/db';
 import type { Definition, Run } from '@valuerank/db';
+import { getAuthHeader } from '../../test-utils.js';
 
 const app = createServer();
 
@@ -106,6 +107,7 @@ describe('DataLoader N+1 Prevention', () => {
 
       const response = await request(app)
         .post('/graphql')
+        .set('Authorization', getAuthHeader())
         .send({
           query,
           variables: { id1: childDef1.id, id2: childDef2.id },
@@ -138,6 +140,7 @@ describe('DataLoader N+1 Prevention', () => {
 
       const response = await request(app)
         .post('/graphql')
+        .set('Authorization', getAuthHeader())
         .send({ query })
         .expect(200);
 
@@ -173,12 +176,14 @@ describe('DataLoader N+1 Prevention', () => {
       // First request
       const response1 = await request(app)
         .post('/graphql')
+        .set('Authorization', getAuthHeader())
         .send({ query, variables: { id: childDef1.id } })
         .expect(200);
 
       // Second request (should have fresh cache)
       const response2 = await request(app)
         .post('/graphql')
+        .set('Authorization', getAuthHeader())
         .send({ query, variables: { id: childDef1.id } })
         .expect(200);
 
@@ -206,6 +211,7 @@ describe('DataLoader N+1 Prevention', () => {
 
       const response = await request(app)
         .post('/graphql')
+        .set('Authorization', getAuthHeader())
         .send({
           query,
           variables: { id1: childDef1.id, id2: childDef2.id },
@@ -242,6 +248,7 @@ describe('DataLoader N+1 Prevention', () => {
 
       const response = await request(app)
         .post('/graphql')
+        .set('Authorization', getAuthHeader())
         .send({ query })
         .expect(200);
 

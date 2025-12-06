@@ -3,6 +3,7 @@ import request from 'supertest';
 import { createServer } from '../../../src/server.js';
 import { db } from '@valuerank/db';
 import type { Definition, Run, Transcript, Scenario } from '@valuerank/db';
+import { getAuthHeader } from '../../test-utils.js';
 
 const app = createServer();
 
@@ -78,6 +79,7 @@ describe('GraphQL Type Resolvers', () => {
 
       const response = await request(app)
         .post('/graphql')
+        .set('Authorization', getAuthHeader())
         .send({ query, variables: { id: testRun.id } })
         .expect(200);
 
@@ -105,6 +107,7 @@ describe('GraphQL Type Resolvers', () => {
 
       const response = await request(app)
         .post('/graphql')
+        .set('Authorization', getAuthHeader())
         .send({ query, variables: { id: testRun.id } })
         .expect(200);
 
@@ -136,6 +139,7 @@ describe('GraphQL Type Resolvers', () => {
 
       const response = await request(app)
         .post('/graphql')
+        .set('Authorization', getAuthHeader())
         .send({ query, variables: { id: testRun.id } })
         .expect(200);
 
@@ -165,6 +169,7 @@ describe('GraphQL Type Resolvers', () => {
 
       const response = await request(app)
         .post('/graphql')
+        .set('Authorization', getAuthHeader())
         .send({ query, variables: { id: testDefinition.id } })
         .expect(200);
 
@@ -199,6 +204,7 @@ describe('GraphQL Type Resolvers', () => {
 
         const response = await request(app)
           .post('/graphql')
+          .set('Authorization', getAuthHeader())
           .send({ query, variables: { id: emptyDef.id } })
           .expect(200);
 

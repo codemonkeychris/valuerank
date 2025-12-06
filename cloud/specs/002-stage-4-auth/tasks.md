@@ -86,14 +86,14 @@ This phase creates the shared auth types, error classes, and service foundations
 
 ### Implementation for User Story 3
 
-- [ ] T023 [US3] Create `apps/api/src/auth/middleware.ts` - JWT validation middleware
-- [ ] T024 [US3] Extract Bearer token from Authorization header
-- [ ] T025 [US3] Handle clock skew (30-second tolerance) in JWT validation
-- [ ] T026 [US3] Populate `req.user` with decoded JWT payload on success
-- [ ] T027 [US3] Update `apps/api/src/graphql/context.ts` - Add user and authMethod to Context
-- [ ] T028 [US3] Add auth check before GraphQL in `apps/api/src/server.ts`
-- [ ] T029 [US3] Keep introspection public (skip auth for __schema queries)
-- [ ] T030 [US3] Write middleware tests in `apps/api/tests/auth/middleware.test.ts`
+- [X] T023 [US3] Create `apps/api/src/auth/middleware.ts` - JWT validation middleware
+- [X] T024 [US3] Extract Bearer token from Authorization header
+- [X] T025 [US3] Handle clock skew (30-second tolerance) in JWT validation
+- [X] T026 [US3] Populate `req.user` with decoded JWT payload on success
+- [X] T027 [US3] Update `apps/api/src/graphql/context.ts` - Add user and authMethod to Context
+- [X] T028 [US3] Add auth check before GraphQL in `apps/api/src/server.ts`
+- [X] T029 [US3] Keep introspection public (skip auth for __schema queries)
+- [X] T030 [US3] Write middleware tests in `apps/api/tests/auth/middleware.test.ts`
 
 **Checkpoint**: User Story 3 complete - GraphQL protected, valid JWT grants access
 

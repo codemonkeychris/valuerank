@@ -3,6 +3,7 @@ import request from 'supertest';
 import { createServer } from '../../../src/server.js';
 import { db } from '@valuerank/db';
 import type { Definition, Run, Transcript, Experiment, Scenario } from '@valuerank/db';
+import { getAuthHeader } from '../../test-utils.js';
 
 const app = createServer();
 
@@ -73,6 +74,7 @@ describe('GraphQL Run Query', () => {
 
       const response = await request(app)
         .post('/graphql')
+        .set('Authorization', getAuthHeader())
         .send({ query, variables: { id: testRun.id } });
 
       if (response.status !== 200) {
@@ -103,6 +105,7 @@ describe('GraphQL Run Query', () => {
 
       const response = await request(app)
         .post('/graphql')
+        .set('Authorization', getAuthHeader())
         .send({ query, variables: { id: 'nonexistent-id' } })
         .expect(200);
 
@@ -125,6 +128,7 @@ describe('GraphQL Run Query', () => {
 
       const response = await request(app)
         .post('/graphql')
+        .set('Authorization', getAuthHeader())
         .send({ query, variables: { id: testRun.id } })
         .expect(200);
 
@@ -152,6 +156,7 @@ describe('GraphQL Run Query', () => {
 
       const response = await request(app)
         .post('/graphql')
+        .set('Authorization', getAuthHeader())
         .send({ query, variables: { id: testRun.id } })
         .expect(200);
 
@@ -192,6 +197,7 @@ describe('GraphQL Run Query', () => {
 
       const response = await request(app)
         .post('/graphql')
+        .set('Authorization', getAuthHeader())
         .send({ query, variables: { id: testRun.id, modelId: 'gpt-4' } })
         .expect(200);
 
@@ -215,6 +221,7 @@ describe('GraphQL Run Query', () => {
 
       const response = await request(app)
         .post('/graphql')
+        .set('Authorization', getAuthHeader())
         .send({ query, variables: { id: testRun.id } })
         .expect(200);
 
@@ -240,6 +247,7 @@ describe('GraphQL Run Query', () => {
 
       const response = await request(app)
         .post('/graphql')
+        .set('Authorization', getAuthHeader())
         .send({ query, variables: { id: testRun.id } })
         .expect(200);
 
@@ -292,6 +300,7 @@ describe('GraphQL Run Query', () => {
 
       const response = await request(app)
         .post('/graphql')
+        .set('Authorization', getAuthHeader())
         .send({ query })
         .expect(200);
 
@@ -314,6 +323,7 @@ describe('GraphQL Run Query', () => {
 
       const response = await request(app)
         .post('/graphql')
+        .set('Authorization', getAuthHeader())
         .send({ query, variables: { definitionId: testDefinition.id } })
         .expect(200);
 
@@ -340,6 +350,7 @@ describe('GraphQL Run Query', () => {
 
       const response = await request(app)
         .post('/graphql')
+        .set('Authorization', getAuthHeader())
         .send({ query, variables: { status: 'COMPLETED' } })
         .expect(200);
 
@@ -368,6 +379,7 @@ describe('GraphQL Run Query', () => {
 
       const response = await request(app)
         .post('/graphql')
+        .set('Authorization', getAuthHeader())
         .send({
           query,
           variables: { definitionId: testDefinition.id, status: 'PENDING' },
@@ -395,6 +407,7 @@ describe('GraphQL Run Query', () => {
 
       const response = await request(app)
         .post('/graphql')
+        .set('Authorization', getAuthHeader())
         .send({ query, variables: { limit: 1 } })
         .expect(200);
 
@@ -414,12 +427,14 @@ describe('GraphQL Run Query', () => {
       // Get all runs first
       const allResponse = await request(app)
         .post('/graphql')
+        .set('Authorization', getAuthHeader())
         .send({ query, variables: { limit: 100, offset: 0 } })
         .expect(200);
 
       // Get with offset
       const offsetResponse = await request(app)
         .post('/graphql')
+        .set('Authorization', getAuthHeader())
         .send({ query, variables: { limit: 100, offset: 1 } })
         .expect(200);
 
@@ -443,6 +458,7 @@ describe('GraphQL Run Query', () => {
 
       const response = await request(app)
         .post('/graphql')
+        .set('Authorization', getAuthHeader())
         .send({ query, variables: { limit: 200 } })
         .expect(200);
 
@@ -503,6 +519,7 @@ describe('GraphQL Run Query', () => {
 
       const response = await request(app)
         .post('/graphql')
+        .set('Authorization', getAuthHeader())
         .send({ query, variables: { id: runWithExperiment.id } })
         .expect(200);
 
@@ -533,6 +550,7 @@ describe('GraphQL Run Query', () => {
 
       const response = await request(app)
         .post('/graphql')
+        .set('Authorization', getAuthHeader())
         .send({ query, variables: { id: runWithExperiment.id } })
         .expect(200);
 
@@ -560,6 +578,7 @@ describe('GraphQL Run Query', () => {
 
       const response = await request(app)
         .post('/graphql')
+        .set('Authorization', getAuthHeader())
         .send({ query, variables: { id: testRun.id } })
         .expect(200);
 
@@ -626,6 +645,7 @@ describe('GraphQL Run Query', () => {
 
       const response = await request(app)
         .post('/graphql')
+        .set('Authorization', getAuthHeader())
         .send({ query, variables: { id: runWithScenario.id } })
         .expect(200);
 

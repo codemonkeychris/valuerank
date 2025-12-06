@@ -3,6 +3,7 @@ import request from 'supertest';
 import { createServer } from '../../../src/server.js';
 import { db } from '@valuerank/db';
 import type { Definition } from '@valuerank/db';
+import { getAuthHeader } from '../../test-utils.js';
 
 const app = createServer();
 
@@ -64,6 +65,7 @@ describe('GraphQL Definition Query', () => {
 
       const response = await request(app)
         .post('/graphql')
+        .set('Authorization', getAuthHeader())
         .send({ query, variables: { id: testDefinition.id } });
 
       // Debug: log response if not 200
@@ -95,6 +97,7 @@ describe('GraphQL Definition Query', () => {
 
       const response = await request(app)
         .post('/graphql')
+        .set('Authorization', getAuthHeader())
         .send({ query, variables: { id: 'nonexistent-id' } })
         .expect(200);
 
@@ -118,6 +121,7 @@ describe('GraphQL Definition Query', () => {
 
       const response = await request(app)
         .post('/graphql')
+        .set('Authorization', getAuthHeader())
         .send({ query, variables: { id: testDefinition.id } })
         .expect(200);
 
@@ -143,6 +147,7 @@ describe('GraphQL Definition Query', () => {
 
       const response = await request(app)
         .post('/graphql')
+        .set('Authorization', getAuthHeader())
         .send({ query, variables: { id: parentDefinition.id } })
         .expect(200);
 
@@ -165,6 +170,7 @@ describe('GraphQL Definition Query', () => {
 
       const response = await request(app)
         .post('/graphql')
+        .set('Authorization', getAuthHeader())
         .send({ query, variables: { id: testDefinition.id } })
         .expect(200);
 
@@ -190,6 +196,7 @@ describe('GraphQL Definition Query', () => {
 
       const response = await request(app)
         .post('/graphql')
+        .set('Authorization', getAuthHeader())
         .send({ query, variables: { id: childDefinition.id } })
         .expect(200);
 
@@ -217,6 +224,7 @@ describe('GraphQL Definition Query', () => {
 
       const response = await request(app)
         .post('/graphql')
+        .set('Authorization', getAuthHeader())
         .send({ query, variables: { id: childDefinition.id } })
         .expect(200);
 
@@ -250,6 +258,7 @@ describe('GraphQL Definition Query', () => {
 
       const response = await request(app)
         .post('/graphql')
+        .set('Authorization', getAuthHeader())
         .send({ query })
         .expect(200);
 
@@ -273,6 +282,7 @@ describe('GraphQL Definition Query', () => {
 
       const response = await request(app)
         .post('/graphql')
+        .set('Authorization', getAuthHeader())
         .send({ query, variables: { rootOnly: true } })
         .expect(200);
 
@@ -300,6 +310,7 @@ describe('GraphQL Definition Query', () => {
 
       const response = await request(app)
         .post('/graphql')
+        .set('Authorization', getAuthHeader())
         .send({ query, variables: { limit: 2 } })
         .expect(200);
 
@@ -319,11 +330,13 @@ describe('GraphQL Definition Query', () => {
       // Test that offset works by comparing result counts
       const noOffsetResponse = await request(app)
         .post('/graphql')
+        .set('Authorization', getAuthHeader())
         .send({ query, variables: { limit: 5, offset: 0 } })
         .expect(200);
 
       const withOffsetResponse = await request(app)
         .post('/graphql')
+        .set('Authorization', getAuthHeader())
         .send({ query, variables: { limit: 5, offset: 2 } })
         .expect(200);
 
@@ -345,6 +358,7 @@ describe('GraphQL Definition Query', () => {
 
       const response = await request(app)
         .post('/graphql')
+        .set('Authorization', getAuthHeader())
         .send({ query, variables: { limit: 200 } })
         .expect(200);
 
@@ -365,6 +379,7 @@ describe('GraphQL Definition Query', () => {
 
       const response = await request(app)
         .post('/graphql')
+        .set('Authorization', getAuthHeader())
         .send({ query, variables: { rootOnly: true, limit: 5 } })
         .expect(200);
 
