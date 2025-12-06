@@ -118,12 +118,12 @@
 
 ### Implementation for User Story 4
 
-- [ ] T042 [US4] Create runs(definitionId, experimentId, status, limit, offset) query in apps/api/src/graphql/queries/run.ts
-- [ ] T043 [US4] Add pagination args validation in apps/api/src/graphql/queries/run.ts
-- [ ] T044 [US4] Write integration test for runs list query in apps/api/tests/graphql/queries/run.test.ts
-- [ ] T045 [US4] Test status filter in apps/api/tests/graphql/queries/run.test.ts
-- [ ] T046 [US4] Test definitionId filter in apps/api/tests/graphql/queries/run.test.ts
-- [ ] T047 [US4] Test combined filters in apps/api/tests/graphql/queries/run.test.ts
+- [X] T042 [US4] Create runs(definitionId, experimentId, status, limit, offset) query in apps/api/src/graphql/queries/run.ts
+- [X] T043 [US4] Add pagination args validation in apps/api/src/graphql/queries/run.ts
+- [X] T044 [US4] Write integration test for runs list query in apps/api/tests/graphql/queries/run.test.ts
+- [X] T045 [US4] Test status filter in apps/api/tests/graphql/queries/run.test.ts
+- [X] T046 [US4] Test definitionId filter in apps/api/tests/graphql/queries/run.test.ts
+- [X] T047 [US4] Test combined filters in apps/api/tests/graphql/queries/run.test.ts
 
 **Checkpoint**: US4 complete - Can list and filter runs
 

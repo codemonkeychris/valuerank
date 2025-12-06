@@ -250,4 +250,204 @@ describe('GraphQL Run Query', () => {
       });
     });
   });
+
+  describe('runs(definitionId, experimentId, status, limit, offset)', () => {
+    let pendingRun: Run;
+    let otherDefinition: Definition;
+
+    beforeAll(async () => {
+      // Create another definition for filter testing
+      otherDefinition = await db.definition.create({
+        data: {
+          name: 'Other Definition',
+          content: { schema_version: 1, preamble: 'Other' },
+        },
+      });
+
+      // Create a pending run for the original definition
+      pendingRun = await db.run.create({
+        data: {
+          definitionId: testDefinition.id,
+          status: 'PENDING',
+          config: { models: ['gpt-4'] },
+        },
+      });
+    });
+
+    afterAll(async () => {
+      await db.run.deleteMany({ where: { id: pendingRun.id } });
+      await db.definition.deleteMany({ where: { id: otherDefinition.id } });
+    });
+
+    it('returns list of runs', async () => {
+      const query = `
+        query ListRuns {
+          runs {
+            id
+            status
+            definitionId
+          }
+        }
+      `;
+
+      const response = await request(app)
+        .post('/graphql')
+        .send({ query })
+        .expect(200);
+
+      expect(response.body.errors).toBeUndefined();
+      expect(Array.isArray(response.body.data.runs)).toBe(true);
+      // Should include our test runs
+      const ids = response.body.data.runs.map((r: { id: string }) => r.id);
+      expect(ids).toContain(testRun.id);
+    });
+
+    it('filters by definitionId', async () => {
+      const query = `
+        query ListRunsByDefinition($definitionId: String) {
+          runs(definitionId: $definitionId) {
+            id
+            definitionId
+          }
+        }
+      `;
+
+      const response = await request(app)
+        .post('/graphql')
+        .send({ query, variables: { definitionId: testDefinition.id } })
+        .expect(200);
+
+      expect(response.body.errors).toBeUndefined();
+      // All returned runs should be for our test definition
+      for (const run of response.body.data.runs) {
+        expect(run.definitionId).toBe(testDefinition.id);
+      }
+      // Should include both our test runs
+      const ids = response.body.data.runs.map((r: { id: string }) => r.id);
+      expect(ids).toContain(testRun.id);
+      expect(ids).toContain(pendingRun.id);
+    });
+
+    it('filters by status', async () => {
+      const query = `
+        query ListRunsByStatus($status: String) {
+          runs(status: $status) {
+            id
+            status
+          }
+        }
+      `;
+
+      const response = await request(app)
+        .post('/graphql')
+        .send({ query, variables: { status: 'COMPLETED' } })
+        .expect(200);
+
+      expect(response.body.errors).toBeUndefined();
+      // All returned runs should have COMPLETED status
+      for (const run of response.body.data.runs) {
+        expect(run.status).toBe('COMPLETED');
+      }
+      // Should include our completed test run
+      const ids = response.body.data.runs.map((r: { id: string }) => r.id);
+      expect(ids).toContain(testRun.id);
+      // Should NOT include our pending run
+      expect(ids).not.toContain(pendingRun.id);
+    });
+
+    it('combines definitionId and status filters', async () => {
+      const query = `
+        query ListRunsWithFilters($definitionId: String, $status: String) {
+          runs(definitionId: $definitionId, status: $status) {
+            id
+            status
+            definitionId
+          }
+        }
+      `;
+
+      const response = await request(app)
+        .post('/graphql')
+        .send({
+          query,
+          variables: { definitionId: testDefinition.id, status: 'PENDING' },
+        })
+        .expect(200);
+
+      expect(response.body.errors).toBeUndefined();
+      // Should only return the pending run for test definition
+      expect(response.body.data.runs).toHaveLength(1);
+      expect(response.body.data.runs[0]).toMatchObject({
+        id: pendingRun.id,
+        status: 'PENDING',
+        definitionId: testDefinition.id,
+      });
+    });
+
+    it('applies limit parameter', async () => {
+      const query = `
+        query ListRunsWithLimit($limit: Int) {
+          runs(limit: $limit) {
+            id
+          }
+        }
+      `;
+
+      const response = await request(app)
+        .post('/graphql')
+        .send({ query, variables: { limit: 1 } })
+        .expect(200);
+
+      expect(response.body.errors).toBeUndefined();
+      expect(response.body.data.runs.length).toBeLessThanOrEqual(1);
+    });
+
+    it('applies offset parameter', async () => {
+      const query = `
+        query ListRunsWithOffset($limit: Int, $offset: Int) {
+          runs(limit: $limit, offset: $offset) {
+            id
+          }
+        }
+      `;
+
+      // Get all runs first
+      const allResponse = await request(app)
+        .post('/graphql')
+        .send({ query, variables: { limit: 100, offset: 0 } })
+        .expect(200);
+
+      // Get with offset
+      const offsetResponse = await request(app)
+        .post('/graphql')
+        .send({ query, variables: { limit: 100, offset: 1 } })
+        .expect(200);
+
+      expect(offsetResponse.body.errors).toBeUndefined();
+      // Offset should skip at least one result
+      if (allResponse.body.data.runs.length > 1) {
+        expect(offsetResponse.body.data.runs.length).toBeLessThan(
+          allResponse.body.data.runs.length
+        );
+      }
+    });
+
+    it('enforces max limit of 100', async () => {
+      const query = `
+        query ListRunsExceedLimit($limit: Int) {
+          runs(limit: $limit) {
+            id
+          }
+        }
+      `;
+
+      const response = await request(app)
+        .post('/graphql')
+        .send({ query, variables: { limit: 200 } })
+        .expect(200);
+
+      expect(response.body.errors).toBeUndefined();
+      expect(response.body.data.runs.length).toBeLessThanOrEqual(100);
+    });
+  });
 });
