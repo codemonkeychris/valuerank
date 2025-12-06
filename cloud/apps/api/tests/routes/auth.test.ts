@@ -7,7 +7,7 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import request from 'supertest';
 import { createServer } from '../../src/server.js';
-import { hashPassword } from '../../src/auth/index.js';
+import { hashPassword, signToken } from '../../src/auth/index.js';
 
 // Mock the db module
 vi.mock('@valuerank/db', () => ({
@@ -216,6 +216,52 @@ describe('Auth Routes', () => {
       // exp should be ~24 hours from iat
       expect(decoded.exp - decoded.iat).toBeGreaterThanOrEqual(23 * 60 * 60);
       expect(decoded.exp - decoded.iat).toBeLessThanOrEqual(25 * 60 * 60);
+    });
+  });
+
+  describe('GET /api/auth/me', () => {
+    it('returns current user when authenticated', async () => {
+      const mockUser = {
+        id: 'user-123',
+        email: 'test@example.com',
+        name: 'Test User',
+        passwordHash: 'hash',
+        lastLoginAt: new Date('2024-01-01'),
+        createdAt: new Date('2024-01-01'),
+        updatedAt: new Date('2024-01-01'),
+      };
+
+      vi.mocked(db.user.findUnique).mockResolvedValue(mockUser);
+
+      const token = signToken({ id: 'user-123', email: 'test@example.com' });
+
+      const response = await request(app)
+        .get('/api/auth/me')
+        .set('Authorization', `Bearer ${token}`);
+
+      expect(response.status).toBe(200);
+      expect(response.body).toEqual({
+        id: 'user-123',
+        email: 'test@example.com',
+        name: 'Test User',
+        createdAt: mockUser.createdAt.toISOString(),
+        lastLoginAt: mockUser.lastLoginAt.toISOString(),
+      });
+    });
+
+    it('returns 401 when not authenticated', async () => {
+      const response = await request(app).get('/api/auth/me');
+
+      expect(response.status).toBe(401);
+      expect(response.body.message).toBe('Authentication required');
+    });
+
+    it('returns 401 for invalid token', async () => {
+      const response = await request(app)
+        .get('/api/auth/me')
+        .set('Authorization', 'Bearer invalid-token');
+
+      expect(response.status).toBe(401);
     });
   });
 

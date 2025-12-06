@@ -197,12 +197,12 @@ This phase creates the shared auth types, error classes, and service foundations
 
 **Purpose**: Integration testing, documentation, and final validation
 
-- [ ] T060 Add GET `/api/auth/me` endpoint in `apps/api/src/routes/auth.ts`
-- [ ] T061 [P] Run full test suite with coverage (`npm run test:coverage`)
-- [ ] T062 [P] Verify 80%+ coverage on auth modules
-- [ ] T063 Follow quickstart.md to validate all user stories manually
-- [ ] T064 Verify health endpoints remain unauthenticated
-- [ ] T065 Verify GraphQL introspection works without auth
+- [X] T060 Add GET `/api/auth/me` endpoint in `apps/api/src/routes/auth.ts`
+- [X] T061 [P] Run full test suite with coverage (`npm run test:coverage`)
+- [X] T062 [P] Verify 80%+ coverage on auth modules (88.14% achieved)
+- [X] T063 Follow quickstart.md to validate all user stories manually
+- [X] T064 Verify health endpoints remain unauthenticated
+- [X] T065 Verify GraphQL introspection works without auth
 
 **Checkpoint**: Stage 4 Authentication complete and validated
 

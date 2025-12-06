@@ -2,6 +2,7 @@
  * Authentication routes
  *
  * POST /api/auth/login - Authenticate with email/password, returns JWT
+ * GET /api/auth/me - Get current user info (requires auth)
  */
 
 import { Router } from 'express';
@@ -85,6 +86,43 @@ authRouter.post(
       };
 
       res.json(response);
+    } catch (err) {
+      next(err);
+    }
+  }
+);
+
+/**
+ * GET /api/auth/me
+ *
+ * Get current authenticated user info
+ * Requires valid JWT in Authorization header
+ */
+authRouter.get(
+  '/me',
+  async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+    try {
+      // Check if user is authenticated (set by authMiddleware)
+      if (!req.user) {
+        throw new AuthenticationError('Authentication required');
+      }
+
+      // Fetch fresh user data from database
+      const user = await db.user.findUnique({
+        where: { id: req.user.id },
+      });
+
+      if (!user) {
+        throw new AuthenticationError('User not found');
+      }
+
+      res.json({
+        id: user.id,
+        email: user.email,
+        name: user.name,
+        createdAt: user.createdAt,
+        lastLoginAt: user.lastLoginAt,
+      });
     } catch (err) {
       next(err);
     }
