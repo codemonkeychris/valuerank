@@ -107,13 +107,13 @@ This phase creates the shared auth types, error classes, and service foundations
 
 ### Implementation for User Story 4
 
-- [ ] T031 [US4] Create `apps/api/src/graphql/types/api-key.ts` - ApiKey and CreateApiKeyResult types
-- [ ] T032 [US4] Create `apps/api/src/graphql/mutations/api-key.ts` - createApiKey mutation
-- [ ] T033 [US4] Generate secure random key with vr_ prefix (32 alphanumeric chars)
-- [ ] T034 [US4] Store SHA-256 hash and key_prefix in database (never plaintext)
-- [ ] T035 [US4] Return full key only in mutation response
-- [ ] T036 [US4] Register api-key mutations in `apps/api/src/graphql/mutations/index.ts`
-- [ ] T037 [US4] Write tests in `apps/api/tests/graphql/mutations/api-key.test.ts`
+- [X] T031 [US4] Create `apps/api/src/graphql/types/api-key.ts` - ApiKey and CreateApiKeyResult types
+- [X] T032 [US4] Create `apps/api/src/graphql/mutations/api-key.ts` - createApiKey mutation
+- [X] T033 [US4] Generate secure random key with vr_ prefix (32 alphanumeric chars)
+- [X] T034 [US4] Store SHA-256 hash and key_prefix in database (never plaintext)
+- [X] T035 [US4] Return full key only in mutation response
+- [X] T036 [US4] Register api-key mutations in `apps/api/src/graphql/mutations/index.ts`
+- [X] T037 [US4] Write tests in `apps/api/tests/graphql/mutations/api-key.test.ts`
 
 **Checkpoint**: User Story 4 complete - API keys can be created
 

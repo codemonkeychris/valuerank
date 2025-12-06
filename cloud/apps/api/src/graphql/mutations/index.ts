@@ -2,3 +2,4 @@
 // Mutations are registered as a side effect of importing
 
 import './definition.js';
+import './api-key.js';
