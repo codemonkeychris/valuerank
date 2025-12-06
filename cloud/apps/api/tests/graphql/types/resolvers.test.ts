@@ -1,0 +1,149 @@
+import { describe, it, expect, beforeAll, afterAll } from 'vitest';
+import request from 'supertest';
+import { createServer } from '../../../src/server.js';
+import { db } from '@valuerank/db';
+import type { Definition, Run, Transcript, Scenario } from '@valuerank/db';
+
+const app = createServer();
+
+describe('GraphQL Type Resolvers', () => {
+  let testDefinition: Definition;
+  let testScenario: Scenario;
+  let testRun: Run;
+  let testTranscript: Transcript;
+
+  beforeAll(async () => {
+    // Create test definition
+    testDefinition = await db.definition.create({
+      data: {
+        name: 'Resolver Test Definition',
+        content: { schema_version: 1, preamble: 'Test' },
+      },
+    });
+
+    // Create test scenario
+    testScenario = await db.scenario.create({
+      data: {
+        definitionId: testDefinition.id,
+        name: 'Test Scenario',
+        content: { dilemma: 'Test content' },
+      },
+    });
+
+    // Create test run
+    testRun = await db.run.create({
+      data: {
+        definitionId: testDefinition.id,
+        status: 'COMPLETED',
+        config: { models: ['gpt-4'] },
+      },
+    });
+
+    // Create test transcript with scenario link
+    testTranscript = await db.transcript.create({
+      data: {
+        runId: testRun.id,
+        scenarioId: testScenario.id,
+        modelId: 'gpt-4',
+        content: { messages: [] },
+        turnCount: 1,
+        tokenCount: 100,
+        durationMs: 1000,
+      },
+    });
+  });
+
+  afterAll(async () => {
+    await db.transcript.deleteMany({ where: { id: testTranscript.id } });
+    await db.run.deleteMany({ where: { id: testRun.id } });
+    await db.scenario.deleteMany({ where: { id: testScenario.id } });
+    await db.definition.deleteMany({ where: { id: testDefinition.id } });
+  });
+
+  describe('Transcript resolvers', () => {
+    it('resolves transcript.run relationship', async () => {
+      const query = `
+        query GetRunWithTranscripts($id: ID!) {
+          run(id: $id) {
+            transcripts {
+              id
+              run {
+                id
+                status
+              }
+            }
+          }
+        }
+      `;
+
+      const response = await request(app)
+        .post('/graphql')
+        .send({ query, variables: { id: testRun.id } })
+        .expect(200);
+
+      expect(response.body.errors).toBeUndefined();
+      expect(response.body.data.run.transcripts[0].run).toMatchObject({
+        id: testRun.id,
+        status: 'COMPLETED',
+      });
+    });
+
+    it('resolves transcript.scenario relationship', async () => {
+      const query = `
+        query GetRunWithTranscripts($id: ID!) {
+          run(id: $id) {
+            transcripts {
+              id
+              scenario {
+                id
+                name
+              }
+            }
+          }
+        }
+      `;
+
+      const response = await request(app)
+        .post('/graphql')
+        .send({ query, variables: { id: testRun.id } })
+        .expect(200);
+
+      expect(response.body.errors).toBeUndefined();
+      expect(response.body.data.run.transcripts[0].scenario).toMatchObject({
+        id: testScenario.id,
+        name: 'Test Scenario',
+      });
+    });
+  });
+
+  describe('Scenario resolvers', () => {
+    it('resolves scenario.definition relationship', async () => {
+      const query = `
+        query GetRunWithTranscripts($id: ID!) {
+          run(id: $id) {
+            transcripts {
+              scenario {
+                id
+                definition {
+                  id
+                  name
+                }
+              }
+            }
+          }
+        }
+      `;
+
+      const response = await request(app)
+        .post('/graphql')
+        .send({ query, variables: { id: testRun.id } })
+        .expect(200);
+
+      expect(response.body.errors).toBeUndefined();
+      expect(response.body.data.run.transcripts[0].scenario.definition).toMatchObject({
+        id: testDefinition.id,
+        name: 'Resolver Test Definition',
+      });
+    });
+  });
+});

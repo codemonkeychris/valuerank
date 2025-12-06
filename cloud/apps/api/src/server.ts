@@ -45,7 +45,7 @@ export function createServer() {
 
   // GraphQL endpoint
   app.all('/graphql', (req, res) => {
-    yoga.handle(req, res);
+    void yoga.handle(req, res);
   });
 
   // Root

@@ -1,6 +1,6 @@
 import SchemaBuilder from '@pothos/core';
 import ValidationPlugin from '@pothos/plugin-validation';
-import { ZodError } from 'zod';
+import type { ZodError } from 'zod';
 import type { Context } from './context.js';
 
 // Builder configuration with type-safe scalars and plugins

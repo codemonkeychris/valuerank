@@ -1,5 +1,6 @@
 import { builder } from '../builder.js';
 import { db } from '@valuerank/db';
+import type { Prisma } from '@valuerank/db';
 import { DefinitionRef } from '../types/refs.js';
 
 const CURRENT_SCHEMA_VERSION = 1;
@@ -8,19 +9,15 @@ const CURRENT_SCHEMA_VERSION = 1;
  * Ensures content has schema_version field.
  * If not present, adds the current version.
  */
-function ensureSchemaVersion(content: unknown): Record<string, unknown> {
-  if (typeof content !== 'object' || content === null) {
-    throw new Error('Content must be an object');
-  }
-
-  const contentObj = content as Record<string, unknown>;
-
+function ensureSchemaVersion(
+  content: Record<string, unknown>
+): Prisma.InputJsonValue {
   // If schema_version exists, keep it; otherwise add current version
-  if (!('schema_version' in contentObj)) {
-    return { schema_version: CURRENT_SCHEMA_VERSION, ...contentObj };
+  if (!('schema_version' in content)) {
+    return { schema_version: CURRENT_SCHEMA_VERSION, ...content };
   }
 
-  return contentObj;
+  return content as Prisma.InputJsonValue;
 }
 
 // Input type for creating a definition
@@ -65,10 +62,10 @@ builder.mutationField('createDefinition', (t) =>
       }
 
       // Ensure schema_version is present
-      const processedContent = ensureSchemaVersion(content);
+      const processedContent = ensureSchemaVersion(content as Record<string, unknown>);
 
       // If parentId provided, verify it exists
-      if (parentId) {
+      if (parentId !== null && parentId !== undefined && parentId !== '') {
         const parent = await db.definition.findUnique({
           where: { id: parentId },
         });
@@ -137,17 +134,17 @@ builder.mutationField('forkDefinition', (t) =>
       }
 
       // Determine content: use provided content or inherit from parent
-      let finalContent: Record<string, unknown>;
+      let finalContent: Prisma.InputJsonValue;
 
       if (content !== null && content !== undefined) {
         // Validate provided content
         if (typeof content !== 'object' || Array.isArray(content)) {
           throw new Error('Content must be a JSON object');
         }
-        finalContent = ensureSchemaVersion(content);
+        finalContent = ensureSchemaVersion(content as Record<string, unknown>);
       } else {
         // Inherit from parent
-        finalContent = parent.content as Record<string, unknown>;
+        finalContent = parent.content as Prisma.InputJsonValue;
       }
 
       const definition = await db.definition.create({

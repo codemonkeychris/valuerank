@@ -2,7 +2,7 @@ import { describe, it, expect, beforeAll, afterAll } from 'vitest';
 import request from 'supertest';
 import { createServer } from '../../../src/server.js';
 import { db } from '@valuerank/db';
-import type { Definition, Run, Transcript } from '@valuerank/db';
+import type { Definition, Run, Transcript, Experiment, Scenario } from '@valuerank/db';
 
 const app = createServer();
 
@@ -448,6 +448,189 @@ describe('GraphQL Run Query', () => {
 
       expect(response.body.errors).toBeUndefined();
       expect(response.body.data.runs.length).toBeLessThanOrEqual(100);
+    });
+  });
+
+  describe('Run with experiment relationship', () => {
+    let experimentDef: Definition;
+    let experiment: Experiment;
+    let runWithExperiment: Run;
+
+    beforeAll(async () => {
+      experimentDef = await db.definition.create({
+        data: {
+          name: 'Experiment Test Def',
+          content: { schema_version: 1, preamble: 'Test' },
+        },
+      });
+
+      experiment = await db.experiment.create({
+        data: {
+          name: 'Test Experiment',
+          hypothesis: 'Testing experiment relationship',
+        },
+      });
+
+      runWithExperiment = await db.run.create({
+        data: {
+          definitionId: experimentDef.id,
+          experimentId: experiment.id,
+          status: 'COMPLETED',
+          config: { models: ['gpt-4'] },
+        },
+      });
+    });
+
+    afterAll(async () => {
+      await db.run.deleteMany({ where: { id: runWithExperiment.id } });
+      await db.experiment.deleteMany({ where: { id: experiment.id } });
+      await db.definition.deleteMany({ where: { id: experimentDef.id } });
+    });
+
+    it('resolves experiment relationship', async () => {
+      const query = `
+        query GetRunWithExperiment($id: ID!) {
+          run(id: $id) {
+            id
+            experiment {
+              id
+              name
+              hypothesis
+            }
+          }
+        }
+      `;
+
+      const response = await request(app)
+        .post('/graphql')
+        .send({ query, variables: { id: runWithExperiment.id } })
+        .expect(200);
+
+      expect(response.body.errors).toBeUndefined();
+      expect(response.body.data.run.experiment).toMatchObject({
+        id: experiment.id,
+        name: 'Test Experiment',
+        hypothesis: 'Testing experiment relationship',
+      });
+    });
+
+    it('resolves experiment runs and runCount', async () => {
+      const query = `
+        query GetRunWithExperimentRuns($id: ID!) {
+          run(id: $id) {
+            id
+            experiment {
+              id
+              runs {
+                id
+                status
+              }
+              runCount
+            }
+          }
+        }
+      `;
+
+      const response = await request(app)
+        .post('/graphql')
+        .send({ query, variables: { id: runWithExperiment.id } })
+        .expect(200);
+
+      expect(response.body.errors).toBeUndefined();
+      expect(response.body.data.run.experiment.runs).toContainEqual({
+        id: runWithExperiment.id,
+        status: 'COMPLETED',
+      });
+      expect(response.body.data.run.experiment.runCount).toBe(1);
+    });
+
+    it('returns null experiment for run without experiment', async () => {
+      // Use the testRun from outer scope which has no experiment
+      const query = `
+        query GetRunWithExperiment($id: ID!) {
+          run(id: $id) {
+            id
+            experimentId
+            experiment {
+              id
+            }
+          }
+        }
+      `;
+
+      const response = await request(app)
+        .post('/graphql')
+        .send({ query, variables: { id: testRun.id } })
+        .expect(200);
+
+      expect(response.body.errors).toBeUndefined();
+      expect(response.body.data.run.experimentId).toBeNull();
+      expect(response.body.data.run.experiment).toBeNull();
+    });
+  });
+
+  describe('Run selectedScenarios relationship', () => {
+    let scenarioDef: Definition;
+    let scenario: Scenario;
+    let runWithScenario: Run;
+
+    beforeAll(async () => {
+      scenarioDef = await db.definition.create({
+        data: {
+          name: 'Scenario Test Def',
+          content: { schema_version: 1, preamble: 'Test' },
+        },
+      });
+
+      scenario = await db.scenario.create({
+        data: {
+          definitionId: scenarioDef.id,
+          name: 'Test Scenario',
+          content: { dilemma: 'Test dilemma content' },
+        },
+      });
+
+      runWithScenario = await db.run.create({
+        data: {
+          definitionId: scenarioDef.id,
+          status: 'RUNNING',
+          config: { models: ['gpt-4'] },
+        },
+      });
+
+      // Link scenario to run
+      await db.runScenarioSelection.create({
+        data: {
+          runId: runWithScenario.id,
+          scenarioId: scenario.id,
+        },
+      });
+    });
+
+    afterAll(async () => {
+      await db.runScenarioSelection.deleteMany({ where: { runId: runWithScenario.id } });
+      await db.run.deleteMany({ where: { id: runWithScenario.id } });
+      await db.scenario.deleteMany({ where: { id: scenario.id } });
+      await db.definition.deleteMany({ where: { id: scenarioDef.id } });
+    });
+
+    it('resolves selectedScenarios', async () => {
+      const query = `
+        query GetRunWithScenarios($id: ID!) {
+          run(id: $id) {
+            id
+            selectedScenarios
+          }
+        }
+      `;
+
+      const response = await request(app)
+        .post('/graphql')
+        .send({ query, variables: { id: runWithScenario.id } })
+        .expect(200);
+
+      expect(response.body.errors).toBeUndefined();
+      expect(response.body.data.run.selectedScenarios).toContain(scenario.id);
     });
   });
 });

@@ -4,6 +4,7 @@ import { createDefinitionLoader } from './definition.js';
 import { createRunLoader } from './run.js';
 import { createTranscriptLoader, createTranscriptsByRunLoader } from './transcript.js';
 import { createScenarioLoader } from './scenario.js';
+import { createExperimentLoader } from './experiment.js';
 
 // DataLoader types
 export interface DataLoaders {
@@ -18,17 +19,12 @@ export interface DataLoaders {
 // Factory function - creates new DataLoader instances per request
 // Per-request instantiation prevents cache leakage between users
 export function createDataLoaders(): DataLoaders {
-  // Placeholder batch function for loaders not yet implemented
-  const placeholderBatchFn = async <T>(ids: readonly string[]): Promise<(T | null)[]> => {
-    return ids.map(() => null);
-  };
-
   return {
     definition: createDefinitionLoader(),
     run: createRunLoader(),
     transcript: createTranscriptLoader(),
     transcriptsByRun: createTranscriptsByRunLoader(),
     scenario: createScenarioLoader(),
-    experiment: new DataLoader<string, Experiment | null>(placeholderBatchFn),
+    experiment: createExperimentLoader(),
   };
 }

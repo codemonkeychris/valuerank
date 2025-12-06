@@ -195,10 +195,10 @@
 
 ### Implementation for User Story 8
 
-- [ ] T067 [US8] Configure GraphiQL in GraphQL Yoga (enabled in development only) in apps/api/src/graphql/index.ts
-- [ ] T068 [US8] Add environment check for NODE_ENV in playground config in apps/api/src/graphql/index.ts
-- [ ] T069 [US8] Manual test: verify playground loads at http://localhost:3001/graphql
-- [ ] T070 [US8] Manual test: verify schema introspection query works
+- [X] T067 [US8] Configure GraphiQL in GraphQL Yoga (enabled in development only) in apps/api/src/graphql/index.ts
+- [X] T068 [US8] Add environment check for NODE_ENV in playground config in apps/api/src/graphql/index.ts
+- [X] T069 [US8] Manual test: verify playground loads at http://localhost:3001/graphql
+- [X] T070 [US8] Manual test: verify schema introspection query works
 
 **Checkpoint**: US8 complete - Playground works in development
 
@@ -208,13 +208,13 @@
 
 **Purpose**: Final validation and documentation
 
-- [ ] T071 Run full test suite with coverage: `npm run test:coverage`
-- [ ] T072 Verify coverage meets 80% threshold for graphql/ directory
-- [ ] T073 [P] Run linting: `npm run lint`
-- [ ] T074 [P] Run type checking: `npm run typecheck`
-- [ ] T075 Execute all quickstart.md scenarios manually
-- [ ] T076 Update apps/api/package.json version if needed
-- [ ] T077 Mark Stage 3 complete in cloud/specs/high-level.md
+- [X] T071 Run full test suite with coverage: `npm run test:coverage`
+- [X] T072 Verify coverage meets 80% threshold for graphql/ directory
+- [X] T073 [P] Run linting: `npm run lint`
+- [X] T074 [P] Run type checking: `npm run typecheck`
+- [X] T075 Execute all quickstart.md scenarios manually
+- [X] T076 Update apps/api/package.json version if needed
+- [X] T077 Mark Stage 3 complete in cloud/specs/high-level.md
 
 **Checkpoint**: Stage 3 complete - All exit criteria verified
 

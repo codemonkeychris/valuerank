@@ -98,7 +98,7 @@
 
 ---
 
-## Stage 3: GraphQL API Foundation [ ]
+## Stage 3: GraphQL API Foundation [x]
 
 **Goal:** Set up the GraphQL server with Pothos (code-first), core types, and basic CRUD operations.
 
