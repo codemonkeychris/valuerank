@@ -8,8 +8,8 @@
   "scripts": {
     "dev": "turbo dev",
     "build": "turbo build",
-    "test": "turbo test",
-    "test:coverage": "turbo test:coverage",
+    "test": "npm run db:test:setup && turbo test",
+    "test:coverage": "npm run db:test:setup && turbo test:coverage",
     "lint": "turbo lint",
     "lint:fix": "turbo lint:fix",
     "typecheck": "turbo typecheck",
@@ -18,6 +18,8 @@
     "db:studio": "npm run studio --workspace=@valuerank/db",
     "db:push": "npm run push --workspace=@valuerank/db",
     "db:seed": "npx prisma db seed --schema=packages/db/prisma/schema.prisma",
+    "db:test:setup": "DATABASE_URL=postgresql://valuerank:valuerank@localhost:5433/valuerank_test npx prisma db push --schema=packages/db/prisma/schema.prisma --skip-generate",
+    "db:test:reset": "DATABASE_URL=postgresql://valuerank:valuerank@localhost:5433/valuerank_test npx prisma db push --schema=packages/db/prisma/schema.prisma --force-reset --skip-generate",
     "clean": "turbo clean && rm -rf node_modules"
   },
   "devDependencies": {

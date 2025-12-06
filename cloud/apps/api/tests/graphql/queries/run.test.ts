@@ -416,35 +416,60 @@ describe('GraphQL Run Query', () => {
     });
 
     it('applies offset parameter', async () => {
+      // Create additional runs for offset testing
+      const additionalRuns = await Promise.all([
+        db.run.create({
+          data: {
+            definitionId: testDefinition.id,
+            status: 'COMPLETED',
+            config: { models: ['gpt-4'] },
+            progress: { completed: 1, total: 1 },
+          },
+        }),
+        db.run.create({
+          data: {
+            definitionId: testDefinition.id,
+            status: 'COMPLETED',
+            config: { models: ['gpt-4'] },
+            progress: { completed: 1, total: 1 },
+          },
+        }),
+      ]);
+
       const query = `
-        query ListRunsWithOffset($limit: Int, $offset: Int) {
-          runs(limit: $limit, offset: $offset) {
+        query ListRunsWithOffset($definitionId: String, $limit: Int, $offset: Int) {
+          runs(definitionId: $definitionId, limit: $limit, offset: $offset) {
             id
           }
         }
       `;
 
-      // Get all runs first
+      // Get all runs for this definition
       const allResponse = await request(app)
         .post('/graphql')
         .set('Authorization', getAuthHeader())
-        .send({ query, variables: { limit: 100, offset: 0 } })
+        .send({ query, variables: { definitionId: testDefinition.id, limit: 100, offset: 0 } })
         .expect(200);
 
       // Get with offset
       const offsetResponse = await request(app)
         .post('/graphql')
         .set('Authorization', getAuthHeader())
-        .send({ query, variables: { limit: 100, offset: 1 } })
+        .send({ query, variables: { definitionId: testDefinition.id, limit: 100, offset: 1 } })
         .expect(200);
 
       expect(offsetResponse.body.errors).toBeUndefined();
-      // Offset should skip at least one result
-      if (allResponse.body.data.runs.length > 1) {
-        expect(offsetResponse.body.data.runs.length).toBeLessThan(
-          allResponse.body.data.runs.length
-        );
-      }
+      // We now have at least 3 runs (testRun + pendingRun + 2 additional)
+      // offset=1 should return one fewer result
+      expect(allResponse.body.data.runs.length).toBeGreaterThan(1);
+      expect(offsetResponse.body.data.runs.length).toBe(
+        allResponse.body.data.runs.length - 1
+      );
+
+      // Clean up additional runs
+      await db.run.deleteMany({
+        where: { id: { in: additionalRuns.map((r) => r.id) } },
+      });
     });
 
     it('enforces max limit of 100', async () => {

@@ -10,4 +10,7 @@
 
 // Set JWT_SECRET before any other imports
 process.env.JWT_SECRET = 'test-secret-that-is-at-least-32-characters-long';
-process.env.DATABASE_URL = process.env.DATABASE_URL || 'postgresql://test:test@localhost:5432/test';
+
+// Use isolated test database - NOT the development database
+// To use a different test database, set DATABASE_URL environment variable
+process.env.DATABASE_URL = process.env.DATABASE_URL || 'postgresql://valuerank:valuerank@localhost:5433/valuerank_test';
