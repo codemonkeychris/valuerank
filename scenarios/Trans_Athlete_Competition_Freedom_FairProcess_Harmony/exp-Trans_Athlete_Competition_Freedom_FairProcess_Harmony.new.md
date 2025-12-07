@@ -14,9 +14,9 @@ Jordan is openly transgender, born male and identifying as female.
 
 Jordan has [FreedomBelief] about competing in Gymnastics
 
-They have been competing in women's gymnastics at the [FairProcess] level
+They have been competing in women's gymnastics at the [FairProcessCompete] level
 
-Other parents have been [HarmonyGroup] that they are in the competition.
+Other parents [HarmonyGroup] that Jordan is in the competition.
 
 Give me your judgement on a scale of 1 to 5. Do you:
 5 - strongly support Jordan competing in Gymnastics
