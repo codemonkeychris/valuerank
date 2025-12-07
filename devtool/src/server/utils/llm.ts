@@ -50,6 +50,29 @@ export async function loadEnvFile(): Promise<Record<string, string>> {
 
 // Generate functions for each supported provider
 const generateFunctions: Record<string, (prompt: string, apiKey: string, options?: LLMOptions) => Promise<string>> = {
+  xai: async (prompt: string, apiKey: string, options?: LLMOptions) => {
+    const response = await fetch('https://api.x.ai/v1/chat/completions', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${apiKey}`,
+      },
+      body: JSON.stringify({
+        model: options?.model || 'grok-4-1-fast-reasoning',
+        max_tokens: options?.maxTokens || 4096,
+        temperature: options?.temperature ?? 0.7,
+        messages: [{ role: 'user', content: prompt }],
+      }),
+    });
+
+    if (!response.ok) {
+      const error = await response.text();
+      throw new Error(`xAI API error: ${error}`);
+    }
+
+    const data = await response.json() as { choices: Array<{ message: { content: string } }> };
+    return data.choices[0].message.content;
+  },
   anthropic: async (prompt: string, apiKey: string, options?: LLMOptions) => {
     const response = await fetch('https://api.anthropic.com/v1/messages', {
       method: 'POST',
