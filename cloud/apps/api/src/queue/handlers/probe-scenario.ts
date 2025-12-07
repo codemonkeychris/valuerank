@@ -1,40 +1,146 @@
 /**
- * Probe Scenario Handler (Stub)
+ * Probe Scenario Handler
  *
- * Handles probe_scenario jobs. Currently a stub that simulates work.
- * Real Python execution will be added in Stage 6.
+ * Handles probe_scenario jobs by executing Python probe worker
+ * and saving transcripts to database.
  */
 
+import path from 'path';
 import type * as PgBoss from 'pg-boss';
+import { db, Prisma } from '@valuerank/db';
 import { createLogger } from '@valuerank/shared';
 import type { ProbeScenarioJobData } from '../types.js';
 import { DEFAULT_JOB_OPTIONS } from '../types.js';
+import { spawnPython } from '../spawn.js';
 import { incrementCompleted, incrementFailed, isRunPaused, isRunTerminal } from '../../services/run/index.js';
+import { createTranscript, validateTranscript } from '../../services/transcript/index.js';
+import type { ProbeTranscript } from '../../services/transcript/index.js';
 
 const log = createLogger('queue:probe-scenario');
-
-// Configurable delay for stub simulation (ms)
-const STUB_DELAY_MS = parseInt(process.env.STUB_JOB_DELAY_MS ?? '100', 10);
-
-// Test failure injection: set FAIL_MODEL_ID to trigger failures
-const FAIL_MODEL_ID = process.env.FAIL_MODEL_ID ?? 'fail-test-model';
 
 // Retry limit from job options (default 3)
 const RETRY_LIMIT = DEFAULT_JOB_OPTIONS['probe_scenario'].retryLimit ?? 3;
 
+// Python worker paths (relative to cloud/ directory)
+const PROBE_WORKER_PATH = 'workers/probe.py';
+const HEALTH_CHECK_PATH = 'workers/health_check.py';
+
+// Health check cache - verified once per process lifetime
+let healthCheckDone = false;
+let healthCheckPromise: Promise<void> | null = null;
+
+/**
+ * Health check output structure.
+ */
+type HealthCheckOutput = {
+  success: boolean;
+  health?: {
+    pythonVersion: string;
+    packages: Record<string, string>;
+    apiKeys: Record<string, boolean>;
+    warnings: string[];
+  };
+  error?: { message: string; code: string; retryable: boolean };
+};
+
+/**
+ * Run health check on first probe job (lazy initialization).
+ * Caches result to avoid repeated checks.
+ */
+async function ensureHealthCheck(): Promise<void> {
+  // Already verified
+  if (healthCheckDone) {
+    return;
+  }
+
+  // Health check in progress - wait for it
+  if (healthCheckPromise) {
+    return healthCheckPromise;
+  }
+
+  // Start health check
+  healthCheckPromise = (async () => {
+    log.info('Running Python worker health check');
+
+    const result = await spawnPython<Record<string, never>, HealthCheckOutput>(
+      HEALTH_CHECK_PATH,
+      {},
+      { cwd: path.resolve(process.cwd(), '..'), timeout: 10000 }
+    );
+
+    if (!result.success) {
+      log.error({ error: result.error, stderr: result.stderr }, 'Health check failed');
+      throw new Error(`Python health check failed: ${result.error}`);
+    }
+
+    const output = result.data;
+    if (!output.success) {
+      log.error({ error: output.error }, 'Health check returned error');
+      throw new Error(`Python health check error: ${output.error?.message}`);
+    }
+
+    // Log health status
+    const health = output.health;
+    if (health) {
+      log.info(
+        {
+          pythonVersion: health.pythonVersion,
+          packages: Object.keys(health.packages).length,
+          apiKeys: Object.fromEntries(
+            Object.entries(health.apiKeys).filter(([, v]) => v)
+          ),
+        },
+        'Python worker health check passed'
+      );
+
+      // Log warnings
+      for (const warning of health.warnings) {
+        log.warn({ warning }, 'Python worker health warning');
+      }
+    }
+
+    healthCheckDone = true;
+  })();
+
+  return healthCheckPromise;
+}
+
+/**
+ * Reset health check cache (for testing).
+ */
+export function resetHealthCheck(): void {
+  healthCheckDone = false;
+  healthCheckPromise = null;
+}
+
+/**
+ * Python worker input structure.
+ */
+type ProbeWorkerInput = {
+  runId: string;
+  scenarioId: string;
+  modelId: string;
+  scenario: {
+    preamble: string;
+    prompt: string;
+    followups: Array<{ label: string; prompt: string }>;
+  };
+  config: {
+    temperature: number;
+    maxTokens: number;
+    maxTurns: number;
+  };
+};
+
+/**
+ * Python worker output structure.
+ */
+type ProbeWorkerOutput =
+  | { success: true; transcript: ProbeTranscript }
+  | { success: false; error: { message: string; code: string; retryable: boolean; details?: string } };
+
 /**
  * Checks if an error is retryable.
- *
- * Retryable errors:
- * - Network errors (ECONNREFUSED, ENOTFOUND, ETIMEDOUT, ECONNRESET)
- * - Rate limit errors (HTTP 429)
- * - Temporary server errors (HTTP 500, 502, 503, 504)
- *
- * Non-retryable errors:
- * - Validation errors
- * - Authentication errors (HTTP 401, 403)
- * - Not found errors (HTTP 404)
- * - Bad request errors (HTTP 400)
  */
 export function isRetryableError(error: unknown): boolean {
   if (!(error instanceof Error)) {
@@ -90,8 +196,71 @@ export function isRetryableError(error: unknown): boolean {
 }
 
 /**
+ * Fetch scenario content from database.
+ */
+async function fetchScenario(scenarioId: string) {
+  const scenario = await db.scenario.findUnique({
+    where: { id: scenarioId },
+    include: {
+      definition: {
+        select: {
+          id: true,
+          content: true,
+        },
+      },
+    },
+  });
+
+  if (!scenario) {
+    throw new Error(`Scenario not found: ${scenarioId}`);
+  }
+
+  return scenario;
+}
+
+/**
+ * Build Python worker input from scenario data.
+ */
+function buildWorkerInput(
+  runId: string,
+  scenarioId: string,
+  modelId: string,
+  scenarioContent: unknown,
+  definitionContent: unknown,
+  config: { temperature: number; maxTurns: number }
+): ProbeWorkerInput {
+  // Extract scenario fields (content is JSON in database)
+  const content = scenarioContent as Record<string, unknown>;
+  const definition = definitionContent as Record<string, unknown>;
+
+  // Get preamble from definition or scenario
+  const preamble = (content.preamble as string) || (definition.preamble as string) || '';
+
+  // Get prompt from scenario
+  const prompt = (content.prompt as string) || '';
+
+  // Get followups from scenario
+  const followups = (content.followups as Array<{ label: string; prompt: string }>) || [];
+
+  return {
+    runId,
+    scenarioId,
+    modelId,
+    scenario: {
+      preamble,
+      prompt,
+      followups,
+    },
+    config: {
+      temperature: config.temperature,
+      maxTokens: 1024, // Default max tokens
+      maxTurns: config.maxTurns,
+    },
+  };
+}
+
+/**
  * Creates a handler for probe_scenario jobs.
- * Returns a function that processes a batch of jobs.
  */
 export function createProbeScenarioHandler(): PgBoss.WorkHandler<ProbeScenarioJobData> {
   return async (jobs: PgBoss.Job<ProbeScenarioJobData>[]) => {
@@ -108,51 +277,91 @@ export function createProbeScenarioHandler(): PgBoss.WorkHandler<ProbeScenarioJo
         // Check if run is in a terminal state (completed/cancelled) - skip processing
         if (await isRunTerminal(runId)) {
           log.info({ jobId, runId }, 'Skipping job - run is in terminal state');
-          return; // Complete job without doing work
+          return;
         }
 
         // Check if run is paused - defer job for later
         if (await isRunPaused(runId)) {
           log.info({ jobId, runId }, 'Deferring job - run is paused');
-          // Throw a special error to trigger retry after delay
           throw new Error('RUN_PAUSED: Job deferred because run is paused');
         }
 
-        // Simulate work with configurable delay
-        await new Promise((resolve) => setTimeout(resolve, STUB_DELAY_MS));
+        // Run health check on first job (lazy initialization)
+        await ensureHealthCheck();
 
-        // Test failure injection for retry testing
-        if (modelId === FAIL_MODEL_ID) {
-          log.warn({ jobId, runId, modelId }, 'Injecting test failure');
-          throw new Error(`Test failure injected for model: ${modelId}`);
-        }
+        // Fetch scenario and definition from database
+        const scenario = await fetchScenario(scenarioId);
 
-        // Mock transcript data that would come from Python worker
-        // TODO: Store transcript in database (Stage 6)
-        const mockTranscript = {
+        // Build input for Python worker
+        const workerInput = buildWorkerInput(
           runId,
           scenarioId,
           modelId,
-          turns: [
-            { role: 'system', content: 'Mock scenario prompt' },
-            { role: 'assistant', content: 'Mock model response' },
-          ],
-          completedAt: new Date().toISOString(),
-        };
+          scenario.content,
+          scenario.definition.content,
+          config
+        );
+
+        log.debug({ jobId, workerInput }, 'Calling Python probe worker');
+
+        // Execute Python probe worker
+        const result = await spawnPython<ProbeWorkerInput, ProbeWorkerOutput>(
+          PROBE_WORKER_PATH,
+          workerInput,
+          { cwd: path.resolve(process.cwd(), '..') } // cloud/ directory
+        );
+
+        // Handle spawn failure
+        if (!result.success) {
+          log.error({ jobId, runId, error: result.error, stderr: result.stderr }, 'Python spawn failed');
+          throw new Error(`Python worker failed: ${result.error}`);
+        }
+
+        // Handle worker failure
+        const output = result.data;
+        if (!output.success) {
+          const err = output.error;
+          log.warn({ jobId, runId, error: err }, 'Probe worker returned error');
+
+          // Use Python's retryable flag if available
+          if (!err.retryable) {
+            // Non-retryable error - increment failed count immediately
+            const { progress, status } = await incrementFailed(runId);
+            log.error({ jobId, runId, progress, status, error: err }, 'Probe job permanently failed');
+            return; // Complete job without retrying
+          }
+
+          // Retryable error - throw to trigger retry
+          throw new Error(`${err.code}: ${err.message}`);
+        }
+
+        // Validate transcript structure
+        if (!validateTranscript(output.transcript)) {
+          log.error({ jobId, runId }, 'Invalid transcript structure from Python worker');
+          throw new Error('Invalid transcript structure');
+        }
+
+        // Create transcript record
+        await createTranscript({
+          runId,
+          scenarioId,
+          modelId,
+          transcript: output.transcript,
+          definitionSnapshot: scenario.definition.content as Prisma.InputJsonValue,
+        });
 
         // Update progress - increment completed count
         const { progress, status } = await incrementCompleted(runId);
 
         log.info(
-          { jobId, runId, scenarioId, modelId, progress, status },
-          'Probe job completed (stub)'
+          { jobId, runId, scenarioId, modelId, progress, status, turns: output.transcript.turns.length },
+          'Probe job completed'
         );
       } catch (error) {
         // Check if this is a pause deferral (not a real failure)
         const isPauseDeferral = error instanceof Error && error.message.startsWith('RUN_PAUSED:');
 
         if (isPauseDeferral) {
-          // Re-throw to trigger retry later
           throw error;
         }
 
