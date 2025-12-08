@@ -48,12 +48,12 @@
 
 **Purpose**: Get code into main and create deployable fork
 
-- [ ] T013 Create PR: `cloud-planning` → `main` on `chrislawcodes/valuerank`
-- [ ] T014 Verify CI passes on PR (all tests green)
-- [ ] T015 Merge PR to main
-- [ ] T016 Fork `chrislawcodes/valuerank` to personal GitHub account
-- [ ] T017 Clone fork locally
-- [ ] T018 Add upstream remote: `git remote add upstream https://github.com/chrislawcodes/valuerank.git`
+- [X] T013 Create PR: `cloud-planning` → `main` on `chrislawcodes/valuerank`
+- [X] T014 Verify CI passes on PR (all tests green)
+- [X] T015 Merge PR to main
+- [X] T016 Fork `chrislawcodes/valuerank` to personal GitHub account
+- [X] T017 Clone fork locally
+- [X] T018 Add upstream remote: `git remote add upstream https://github.com/chrislawcodes/valuerank.git`
 
 **Checkpoint**: Fork ready with all deployment config in main
 
