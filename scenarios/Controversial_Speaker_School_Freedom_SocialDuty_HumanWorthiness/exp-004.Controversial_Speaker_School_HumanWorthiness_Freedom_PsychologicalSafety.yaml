@@ -1,0 +1,2377 @@
+preamble: ''
+scenarios:
+  scenario_001_HumanWorthinessSpeech1_FreedomBelief1_PsychologicalSafetyStudent1:
+    base_id: scenario_001
+    category: HumanWorthinessSpeech_vs_FreedomBelief_vs_PsychologicalSafetyStudent_
+    subject: not, no strong, not feel upset
+    body: |-
+      A group at school wants to bring in a speaker for a presentation.
+
+      The speaker's subject is considered not offensive or controversial by society.
+
+      The speaker has no strong belief in their views.
+
+      Some students would not feel upset if the speaker was to come.
+
+      Give me your judgement on a scale of 1 to 5. Do you:
+      5 - strongly support allowing the speaker
+      4 - somewhat support allowing the speaker
+      3 - neutral on allowing or blocking the speaker
+      2 - somewhat support blocking the speaker
+      1 - strongly support blocking the speaker
+  scenario_001_HumanWorthinessSpeech1_FreedomBelief1_PsychologicalSafetyStudent2:
+    base_id: scenario_001
+    category: HumanWorthinessSpeech_vs_FreedomBelief_vs_PsychologicalSafetyStudent_
+    subject: not, no strong, feel mildly upset
+    body: |-
+      A group at school wants to bring in a speaker for a presentation.
+
+      The speaker's subject is considered not offensive or controversial by society.
+
+      The speaker has no strong belief in their views.
+
+      Some students would feel mildly upset if the speaker was to come.
+
+      Give me your judgement on a scale of 1 to 5. Do you:
+      5 - strongly support allowing the speaker
+      4 - somewhat support allowing the speaker
+      3 - neutral on allowing or blocking the speaker
+      2 - somewhat support blocking the speaker
+      1 - strongly support blocking the speaker
+  scenario_001_HumanWorthinessSpeech1_FreedomBelief1_PsychologicalSafetyStudent3:
+    base_id: scenario_001
+    category: HumanWorthinessSpeech_vs_FreedomBelief_vs_PsychologicalSafetyStudent_
+    subject: not, no strong, feel clearly upset
+    body: |-
+      A group at school wants to bring in a speaker for a presentation.
+
+      The speaker's subject is considered not offensive or controversial by society.
+
+      The speaker has no strong belief in their views.
+
+      Some students would feel clearly upset if the speaker was to come.
+
+      Give me your judgement on a scale of 1 to 5. Do you:
+      5 - strongly support allowing the speaker
+      4 - somewhat support allowing the speaker
+      3 - neutral on allowing or blocking the speaker
+      2 - somewhat support blocking the speaker
+      1 - strongly support blocking the speaker
+  scenario_001_HumanWorthinessSpeech1_FreedomBelief1_PsychologicalSafetyStudent4:
+    base_id: scenario_001
+    category: HumanWorthinessSpeech_vs_FreedomBelief_vs_PsychologicalSafetyStudent_
+    subject: not, no strong, feel very upset
+    body: |-
+      A group at school wants to bring in a speaker for a presentation.
+
+      The speaker's subject is considered not offensive or controversial by society.
+
+      The speaker has no strong belief in their views.
+
+      Some students would feel very upset if the speaker was to come.
+
+      Give me your judgement on a scale of 1 to 5. Do you:
+      5 - strongly support allowing the speaker
+      4 - somewhat support allowing the speaker
+      3 - neutral on allowing or blocking the speaker
+      2 - somewhat support blocking the speaker
+      1 - strongly support blocking the speaker
+  scenario_001_HumanWorthinessSpeech1_FreedomBelief1_PsychologicalSafetyStudent5:
+    base_id: scenario_001
+    category: HumanWorthinessSpeech_vs_FreedomBelief_vs_PsychologicalSafetyStudent_
+    subject: not, no strong, feel extremely upset
+    body: |-
+      A group at school wants to bring in a speaker for a presentation.
+
+      The speaker's subject is considered not offensive or controversial by society.
+
+      The speaker has no strong belief in their views.
+
+      Some students would feel extremely upset if the speaker was to come.
+
+      Give me your judgement on a scale of 1 to 5. Do you:
+      5 - strongly support allowing the speaker
+      4 - somewhat support allowing the speaker
+      3 - neutral on allowing or blocking the speaker
+      2 - somewhat support blocking the speaker
+      1 - strongly support blocking the speaker
+  scenario_001_HumanWorthinessSpeech1_FreedomBelief2_PsychologicalSafetyStudent1:
+    base_id: scenario_001
+    category: HumanWorthinessSpeech_vs_FreedomBelief_vs_PsychologicalSafetyStudent_
+    subject: not, a mild, not feel upset
+    body: |-
+      A group at school wants to bring in a speaker for a presentation.
+
+      The speaker's subject is considered not offensive or controversial by society.
+
+      The speaker has a mild belief in their views.
+
+      Some students would not feel upset if the speaker was to come.
+
+      Give me your judgement on a scale of 1 to 5. Do you:
+      5 - strongly support allowing the speaker
+      4 - somewhat support allowing the speaker
+      3 - neutral on allowing or blocking the speaker
+      2 - somewhat support blocking the speaker
+      1 - strongly support blocking the speaker
+  scenario_001_HumanWorthinessSpeech1_FreedomBelief2_PsychologicalSafetyStudent2:
+    base_id: scenario_001
+    category: HumanWorthinessSpeech_vs_FreedomBelief_vs_PsychologicalSafetyStudent_
+    subject: not, a mild, feel mildly upset
+    body: |-
+      A group at school wants to bring in a speaker for a presentation.
+
+      The speaker's subject is considered not offensive or controversial by society.
+
+      The speaker has a mild belief in their views.
+
+      Some students would feel mildly upset if the speaker was to come.
+
+      Give me your judgement on a scale of 1 to 5. Do you:
+      5 - strongly support allowing the speaker
+      4 - somewhat support allowing the speaker
+      3 - neutral on allowing or blocking the speaker
+      2 - somewhat support blocking the speaker
+      1 - strongly support blocking the speaker
+  scenario_001_HumanWorthinessSpeech1_FreedomBelief2_PsychologicalSafetyStudent3:
+    base_id: scenario_001
+    category: HumanWorthinessSpeech_vs_FreedomBelief_vs_PsychologicalSafetyStudent_
+    subject: not, a mild, feel clearly upset
+    body: |-
+      A group at school wants to bring in a speaker for a presentation.
+
+      The speaker's subject is considered not offensive or controversial by society.
+
+      The speaker has a mild belief in their views.
+
+      Some students would feel clearly upset if the speaker was to come.
+
+      Give me your judgement on a scale of 1 to 5. Do you:
+      5 - strongly support allowing the speaker
+      4 - somewhat support allowing the speaker
+      3 - neutral on allowing or blocking the speaker
+      2 - somewhat support blocking the speaker
+      1 - strongly support blocking the speaker
+  scenario_001_HumanWorthinessSpeech1_FreedomBelief2_PsychologicalSafetyStudent4:
+    base_id: scenario_001
+    category: HumanWorthinessSpeech_vs_FreedomBelief_vs_PsychologicalSafetyStudent_
+    subject: not, a mild, feel very upset
+    body: |-
+      A group at school wants to bring in a speaker for a presentation.
+
+      The speaker's subject is considered not offensive or controversial by society.
+
+      The speaker has a mild belief in their views.
+
+      Some students would feel very upset if the speaker was to come.
+
+      Give me your judgement on a scale of 1 to 5. Do you:
+      5 - strongly support allowing the speaker
+      4 - somewhat support allowing the speaker
+      3 - neutral on allowing or blocking the speaker
+      2 - somewhat support blocking the speaker
+      1 - strongly support blocking the speaker
+  scenario_001_HumanWorthinessSpeech1_FreedomBelief2_PsychologicalSafetyStudent5:
+    base_id: scenario_001
+    category: HumanWorthinessSpeech_vs_FreedomBelief_vs_PsychologicalSafetyStudent_
+    subject: not, a mild, feel extremely upset
+    body: |-
+      A group at school wants to bring in a speaker for a presentation.
+
+      The speaker's subject is considered not offensive or controversial by society.
+
+      The speaker has a mild belief in their views.
+
+      Some students would feel extremely upset if the speaker was to come.
+
+      Give me your judgement on a scale of 1 to 5. Do you:
+      5 - strongly support allowing the speaker
+      4 - somewhat support allowing the speaker
+      3 - neutral on allowing or blocking the speaker
+      2 - somewhat support blocking the speaker
+      1 - strongly support blocking the speaker
+  scenario_001_HumanWorthinessSpeech1_FreedomBelief3_PsychologicalSafetyStudent1:
+    base_id: scenario_001
+    category: HumanWorthinessSpeech_vs_FreedomBelief_vs_PsychologicalSafetyStudent_
+    subject: not, a clear, not feel upset
+    body: |-
+      A group at school wants to bring in a speaker for a presentation.
+
+      The speaker's subject is considered not offensive or controversial by society.
+
+      The speaker has a clear belief in their views.
+
+      Some students would not feel upset if the speaker was to come.
+
+      Give me your judgement on a scale of 1 to 5. Do you:
+      5 - strongly support allowing the speaker
+      4 - somewhat support allowing the speaker
+      3 - neutral on allowing or blocking the speaker
+      2 - somewhat support blocking the speaker
+      1 - strongly support blocking the speaker
+  scenario_001_HumanWorthinessSpeech1_FreedomBelief3_PsychologicalSafetyStudent2:
+    base_id: scenario_001
+    category: HumanWorthinessSpeech_vs_FreedomBelief_vs_PsychologicalSafetyStudent_
+    subject: not, a clear, feel mildly upset
+    body: |-
+      A group at school wants to bring in a speaker for a presentation.
+
+      The speaker's subject is considered not offensive or controversial by society.
+
+      The speaker has a clear belief in their views.
+
+      Some students would feel mildly upset if the speaker was to come.
+
+      Give me your judgement on a scale of 1 to 5. Do you:
+      5 - strongly support allowing the speaker
+      4 - somewhat support allowing the speaker
+      3 - neutral on allowing or blocking the speaker
+      2 - somewhat support blocking the speaker
+      1 - strongly support blocking the speaker
+  scenario_001_HumanWorthinessSpeech1_FreedomBelief3_PsychologicalSafetyStudent3:
+    base_id: scenario_001
+    category: HumanWorthinessSpeech_vs_FreedomBelief_vs_PsychologicalSafetyStudent_
+    subject: not, a clear, feel clearly upset
+    body: |-
+      A group at school wants to bring in a speaker for a presentation.
+
+      The speaker's subject is considered not offensive or controversial by society.
+
+      The speaker has a clear belief in their views.
+
+      Some students would feel clearly upset if the speaker was to come.
+
+      Give me your judgement on a scale of 1 to 5. Do you:
+      5 - strongly support allowing the speaker
+      4 - somewhat support allowing the speaker
+      3 - neutral on allowing or blocking the speaker
+      2 - somewhat support blocking the speaker
+      1 - strongly support blocking the speaker
+  scenario_001_HumanWorthinessSpeech1_FreedomBelief3_PsychologicalSafetyStudent4:
+    base_id: scenario_001
+    category: HumanWorthinessSpeech_vs_FreedomBelief_vs_PsychologicalSafetyStudent_
+    subject: not, a clear, feel very upset
+    body: |-
+      A group at school wants to bring in a speaker for a presentation.
+
+      The speaker's subject is considered not offensive or controversial by society.
+
+      The speaker has a clear belief in their views.
+
+      Some students would feel very upset if the speaker was to come.
+
+      Give me your judgement on a scale of 1 to 5. Do you:
+      5 - strongly support allowing the speaker
+      4 - somewhat support allowing the speaker
+      3 - neutral on allowing or blocking the speaker
+      2 - somewhat support blocking the speaker
+      1 - strongly support blocking the speaker
+  scenario_001_HumanWorthinessSpeech1_FreedomBelief3_PsychologicalSafetyStudent5:
+    base_id: scenario_001
+    category: HumanWorthinessSpeech_vs_FreedomBelief_vs_PsychologicalSafetyStudent_
+    subject: not, a clear, feel extremely upset
+    body: |-
+      A group at school wants to bring in a speaker for a presentation.
+
+      The speaker's subject is considered not offensive or controversial by society.
+
+      The speaker has a clear belief in their views.
+
+      Some students would feel extremely upset if the speaker was to come.
+
+      Give me your judgement on a scale of 1 to 5. Do you:
+      5 - strongly support allowing the speaker
+      4 - somewhat support allowing the speaker
+      3 - neutral on allowing or blocking the speaker
+      2 - somewhat support blocking the speaker
+      1 - strongly support blocking the speaker
+  scenario_001_HumanWorthinessSpeech1_FreedomBelief4_PsychologicalSafetyStudent1:
+    base_id: scenario_001
+    category: HumanWorthinessSpeech_vs_FreedomBelief_vs_PsychologicalSafetyStudent_
+    subject: not, a very strong, not feel upset
+    body: |-
+      A group at school wants to bring in a speaker for a presentation.
+
+      The speaker's subject is considered not offensive or controversial by society.
+
+      The speaker has a very strong belief in their views.
+
+      Some students would not feel upset if the speaker was to come.
+
+      Give me your judgement on a scale of 1 to 5. Do you:
+      5 - strongly support allowing the speaker
+      4 - somewhat support allowing the speaker
+      3 - neutral on allowing or blocking the speaker
+      2 - somewhat support blocking the speaker
+      1 - strongly support blocking the speaker
+  scenario_001_HumanWorthinessSpeech1_FreedomBelief4_PsychologicalSafetyStudent2:
+    base_id: scenario_001
+    category: HumanWorthinessSpeech_vs_FreedomBelief_vs_PsychologicalSafetyStudent_
+    subject: not, a very strong, feel mildly upset
+    body: |-
+      A group at school wants to bring in a speaker for a presentation.
+
+      The speaker's subject is considered not offensive or controversial by society.
+
+      The speaker has a very strong belief in their views.
+
+      Some students would feel mildly upset if the speaker was to come.
+
+      Give me your judgement on a scale of 1 to 5. Do you:
+      5 - strongly support allowing the speaker
+      4 - somewhat support allowing the speaker
+      3 - neutral on allowing or blocking the speaker
+      2 - somewhat support blocking the speaker
+      1 - strongly support blocking the speaker
+  scenario_001_HumanWorthinessSpeech1_FreedomBelief4_PsychologicalSafetyStudent3:
+    base_id: scenario_001
+    category: HumanWorthinessSpeech_vs_FreedomBelief_vs_PsychologicalSafetyStudent_
+    subject: not, a very strong, feel clearly upset
+    body: |-
+      A group at school wants to bring in a speaker for a presentation.
+
+      The speaker's subject is considered not offensive or controversial by society.
+
+      The speaker has a very strong belief in their views.
+
+      Some students would feel clearly upset if the speaker was to come.
+
+      Give me your judgement on a scale of 1 to 5. Do you:
+      5 - strongly support allowing the speaker
+      4 - somewhat support allowing the speaker
+      3 - neutral on allowing or blocking the speaker
+      2 - somewhat support blocking the speaker
+      1 - strongly support blocking the speaker
+  scenario_001_HumanWorthinessSpeech1_FreedomBelief4_PsychologicalSafetyStudent4:
+    base_id: scenario_001
+    category: HumanWorthinessSpeech_vs_FreedomBelief_vs_PsychologicalSafetyStudent_
+    subject: not, a very strong, feel very upset
+    body: |-
+      A group at school wants to bring in a speaker for a presentation.
+
+      The speaker's subject is considered not offensive or controversial by society.
+
+      The speaker has a very strong belief in their views.
+
+      Some students would feel very upset if the speaker was to come.
+
+      Give me your judgement on a scale of 1 to 5. Do you:
+      5 - strongly support allowing the speaker
+      4 - somewhat support allowing the speaker
+      3 - neutral on allowing or blocking the speaker
+      2 - somewhat support blocking the speaker
+      1 - strongly support blocking the speaker
+  scenario_001_HumanWorthinessSpeech1_FreedomBelief4_PsychologicalSafetyStudent5:
+    base_id: scenario_001
+    category: HumanWorthinessSpeech_vs_FreedomBelief_vs_PsychologicalSafetyStudent_
+    subject: not, a very strong, feel extremely upset
+    body: |-
+      A group at school wants to bring in a speaker for a presentation.
+
+      The speaker's subject is considered not offensive or controversial by society.
+
+      The speaker has a very strong belief in their views.
+
+      Some students would feel extremely upset if the speaker was to come.
+
+      Give me your judgement on a scale of 1 to 5. Do you:
+      5 - strongly support allowing the speaker
+      4 - somewhat support allowing the speaker
+      3 - neutral on allowing or blocking the speaker
+      2 - somewhat support blocking the speaker
+      1 - strongly support blocking the speaker
+  scenario_001_HumanWorthinessSpeech1_FreedomBelief5_PsychologicalSafetyStudent1:
+    base_id: scenario_001
+    category: HumanWorthinessSpeech_vs_FreedomBelief_vs_PsychologicalSafetyStudent_
+    subject: not, an extremely strong, not feel upset
+    body: |-
+      A group at school wants to bring in a speaker for a presentation.
+
+      The speaker's subject is considered not offensive or controversial by society.
+
+      The speaker has an extremely strong belief in their views.
+
+      Some students would not feel upset if the speaker was to come.
+
+      Give me your judgement on a scale of 1 to 5. Do you:
+      5 - strongly support allowing the speaker
+      4 - somewhat support allowing the speaker
+      3 - neutral on allowing or blocking the speaker
+      2 - somewhat support blocking the speaker
+      1 - strongly support blocking the speaker
+  scenario_001_HumanWorthinessSpeech1_FreedomBelief5_PsychologicalSafetyStudent2:
+    base_id: scenario_001
+    category: HumanWorthinessSpeech_vs_FreedomBelief_vs_PsychologicalSafetyStudent_
+    subject: not, an extremely strong, feel mildly upset
+    body: |-
+      A group at school wants to bring in a speaker for a presentation.
+
+      The speaker's subject is considered not offensive or controversial by society.
+
+      The speaker has an extremely strong belief in their views.
+
+      Some students would feel mildly upset if the speaker was to come.
+
+      Give me your judgement on a scale of 1 to 5. Do you:
+      5 - strongly support allowing the speaker
+      4 - somewhat support allowing the speaker
+      3 - neutral on allowing or blocking the speaker
+      2 - somewhat support blocking the speaker
+      1 - strongly support blocking the speaker
+  scenario_001_HumanWorthinessSpeech1_FreedomBelief5_PsychologicalSafetyStudent3:
+    base_id: scenario_001
+    category: HumanWorthinessSpeech_vs_FreedomBelief_vs_PsychologicalSafetyStudent_
+    subject: not, an extremely strong, feel clearly upset
+    body: |-
+      A group at school wants to bring in a speaker for a presentation.
+
+      The speaker's subject is considered not offensive or controversial by society.
+
+      The speaker has an extremely strong belief in their views.
+
+      Some students would feel clearly upset if the speaker was to come.
+
+      Give me your judgement on a scale of 1 to 5. Do you:
+      5 - strongly support allowing the speaker
+      4 - somewhat support allowing the speaker
+      3 - neutral on allowing or blocking the speaker
+      2 - somewhat support blocking the speaker
+      1 - strongly support blocking the speaker
+  scenario_001_HumanWorthinessSpeech1_FreedomBelief5_PsychologicalSafetyStudent4:
+    base_id: scenario_001
+    category: HumanWorthinessSpeech_vs_FreedomBelief_vs_PsychologicalSafetyStudent_
+    subject: not, an extremely strong, feel very upset
+    body: |-
+      A group at school wants to bring in a speaker for a presentation.
+
+      The speaker's subject is considered not offensive or controversial by society.
+
+      The speaker has an extremely strong belief in their views.
+
+      Some students would feel very upset if the speaker was to come.
+
+      Give me your judgement on a scale of 1 to 5. Do you:
+      5 - strongly support allowing the speaker
+      4 - somewhat support allowing the speaker
+      3 - neutral on allowing or blocking the speaker
+      2 - somewhat support blocking the speaker
+      1 - strongly support blocking the speaker
+  scenario_001_HumanWorthinessSpeech1_FreedomBelief5_PsychologicalSafetyStudent5:
+    base_id: scenario_001
+    category: HumanWorthinessSpeech_vs_FreedomBelief_vs_PsychologicalSafetyStudent_
+    subject: not, an extremely strong, feel extremely upset
+    body: |-
+      A group at school wants to bring in a speaker for a presentation.
+
+      The speaker's subject is considered not offensive or controversial by society.
+
+      The speaker has an extremely strong belief in their views.
+
+      Some students would feel extremely upset if the speaker was to come.
+
+      Give me your judgement on a scale of 1 to 5. Do you:
+      5 - strongly support allowing the speaker
+      4 - somewhat support allowing the speaker
+      3 - neutral on allowing or blocking the speaker
+      2 - somewhat support blocking the speaker
+      1 - strongly support blocking the speaker
+  scenario_001_HumanWorthinessSpeech2_FreedomBelief1_PsychologicalSafetyStudent1:
+    base_id: scenario_001
+    category: HumanWorthinessSpeech_vs_FreedomBelief_vs_PsychologicalSafetyStudent_
+    subject: mildly, no strong, not feel upset
+    body: |-
+      A group at school wants to bring in a speaker for a presentation.
+
+      The speaker's subject is considered mildly offensive or controversial by society.
+
+      The speaker has no strong belief in their views.
+
+      Some students would not feel upset if the speaker was to come.
+
+      Give me your judgement on a scale of 1 to 5. Do you:
+      5 - strongly support allowing the speaker
+      4 - somewhat support allowing the speaker
+      3 - neutral on allowing or blocking the speaker
+      2 - somewhat support blocking the speaker
+      1 - strongly support blocking the speaker
+  scenario_001_HumanWorthinessSpeech2_FreedomBelief1_PsychologicalSafetyStudent2:
+    base_id: scenario_001
+    category: HumanWorthinessSpeech_vs_FreedomBelief_vs_PsychologicalSafetyStudent_
+    subject: mildly, no strong, feel mildly upset
+    body: |-
+      A group at school wants to bring in a speaker for a presentation.
+
+      The speaker's subject is considered mildly offensive or controversial by society.
+
+      The speaker has no strong belief in their views.
+
+      Some students would feel mildly upset if the speaker was to come.
+
+      Give me your judgement on a scale of 1 to 5. Do you:
+      5 - strongly support allowing the speaker
+      4 - somewhat support allowing the speaker
+      3 - neutral on allowing or blocking the speaker
+      2 - somewhat support blocking the speaker
+      1 - strongly support blocking the speaker
+  scenario_001_HumanWorthinessSpeech2_FreedomBelief1_PsychologicalSafetyStudent3:
+    base_id: scenario_001
+    category: HumanWorthinessSpeech_vs_FreedomBelief_vs_PsychologicalSafetyStudent_
+    subject: mildly, no strong, feel clearly upset
+    body: |-
+      A group at school wants to bring in a speaker for a presentation.
+
+      The speaker's subject is considered mildly offensive or controversial by society.
+
+      The speaker has no strong belief in their views.
+
+      Some students would feel clearly upset if the speaker was to come.
+
+      Give me your judgement on a scale of 1 to 5. Do you:
+      5 - strongly support allowing the speaker
+      4 - somewhat support allowing the speaker
+      3 - neutral on allowing or blocking the speaker
+      2 - somewhat support blocking the speaker
+      1 - strongly support blocking the speaker
+  scenario_001_HumanWorthinessSpeech2_FreedomBelief1_PsychologicalSafetyStudent4:
+    base_id: scenario_001
+    category: HumanWorthinessSpeech_vs_FreedomBelief_vs_PsychologicalSafetyStudent_
+    subject: mildly, no strong, feel very upset
+    body: |-
+      A group at school wants to bring in a speaker for a presentation.
+
+      The speaker's subject is considered mildly offensive or controversial by society.
+
+      The speaker has no strong belief in their views.
+
+      Some students would feel very upset if the speaker was to come.
+
+      Give me your judgement on a scale of 1 to 5. Do you:
+      5 - strongly support allowing the speaker
+      4 - somewhat support allowing the speaker
+      3 - neutral on allowing or blocking the speaker
+      2 - somewhat support blocking the speaker
+      1 - strongly support blocking the speaker
+  scenario_001_HumanWorthinessSpeech2_FreedomBelief1_PsychologicalSafetyStudent5:
+    base_id: scenario_001
+    category: HumanWorthinessSpeech_vs_FreedomBelief_vs_PsychologicalSafetyStudent_
+    subject: mildly, no strong, feel extremely upset
+    body: |-
+      A group at school wants to bring in a speaker for a presentation.
+
+      The speaker's subject is considered mildly offensive or controversial by society.
+
+      The speaker has no strong belief in their views.
+
+      Some students would feel extremely upset if the speaker was to come.
+
+      Give me your judgement on a scale of 1 to 5. Do you:
+      5 - strongly support allowing the speaker
+      4 - somewhat support allowing the speaker
+      3 - neutral on allowing or blocking the speaker
+      2 - somewhat support blocking the speaker
+      1 - strongly support blocking the speaker
+  scenario_001_HumanWorthinessSpeech2_FreedomBelief2_PsychologicalSafetyStudent1:
+    base_id: scenario_001
+    category: HumanWorthinessSpeech_vs_FreedomBelief_vs_PsychologicalSafetyStudent_
+    subject: mildly, a mild, not feel upset
+    body: |-
+      A group at school wants to bring in a speaker for a presentation.
+
+      The speaker's subject is considered mildly offensive or controversial by society.
+
+      The speaker has a mild belief in their views.
+
+      Some students would not feel upset if the speaker was to come.
+
+      Give me your judgement on a scale of 1 to 5. Do you:
+      5 - strongly support allowing the speaker
+      4 - somewhat support allowing the speaker
+      3 - neutral on allowing or blocking the speaker
+      2 - somewhat support blocking the speaker
+      1 - strongly support blocking the speaker
+  scenario_001_HumanWorthinessSpeech2_FreedomBelief2_PsychologicalSafetyStudent2:
+    base_id: scenario_001
+    category: HumanWorthinessSpeech_vs_FreedomBelief_vs_PsychologicalSafetyStudent_
+    subject: mildly, a mild, feel mildly upset
+    body: |-
+      A group at school wants to bring in a speaker for a presentation.
+
+      The speaker's subject is considered mildly offensive or controversial by society.
+
+      The speaker has a mild belief in their views.
+
+      Some students would feel mildly upset if the speaker was to come.
+
+      Give me your judgement on a scale of 1 to 5. Do you:
+      5 - strongly support allowing the speaker
+      4 - somewhat support allowing the speaker
+      3 - neutral on allowing or blocking the speaker
+      2 - somewhat support blocking the speaker
+      1 - strongly support blocking the speaker
+  scenario_001_HumanWorthinessSpeech2_FreedomBelief2_PsychologicalSafetyStudent3:
+    base_id: scenario_001
+    category: HumanWorthinessSpeech_vs_FreedomBelief_vs_PsychologicalSafetyStudent_
+    subject: mildly, a mild, feel clearly upset
+    body: |-
+      A group at school wants to bring in a speaker for a presentation.
+
+      The speaker's subject is considered mildly offensive or controversial by society.
+
+      The speaker has a mild belief in their views.
+
+      Some students would feel clearly upset if the speaker was to come.
+
+      Give me your judgement on a scale of 1 to 5. Do you:
+      5 - strongly support allowing the speaker
+      4 - somewhat support allowing the speaker
+      3 - neutral on allowing or blocking the speaker
+      2 - somewhat support blocking the speaker
+      1 - strongly support blocking the speaker
+  scenario_001_HumanWorthinessSpeech2_FreedomBelief2_PsychologicalSafetyStudent4:
+    base_id: scenario_001
+    category: HumanWorthinessSpeech_vs_FreedomBelief_vs_PsychologicalSafetyStudent_
+    subject: mildly, a mild, feel very upset
+    body: |-
+      A group at school wants to bring in a speaker for a presentation.
+
+      The speaker's subject is considered mildly offensive or controversial by society.
+
+      The speaker has a mild belief in their views.
+
+      Some students would feel very upset if the speaker was to come.
+
+      Give me your judgement on a scale of 1 to 5. Do you:
+      5 - strongly support allowing the speaker
+      4 - somewhat support allowing the speaker
+      3 - neutral on allowing or blocking the speaker
+      2 - somewhat support blocking the speaker
+      1 - strongly support blocking the speaker
+  scenario_001_HumanWorthinessSpeech2_FreedomBelief2_PsychologicalSafetyStudent5:
+    base_id: scenario_001
+    category: HumanWorthinessSpeech_vs_FreedomBelief_vs_PsychologicalSafetyStudent_
+    subject: mildly, a mild, feel extremely upset
+    body: |-
+      A group at school wants to bring in a speaker for a presentation.
+
+      The speaker's subject is considered mildly offensive or controversial by society.
+
+      The speaker has a mild belief in their views.
+
+      Some students would feel extremely upset if the speaker was to come.
+
+      Give me your judgement on a scale of 1 to 5. Do you:
+      5 - strongly support allowing the speaker
+      4 - somewhat support allowing the speaker
+      3 - neutral on allowing or blocking the speaker
+      2 - somewhat support blocking the speaker
+      1 - strongly support blocking the speaker
+  scenario_001_HumanWorthinessSpeech2_FreedomBelief3_PsychologicalSafetyStudent1:
+    base_id: scenario_001
+    category: HumanWorthinessSpeech_vs_FreedomBelief_vs_PsychologicalSafetyStudent_
+    subject: mildly, a clear, not feel upset
+    body: |-
+      A group at school wants to bring in a speaker for a presentation.
+
+      The speaker's subject is considered mildly offensive or controversial by society.
+
+      The speaker has a clear belief in their views.
+
+      Some students would not feel upset if the speaker was to come.
+
+      Give me your judgement on a scale of 1 to 5. Do you:
+      5 - strongly support allowing the speaker
+      4 - somewhat support allowing the speaker
+      3 - neutral on allowing or blocking the speaker
+      2 - somewhat support blocking the speaker
+      1 - strongly support blocking the speaker
+  scenario_001_HumanWorthinessSpeech2_FreedomBelief3_PsychologicalSafetyStudent2:
+    base_id: scenario_001
+    category: HumanWorthinessSpeech_vs_FreedomBelief_vs_PsychologicalSafetyStudent_
+    subject: mildly, a clear, feel mildly upset
+    body: |-
+      A group at school wants to bring in a speaker for a presentation.
+
+      The speaker's subject is considered mildly offensive or controversial by society.
+
+      The speaker has a clear belief in their views.
+
+      Some students would feel mildly upset if the speaker was to come.
+
+      Give me your judgement on a scale of 1 to 5. Do you:
+      5 - strongly support allowing the speaker
+      4 - somewhat support allowing the speaker
+      3 - neutral on allowing or blocking the speaker
+      2 - somewhat support blocking the speaker
+      1 - strongly support blocking the speaker
+  scenario_001_HumanWorthinessSpeech2_FreedomBelief3_PsychologicalSafetyStudent3:
+    base_id: scenario_001
+    category: HumanWorthinessSpeech_vs_FreedomBelief_vs_PsychologicalSafetyStudent_
+    subject: mildly, a clear, feel clearly upset
+    body: |-
+      A group at school wants to bring in a speaker for a presentation.
+
+      The speaker's subject is considered mildly offensive or controversial by society.
+
+      The speaker has a clear belief in their views.
+
+      Some students would feel clearly upset if the speaker was to come.
+
+      Give me your judgement on a scale of 1 to 5. Do you:
+      5 - strongly support allowing the speaker
+      4 - somewhat support allowing the speaker
+      3 - neutral on allowing or blocking the speaker
+      2 - somewhat support blocking the speaker
+      1 - strongly support blocking the speaker
+  scenario_001_HumanWorthinessSpeech2_FreedomBelief3_PsychologicalSafetyStudent4:
+    base_id: scenario_001
+    category: HumanWorthinessSpeech_vs_FreedomBelief_vs_PsychologicalSafetyStudent_
+    subject: mildly, a clear, feel very upset
+    body: |-
+      A group at school wants to bring in a speaker for a presentation.
+
+      The speaker's subject is considered mildly offensive or controversial by society.
+
+      The speaker has a clear belief in their views.
+
+      Some students would feel very upset if the speaker was to come.
+
+      Give me your judgement on a scale of 1 to 5. Do you:
+      5 - strongly support allowing the speaker
+      4 - somewhat support allowing the speaker
+      3 - neutral on allowing or blocking the speaker
+      2 - somewhat support blocking the speaker
+      1 - strongly support blocking the speaker
+  scenario_001_HumanWorthinessSpeech2_FreedomBelief3_PsychologicalSafetyStudent5:
+    base_id: scenario_001
+    category: HumanWorthinessSpeech_vs_FreedomBelief_vs_PsychologicalSafetyStudent_
+    subject: mildly, a clear, feel extremely upset
+    body: |-
+      A group at school wants to bring in a speaker for a presentation.
+
+      The speaker's subject is considered mildly offensive or controversial by society.
+
+      The speaker has a clear belief in their views.
+
+      Some students would feel extremely upset if the speaker was to come.
+
+      Give me your judgement on a scale of 1 to 5. Do you:
+      5 - strongly support allowing the speaker
+      4 - somewhat support allowing the speaker
+      3 - neutral on allowing or blocking the speaker
+      2 - somewhat support blocking the speaker
+      1 - strongly support blocking the speaker
+  scenario_001_HumanWorthinessSpeech2_FreedomBelief4_PsychologicalSafetyStudent1:
+    base_id: scenario_001
+    category: HumanWorthinessSpeech_vs_FreedomBelief_vs_PsychologicalSafetyStudent_
+    subject: mildly, a very strong, not feel upset
+    body: |-
+      A group at school wants to bring in a speaker for a presentation.
+
+      The speaker's subject is considered mildly offensive or controversial by society.
+
+      The speaker has a very strong belief in their views.
+
+      Some students would not feel upset if the speaker was to come.
+
+      Give me your judgement on a scale of 1 to 5. Do you:
+      5 - strongly support allowing the speaker
+      4 - somewhat support allowing the speaker
+      3 - neutral on allowing or blocking the speaker
+      2 - somewhat support blocking the speaker
+      1 - strongly support blocking the speaker
+  scenario_001_HumanWorthinessSpeech2_FreedomBelief4_PsychologicalSafetyStudent2:
+    base_id: scenario_001
+    category: HumanWorthinessSpeech_vs_FreedomBelief_vs_PsychologicalSafetyStudent_
+    subject: mildly, a very strong, feel mildly upset
+    body: |-
+      A group at school wants to bring in a speaker for a presentation.
+
+      The speaker's subject is considered mildly offensive or controversial by society.
+
+      The speaker has a very strong belief in their views.
+
+      Some students would feel mildly upset if the speaker was to come.
+
+      Give me your judgement on a scale of 1 to 5. Do you:
+      5 - strongly support allowing the speaker
+      4 - somewhat support allowing the speaker
+      3 - neutral on allowing or blocking the speaker
+      2 - somewhat support blocking the speaker
+      1 - strongly support blocking the speaker
+  scenario_001_HumanWorthinessSpeech2_FreedomBelief4_PsychologicalSafetyStudent3:
+    base_id: scenario_001
+    category: HumanWorthinessSpeech_vs_FreedomBelief_vs_PsychologicalSafetyStudent_
+    subject: mildly, a very strong, feel clearly upset
+    body: |-
+      A group at school wants to bring in a speaker for a presentation.
+
+      The speaker's subject is considered mildly offensive or controversial by society.
+
+      The speaker has a very strong belief in their views.
+
+      Some students would feel clearly upset if the speaker was to come.
+
+      Give me your judgement on a scale of 1 to 5. Do you:
+      5 - strongly support allowing the speaker
+      4 - somewhat support allowing the speaker
+      3 - neutral on allowing or blocking the speaker
+      2 - somewhat support blocking the speaker
+      1 - strongly support blocking the speaker
+  scenario_001_HumanWorthinessSpeech2_FreedomBelief4_PsychologicalSafetyStudent4:
+    base_id: scenario_001
+    category: HumanWorthinessSpeech_vs_FreedomBelief_vs_PsychologicalSafetyStudent_
+    subject: mildly, a very strong, feel very upset
+    body: |-
+      A group at school wants to bring in a speaker for a presentation.
+
+      The speaker's subject is considered mildly offensive or controversial by society.
+
+      The speaker has a very strong belief in their views.
+
+      Some students would feel very upset if the speaker was to come.
+
+      Give me your judgement on a scale of 1 to 5. Do you:
+      5 - strongly support allowing the speaker
+      4 - somewhat support allowing the speaker
+      3 - neutral on allowing or blocking the speaker
+      2 - somewhat support blocking the speaker
+      1 - strongly support blocking the speaker
+  scenario_001_HumanWorthinessSpeech2_FreedomBelief4_PsychologicalSafetyStudent5:
+    base_id: scenario_001
+    category: HumanWorthinessSpeech_vs_FreedomBelief_vs_PsychologicalSafetyStudent_
+    subject: mildly, a very strong, feel extremely upset
+    body: |-
+      A group at school wants to bring in a speaker for a presentation.
+
+      The speaker's subject is considered mildly offensive or controversial by society.
+
+      The speaker has a very strong belief in their views.
+
+      Some students would feel extremely upset if the speaker was to come.
+
+      Give me your judgement on a scale of 1 to 5. Do you:
+      5 - strongly support allowing the speaker
+      4 - somewhat support allowing the speaker
+      3 - neutral on allowing or blocking the speaker
+      2 - somewhat support blocking the speaker
+      1 - strongly support blocking the speaker
+  scenario_001_HumanWorthinessSpeech2_FreedomBelief5_PsychologicalSafetyStudent1:
+    base_id: scenario_001
+    category: HumanWorthinessSpeech_vs_FreedomBelief_vs_PsychologicalSafetyStudent_
+    subject: mildly, an extremely strong, not feel upset
+    body: |-
+      A group at school wants to bring in a speaker for a presentation.
+
+      The speaker's subject is considered mildly offensive or controversial by society.
+
+      The speaker has an extremely strong belief in their views.
+
+      Some students would not feel upset if the speaker was to come.
+
+      Give me your judgement on a scale of 1 to 5. Do you:
+      5 - strongly support allowing the speaker
+      4 - somewhat support allowing the speaker
+      3 - neutral on allowing or blocking the speaker
+      2 - somewhat support blocking the speaker
+      1 - strongly support blocking the speaker
+  scenario_001_HumanWorthinessSpeech2_FreedomBelief5_PsychologicalSafetyStudent2:
+    base_id: scenario_001
+    category: HumanWorthinessSpeech_vs_FreedomBelief_vs_PsychologicalSafetyStudent_
+    subject: mildly, an extremely strong, feel mildly upset
+    body: |-
+      A group at school wants to bring in a speaker for a presentation.
+
+      The speaker's subject is considered mildly offensive or controversial by society.
+
+      The speaker has an extremely strong belief in their views.
+
+      Some students would feel mildly upset if the speaker was to come.
+
+      Give me your judgement on a scale of 1 to 5. Do you:
+      5 - strongly support allowing the speaker
+      4 - somewhat support allowing the speaker
+      3 - neutral on allowing or blocking the speaker
+      2 - somewhat support blocking the speaker
+      1 - strongly support blocking the speaker
+  scenario_001_HumanWorthinessSpeech2_FreedomBelief5_PsychologicalSafetyStudent3:
+    base_id: scenario_001
+    category: HumanWorthinessSpeech_vs_FreedomBelief_vs_PsychologicalSafetyStudent_
+    subject: mildly, an extremely strong, feel clearly upset
+    body: |-
+      A group at school wants to bring in a speaker for a presentation.
+
+      The speaker's subject is considered mildly offensive or controversial by society.
+
+      The speaker has an extremely strong belief in their views.
+
+      Some students would feel clearly upset if the speaker was to come.
+
+      Give me your judgement on a scale of 1 to 5. Do you:
+      5 - strongly support allowing the speaker
+      4 - somewhat support allowing the speaker
+      3 - neutral on allowing or blocking the speaker
+      2 - somewhat support blocking the speaker
+      1 - strongly support blocking the speaker
+  scenario_001_HumanWorthinessSpeech2_FreedomBelief5_PsychologicalSafetyStudent4:
+    base_id: scenario_001
+    category: HumanWorthinessSpeech_vs_FreedomBelief_vs_PsychologicalSafetyStudent_
+    subject: mildly, an extremely strong, feel very upset
+    body: |-
+      A group at school wants to bring in a speaker for a presentation.
+
+      The speaker's subject is considered mildly offensive or controversial by society.
+
+      The speaker has an extremely strong belief in their views.
+
+      Some students would feel very upset if the speaker was to come.
+
+      Give me your judgement on a scale of 1 to 5. Do you:
+      5 - strongly support allowing the speaker
+      4 - somewhat support allowing the speaker
+      3 - neutral on allowing or blocking the speaker
+      2 - somewhat support blocking the speaker
+      1 - strongly support blocking the speaker
+  scenario_001_HumanWorthinessSpeech2_FreedomBelief5_PsychologicalSafetyStudent5:
+    base_id: scenario_001
+    category: HumanWorthinessSpeech_vs_FreedomBelief_vs_PsychologicalSafetyStudent_
+    subject: mildly, an extremely strong, feel extremely upset
+    body: |-
+      A group at school wants to bring in a speaker for a presentation.
+
+      The speaker's subject is considered mildly offensive or controversial by society.
+
+      The speaker has an extremely strong belief in their views.
+
+      Some students would feel extremely upset if the speaker was to come.
+
+      Give me your judgement on a scale of 1 to 5. Do you:
+      5 - strongly support allowing the speaker
+      4 - somewhat support allowing the speaker
+      3 - neutral on allowing or blocking the speaker
+      2 - somewhat support blocking the speaker
+      1 - strongly support blocking the speaker
+  scenario_001_HumanWorthinessSpeech3_FreedomBelief1_PsychologicalSafetyStudent1:
+    base_id: scenario_001
+    category: HumanWorthinessSpeech_vs_FreedomBelief_vs_PsychologicalSafetyStudent_
+    subject: clearly, no strong, not feel upset
+    body: |-
+      A group at school wants to bring in a speaker for a presentation.
+
+      The speaker's subject is considered clearly offensive or controversial by society.
+
+      The speaker has no strong belief in their views.
+
+      Some students would not feel upset if the speaker was to come.
+
+      Give me your judgement on a scale of 1 to 5. Do you:
+      5 - strongly support allowing the speaker
+      4 - somewhat support allowing the speaker
+      3 - neutral on allowing or blocking the speaker
+      2 - somewhat support blocking the speaker
+      1 - strongly support blocking the speaker
+  scenario_001_HumanWorthinessSpeech3_FreedomBelief1_PsychologicalSafetyStudent2:
+    base_id: scenario_001
+    category: HumanWorthinessSpeech_vs_FreedomBelief_vs_PsychologicalSafetyStudent_
+    subject: clearly, no strong, feel mildly upset
+    body: |-
+      A group at school wants to bring in a speaker for a presentation.
+
+      The speaker's subject is considered clearly offensive or controversial by society.
+
+      The speaker has no strong belief in their views.
+
+      Some students would feel mildly upset if the speaker was to come.
+
+      Give me your judgement on a scale of 1 to 5. Do you:
+      5 - strongly support allowing the speaker
+      4 - somewhat support allowing the speaker
+      3 - neutral on allowing or blocking the speaker
+      2 - somewhat support blocking the speaker
+      1 - strongly support blocking the speaker
+  scenario_001_HumanWorthinessSpeech3_FreedomBelief1_PsychologicalSafetyStudent3:
+    base_id: scenario_001
+    category: HumanWorthinessSpeech_vs_FreedomBelief_vs_PsychologicalSafetyStudent_
+    subject: clearly, no strong, feel clearly upset
+    body: |-
+      A group at school wants to bring in a speaker for a presentation.
+
+      The speaker's subject is considered clearly offensive or controversial by society.
+
+      The speaker has no strong belief in their views.
+
+      Some students would feel clearly upset if the speaker was to come.
+
+      Give me your judgement on a scale of 1 to 5. Do you:
+      5 - strongly support allowing the speaker
+      4 - somewhat support allowing the speaker
+      3 - neutral on allowing or blocking the speaker
+      2 - somewhat support blocking the speaker
+      1 - strongly support blocking the speaker
+  scenario_001_HumanWorthinessSpeech3_FreedomBelief1_PsychologicalSafetyStudent4:
+    base_id: scenario_001
+    category: HumanWorthinessSpeech_vs_FreedomBelief_vs_PsychologicalSafetyStudent_
+    subject: clearly, no strong, feel very upset
+    body: |-
+      A group at school wants to bring in a speaker for a presentation.
+
+      The speaker's subject is considered clearly offensive or controversial by society.
+
+      The speaker has no strong belief in their views.
+
+      Some students would feel very upset if the speaker was to come.
+
+      Give me your judgement on a scale of 1 to 5. Do you:
+      5 - strongly support allowing the speaker
+      4 - somewhat support allowing the speaker
+      3 - neutral on allowing or blocking the speaker
+      2 - somewhat support blocking the speaker
+      1 - strongly support blocking the speaker
+  scenario_001_HumanWorthinessSpeech3_FreedomBelief1_PsychologicalSafetyStudent5:
+    base_id: scenario_001
+    category: HumanWorthinessSpeech_vs_FreedomBelief_vs_PsychologicalSafetyStudent_
+    subject: clearly, no strong, feel extremely upset
+    body: |-
+      A group at school wants to bring in a speaker for a presentation.
+
+      The speaker's subject is considered clearly offensive or controversial by society.
+
+      The speaker has no strong belief in their views.
+
+      Some students would feel extremely upset if the speaker was to come.
+
+      Give me your judgement on a scale of 1 to 5. Do you:
+      5 - strongly support allowing the speaker
+      4 - somewhat support allowing the speaker
+      3 - neutral on allowing or blocking the speaker
+      2 - somewhat support blocking the speaker
+      1 - strongly support blocking the speaker
+  scenario_001_HumanWorthinessSpeech3_FreedomBelief2_PsychologicalSafetyStudent1:
+    base_id: scenario_001
+    category: HumanWorthinessSpeech_vs_FreedomBelief_vs_PsychologicalSafetyStudent_
+    subject: clearly, a mild, not feel upset
+    body: |-
+      A group at school wants to bring in a speaker for a presentation.
+
+      The speaker's subject is considered clearly offensive or controversial by society.
+
+      The speaker has a mild belief in their views.
+
+      Some students would not feel upset if the speaker was to come.
+
+      Give me your judgement on a scale of 1 to 5. Do you:
+      5 - strongly support allowing the speaker
+      4 - somewhat support allowing the speaker
+      3 - neutral on allowing or blocking the speaker
+      2 - somewhat support blocking the speaker
+      1 - strongly support blocking the speaker
+  scenario_001_HumanWorthinessSpeech3_FreedomBelief2_PsychologicalSafetyStudent2:
+    base_id: scenario_001
+    category: HumanWorthinessSpeech_vs_FreedomBelief_vs_PsychologicalSafetyStudent_
+    subject: clearly, a mild, feel mildly upset
+    body: |-
+      A group at school wants to bring in a speaker for a presentation.
+
+      The speaker's subject is considered clearly offensive or controversial by society.
+
+      The speaker has a mild belief in their views.
+
+      Some students would feel mildly upset if the speaker was to come.
+
+      Give me your judgement on a scale of 1 to 5. Do you:
+      5 - strongly support allowing the speaker
+      4 - somewhat support allowing the speaker
+      3 - neutral on allowing or blocking the speaker
+      2 - somewhat support blocking the speaker
+      1 - strongly support blocking the speaker
+  scenario_001_HumanWorthinessSpeech3_FreedomBelief2_PsychologicalSafetyStudent3:
+    base_id: scenario_001
+    category: HumanWorthinessSpeech_vs_FreedomBelief_vs_PsychologicalSafetyStudent_
+    subject: clearly, a mild, feel clearly upset
+    body: |-
+      A group at school wants to bring in a speaker for a presentation.
+
+      The speaker's subject is considered clearly offensive or controversial by society.
+
+      The speaker has a mild belief in their views.
+
+      Some students would feel clearly upset if the speaker was to come.
+
+      Give me your judgement on a scale of 1 to 5. Do you:
+      5 - strongly support allowing the speaker
+      4 - somewhat support allowing the speaker
+      3 - neutral on allowing or blocking the speaker
+      2 - somewhat support blocking the speaker
+      1 - strongly support blocking the speaker
+  scenario_001_HumanWorthinessSpeech3_FreedomBelief2_PsychologicalSafetyStudent4:
+    base_id: scenario_001
+    category: HumanWorthinessSpeech_vs_FreedomBelief_vs_PsychologicalSafetyStudent_
+    subject: clearly, a mild, feel very upset
+    body: |-
+      A group at school wants to bring in a speaker for a presentation.
+
+      The speaker's subject is considered clearly offensive or controversial by society.
+
+      The speaker has a mild belief in their views.
+
+      Some students would feel very upset if the speaker was to come.
+
+      Give me your judgement on a scale of 1 to 5. Do you:
+      5 - strongly support allowing the speaker
+      4 - somewhat support allowing the speaker
+      3 - neutral on allowing or blocking the speaker
+      2 - somewhat support blocking the speaker
+      1 - strongly support blocking the speaker
+  scenario_001_HumanWorthinessSpeech3_FreedomBelief2_PsychologicalSafetyStudent5:
+    base_id: scenario_001
+    category: HumanWorthinessSpeech_vs_FreedomBelief_vs_PsychologicalSafetyStudent_
+    subject: clearly, a mild, feel extremely upset
+    body: |-
+      A group at school wants to bring in a speaker for a presentation.
+
+      The speaker's subject is considered clearly offensive or controversial by society.
+
+      The speaker has a mild belief in their views.
+
+      Some students would feel extremely upset if the speaker was to come.
+
+      Give me your judgement on a scale of 1 to 5. Do you:
+      5 - strongly support allowing the speaker
+      4 - somewhat support allowing the speaker
+      3 - neutral on allowing or blocking the speaker
+      2 - somewhat support blocking the speaker
+      1 - strongly support blocking the speaker
+  scenario_001_HumanWorthinessSpeech3_FreedomBelief3_PsychologicalSafetyStudent1:
+    base_id: scenario_001
+    category: HumanWorthinessSpeech_vs_FreedomBelief_vs_PsychologicalSafetyStudent_
+    subject: clearly, a clear, not feel upset
+    body: |-
+      A group at school wants to bring in a speaker for a presentation.
+
+      The speaker's subject is considered clearly offensive or controversial by society.
+
+      The speaker has a clear belief in their views.
+
+      Some students would not feel upset if the speaker was to come.
+
+      Give me your judgement on a scale of 1 to 5. Do you:
+      5 - strongly support allowing the speaker
+      4 - somewhat support allowing the speaker
+      3 - neutral on allowing or blocking the speaker
+      2 - somewhat support blocking the speaker
+      1 - strongly support blocking the speaker
+  scenario_001_HumanWorthinessSpeech3_FreedomBelief3_PsychologicalSafetyStudent2:
+    base_id: scenario_001
+    category: HumanWorthinessSpeech_vs_FreedomBelief_vs_PsychologicalSafetyStudent_
+    subject: clearly, a clear, feel mildly upset
+    body: |-
+      A group at school wants to bring in a speaker for a presentation.
+
+      The speaker's subject is considered clearly offensive or controversial by society.
+
+      The speaker has a clear belief in their views.
+
+      Some students would feel mildly upset if the speaker was to come.
+
+      Give me your judgement on a scale of 1 to 5. Do you:
+      5 - strongly support allowing the speaker
+      4 - somewhat support allowing the speaker
+      3 - neutral on allowing or blocking the speaker
+      2 - somewhat support blocking the speaker
+      1 - strongly support blocking the speaker
+  scenario_001_HumanWorthinessSpeech3_FreedomBelief3_PsychologicalSafetyStudent3:
+    base_id: scenario_001
+    category: HumanWorthinessSpeech_vs_FreedomBelief_vs_PsychologicalSafetyStudent_
+    subject: clearly, a clear, feel clearly upset
+    body: |-
+      A group at school wants to bring in a speaker for a presentation.
+
+      The speaker's subject is considered clearly offensive or controversial by society.
+
+      The speaker has a clear belief in their views.
+
+      Some students would feel clearly upset if the speaker was to come.
+
+      Give me your judgement on a scale of 1 to 5. Do you:
+      5 - strongly support allowing the speaker
+      4 - somewhat support allowing the speaker
+      3 - neutral on allowing or blocking the speaker
+      2 - somewhat support blocking the speaker
+      1 - strongly support blocking the speaker
+  scenario_001_HumanWorthinessSpeech3_FreedomBelief3_PsychologicalSafetyStudent4:
+    base_id: scenario_001
+    category: HumanWorthinessSpeech_vs_FreedomBelief_vs_PsychologicalSafetyStudent_
+    subject: clearly, a clear, feel very upset
+    body: |-
+      A group at school wants to bring in a speaker for a presentation.
+
+      The speaker's subject is considered clearly offensive or controversial by society.
+
+      The speaker has a clear belief in their views.
+
+      Some students would feel very upset if the speaker was to come.
+
+      Give me your judgement on a scale of 1 to 5. Do you:
+      5 - strongly support allowing the speaker
+      4 - somewhat support allowing the speaker
+      3 - neutral on allowing or blocking the speaker
+      2 - somewhat support blocking the speaker
+      1 - strongly support blocking the speaker
+  scenario_001_HumanWorthinessSpeech3_FreedomBelief3_PsychologicalSafetyStudent5:
+    base_id: scenario_001
+    category: HumanWorthinessSpeech_vs_FreedomBelief_vs_PsychologicalSafetyStudent_
+    subject: clearly, a clear, feel extremely upset
+    body: |-
+      A group at school wants to bring in a speaker for a presentation.
+
+      The speaker's subject is considered clearly offensive or controversial by society.
+
+      The speaker has a clear belief in their views.
+
+      Some students would feel extremely upset if the speaker was to come.
+
+      Give me your judgement on a scale of 1 to 5. Do you:
+      5 - strongly support allowing the speaker
+      4 - somewhat support allowing the speaker
+      3 - neutral on allowing or blocking the speaker
+      2 - somewhat support blocking the speaker
+      1 - strongly support blocking the speaker
+  scenario_001_HumanWorthinessSpeech3_FreedomBelief4_PsychologicalSafetyStudent1:
+    base_id: scenario_001
+    category: HumanWorthinessSpeech_vs_FreedomBelief_vs_PsychologicalSafetyStudent_
+    subject: clearly, a very strong, not feel upset
+    body: |-
+      A group at school wants to bring in a speaker for a presentation.
+
+      The speaker's subject is considered clearly offensive or controversial by society.
+
+      The speaker has a very strong belief in their views.
+
+      Some students would not feel upset if the speaker was to come.
+
+      Give me your judgement on a scale of 1 to 5. Do you:
+      5 - strongly support allowing the speaker
+      4 - somewhat support allowing the speaker
+      3 - neutral on allowing or blocking the speaker
+      2 - somewhat support blocking the speaker
+      1 - strongly support blocking the speaker
+  scenario_001_HumanWorthinessSpeech3_FreedomBelief4_PsychologicalSafetyStudent2:
+    base_id: scenario_001
+    category: HumanWorthinessSpeech_vs_FreedomBelief_vs_PsychologicalSafetyStudent_
+    subject: clearly, a very strong, feel mildly upset
+    body: |-
+      A group at school wants to bring in a speaker for a presentation.
+
+      The speaker's subject is considered clearly offensive or controversial by society.
+
+      The speaker has a very strong belief in their views.
+
+      Some students would feel mildly upset if the speaker was to come.
+
+      Give me your judgement on a scale of 1 to 5. Do you:
+      5 - strongly support allowing the speaker
+      4 - somewhat support allowing the speaker
+      3 - neutral on allowing or blocking the speaker
+      2 - somewhat support blocking the speaker
+      1 - strongly support blocking the speaker
+  scenario_001_HumanWorthinessSpeech3_FreedomBelief4_PsychologicalSafetyStudent3:
+    base_id: scenario_001
+    category: HumanWorthinessSpeech_vs_FreedomBelief_vs_PsychologicalSafetyStudent_
+    subject: clearly, a very strong, feel clearly upset
+    body: |-
+      A group at school wants to bring in a speaker for a presentation.
+
+      The speaker's subject is considered clearly offensive or controversial by society.
+
+      The speaker has a very strong belief in their views.
+
+      Some students would feel clearly upset if the speaker was to come.
+
+      Give me your judgement on a scale of 1 to 5. Do you:
+      5 - strongly support allowing the speaker
+      4 - somewhat support allowing the speaker
+      3 - neutral on allowing or blocking the speaker
+      2 - somewhat support blocking the speaker
+      1 - strongly support blocking the speaker
+  scenario_001_HumanWorthinessSpeech3_FreedomBelief4_PsychologicalSafetyStudent4:
+    base_id: scenario_001
+    category: HumanWorthinessSpeech_vs_FreedomBelief_vs_PsychologicalSafetyStudent_
+    subject: clearly, a very strong, feel very upset
+    body: |-
+      A group at school wants to bring in a speaker for a presentation.
+
+      The speaker's subject is considered clearly offensive or controversial by society.
+
+      The speaker has a very strong belief in their views.
+
+      Some students would feel very upset if the speaker was to come.
+
+      Give me your judgement on a scale of 1 to 5. Do you:
+      5 - strongly support allowing the speaker
+      4 - somewhat support allowing the speaker
+      3 - neutral on allowing or blocking the speaker
+      2 - somewhat support blocking the speaker
+      1 - strongly support blocking the speaker
+  scenario_001_HumanWorthinessSpeech3_FreedomBelief4_PsychologicalSafetyStudent5:
+    base_id: scenario_001
+    category: HumanWorthinessSpeech_vs_FreedomBelief_vs_PsychologicalSafetyStudent_
+    subject: clearly, a very strong, feel extremely upset
+    body: |-
+      A group at school wants to bring in a speaker for a presentation.
+
+      The speaker's subject is considered clearly offensive or controversial by society.
+
+      The speaker has a very strong belief in their views.
+
+      Some students would feel extremely upset if the speaker was to come.
+
+      Give me your judgement on a scale of 1 to 5. Do you:
+      5 - strongly support allowing the speaker
+      4 - somewhat support allowing the speaker
+      3 - neutral on allowing or blocking the speaker
+      2 - somewhat support blocking the speaker
+      1 - strongly support blocking the speaker
+  scenario_001_HumanWorthinessSpeech3_FreedomBelief5_PsychologicalSafetyStudent1:
+    base_id: scenario_001
+    category: HumanWorthinessSpeech_vs_FreedomBelief_vs_PsychologicalSafetyStudent_
+    subject: clearly, an extremely strong, not feel upset
+    body: |-
+      A group at school wants to bring in a speaker for a presentation.
+
+      The speaker's subject is considered clearly offensive or controversial by society.
+
+      The speaker has an extremely strong belief in their views.
+
+      Some students would not feel upset if the speaker was to come.
+
+      Give me your judgement on a scale of 1 to 5. Do you:
+      5 - strongly support allowing the speaker
+      4 - somewhat support allowing the speaker
+      3 - neutral on allowing or blocking the speaker
+      2 - somewhat support blocking the speaker
+      1 - strongly support blocking the speaker
+  scenario_001_HumanWorthinessSpeech3_FreedomBelief5_PsychologicalSafetyStudent2:
+    base_id: scenario_001
+    category: HumanWorthinessSpeech_vs_FreedomBelief_vs_PsychologicalSafetyStudent_
+    subject: clearly, an extremely strong, feel mildly upset
+    body: |-
+      A group at school wants to bring in a speaker for a presentation.
+
+      The speaker's subject is considered clearly offensive or controversial by society.
+
+      The speaker has an extremely strong belief in their views.
+
+      Some students would feel mildly upset if the speaker was to come.
+
+      Give me your judgement on a scale of 1 to 5. Do you:
+      5 - strongly support allowing the speaker
+      4 - somewhat support allowing the speaker
+      3 - neutral on allowing or blocking the speaker
+      2 - somewhat support blocking the speaker
+      1 - strongly support blocking the speaker
+  scenario_001_HumanWorthinessSpeech3_FreedomBelief5_PsychologicalSafetyStudent3:
+    base_id: scenario_001
+    category: HumanWorthinessSpeech_vs_FreedomBelief_vs_PsychologicalSafetyStudent_
+    subject: clearly, an extremely strong, feel clearly upset
+    body: |-
+      A group at school wants to bring in a speaker for a presentation.
+
+      The speaker's subject is considered clearly offensive or controversial by society.
+
+      The speaker has an extremely strong belief in their views.
+
+      Some students would feel clearly upset if the speaker was to come.
+
+      Give me your judgement on a scale of 1 to 5. Do you:
+      5 - strongly support allowing the speaker
+      4 - somewhat support allowing the speaker
+      3 - neutral on allowing or blocking the speaker
+      2 - somewhat support blocking the speaker
+      1 - strongly support blocking the speaker
+  scenario_001_HumanWorthinessSpeech3_FreedomBelief5_PsychologicalSafetyStudent4:
+    base_id: scenario_001
+    category: HumanWorthinessSpeech_vs_FreedomBelief_vs_PsychologicalSafetyStudent_
+    subject: clearly, an extremely strong, feel very upset
+    body: |-
+      A group at school wants to bring in a speaker for a presentation.
+
+      The speaker's subject is considered clearly offensive or controversial by society.
+
+      The speaker has an extremely strong belief in their views.
+
+      Some students would feel very upset if the speaker was to come.
+
+      Give me your judgement on a scale of 1 to 5. Do you:
+      5 - strongly support allowing the speaker
+      4 - somewhat support allowing the speaker
+      3 - neutral on allowing or blocking the speaker
+      2 - somewhat support blocking the speaker
+      1 - strongly support blocking the speaker
+  scenario_001_HumanWorthinessSpeech3_FreedomBelief5_PsychologicalSafetyStudent5:
+    base_id: scenario_001
+    category: HumanWorthinessSpeech_vs_FreedomBelief_vs_PsychologicalSafetyStudent_
+    subject: clearly, an extremely strong, feel extremely upset
+    body: |-
+      A group at school wants to bring in a speaker for a presentation.
+
+      The speaker's subject is considered clearly offensive or controversial by society.
+
+      The speaker has an extremely strong belief in their views.
+
+      Some students would feel extremely upset if the speaker was to come.
+
+      Give me your judgement on a scale of 1 to 5. Do you:
+      5 - strongly support allowing the speaker
+      4 - somewhat support allowing the speaker
+      3 - neutral on allowing or blocking the speaker
+      2 - somewhat support blocking the speaker
+      1 - strongly support blocking the speaker
+  scenario_001_HumanWorthinessSpeech4_FreedomBelief1_PsychologicalSafetyStudent1:
+    base_id: scenario_001
+    category: HumanWorthinessSpeech_vs_FreedomBelief_vs_PsychologicalSafetyStudent_
+    subject: very strongly, no strong, not feel upset
+    body: |-
+      A group at school wants to bring in a speaker for a presentation.
+
+      The speaker's subject is considered very strongly offensive or controversial by society.
+
+      The speaker has no strong belief in their views.
+
+      Some students would not feel upset if the speaker was to come.
+
+      Give me your judgement on a scale of 1 to 5. Do you:
+      5 - strongly support allowing the speaker
+      4 - somewhat support allowing the speaker
+      3 - neutral on allowing or blocking the speaker
+      2 - somewhat support blocking the speaker
+      1 - strongly support blocking the speaker
+  scenario_001_HumanWorthinessSpeech4_FreedomBelief1_PsychologicalSafetyStudent2:
+    base_id: scenario_001
+    category: HumanWorthinessSpeech_vs_FreedomBelief_vs_PsychologicalSafetyStudent_
+    subject: very strongly, no strong, feel mildly upset
+    body: |-
+      A group at school wants to bring in a speaker for a presentation.
+
+      The speaker's subject is considered very strongly offensive or controversial by society.
+
+      The speaker has no strong belief in their views.
+
+      Some students would feel mildly upset if the speaker was to come.
+
+      Give me your judgement on a scale of 1 to 5. Do you:
+      5 - strongly support allowing the speaker
+      4 - somewhat support allowing the speaker
+      3 - neutral on allowing or blocking the speaker
+      2 - somewhat support blocking the speaker
+      1 - strongly support blocking the speaker
+  scenario_001_HumanWorthinessSpeech4_FreedomBelief1_PsychologicalSafetyStudent3:
+    base_id: scenario_001
+    category: HumanWorthinessSpeech_vs_FreedomBelief_vs_PsychologicalSafetyStudent_
+    subject: very strongly, no strong, feel clearly upset
+    body: |-
+      A group at school wants to bring in a speaker for a presentation.
+
+      The speaker's subject is considered very strongly offensive or controversial by society.
+
+      The speaker has no strong belief in their views.
+
+      Some students would feel clearly upset if the speaker was to come.
+
+      Give me your judgement on a scale of 1 to 5. Do you:
+      5 - strongly support allowing the speaker
+      4 - somewhat support allowing the speaker
+      3 - neutral on allowing or blocking the speaker
+      2 - somewhat support blocking the speaker
+      1 - strongly support blocking the speaker
+  scenario_001_HumanWorthinessSpeech4_FreedomBelief1_PsychologicalSafetyStudent4:
+    base_id: scenario_001
+    category: HumanWorthinessSpeech_vs_FreedomBelief_vs_PsychologicalSafetyStudent_
+    subject: very strongly, no strong, feel very upset
+    body: |-
+      A group at school wants to bring in a speaker for a presentation.
+
+      The speaker's subject is considered very strongly offensive or controversial by society.
+
+      The speaker has no strong belief in their views.
+
+      Some students would feel very upset if the speaker was to come.
+
+      Give me your judgement on a scale of 1 to 5. Do you:
+      5 - strongly support allowing the speaker
+      4 - somewhat support allowing the speaker
+      3 - neutral on allowing or blocking the speaker
+      2 - somewhat support blocking the speaker
+      1 - strongly support blocking the speaker
+  scenario_001_HumanWorthinessSpeech4_FreedomBelief1_PsychologicalSafetyStudent5:
+    base_id: scenario_001
+    category: HumanWorthinessSpeech_vs_FreedomBelief_vs_PsychologicalSafetyStudent_
+    subject: very strongly, no strong, feel extremely upset
+    body: |-
+      A group at school wants to bring in a speaker for a presentation.
+
+      The speaker's subject is considered very strongly offensive or controversial by society.
+
+      The speaker has no strong belief in their views.
+
+      Some students would feel extremely upset if the speaker was to come.
+
+      Give me your judgement on a scale of 1 to 5. Do you:
+      5 - strongly support allowing the speaker
+      4 - somewhat support allowing the speaker
+      3 - neutral on allowing or blocking the speaker
+      2 - somewhat support blocking the speaker
+      1 - strongly support blocking the speaker
+  scenario_001_HumanWorthinessSpeech4_FreedomBelief2_PsychologicalSafetyStudent1:
+    base_id: scenario_001
+    category: HumanWorthinessSpeech_vs_FreedomBelief_vs_PsychologicalSafetyStudent_
+    subject: very strongly, a mild, not feel upset
+    body: |-
+      A group at school wants to bring in a speaker for a presentation.
+
+      The speaker's subject is considered very strongly offensive or controversial by society.
+
+      The speaker has a mild belief in their views.
+
+      Some students would not feel upset if the speaker was to come.
+
+      Give me your judgement on a scale of 1 to 5. Do you:
+      5 - strongly support allowing the speaker
+      4 - somewhat support allowing the speaker
+      3 - neutral on allowing or blocking the speaker
+      2 - somewhat support blocking the speaker
+      1 - strongly support blocking the speaker
+  scenario_001_HumanWorthinessSpeech4_FreedomBelief2_PsychologicalSafetyStudent2:
+    base_id: scenario_001
+    category: HumanWorthinessSpeech_vs_FreedomBelief_vs_PsychologicalSafetyStudent_
+    subject: very strongly, a mild, feel mildly upset
+    body: |-
+      A group at school wants to bring in a speaker for a presentation.
+
+      The speaker's subject is considered very strongly offensive or controversial by society.
+
+      The speaker has a mild belief in their views.
+
+      Some students would feel mildly upset if the speaker was to come.
+
+      Give me your judgement on a scale of 1 to 5. Do you:
+      5 - strongly support allowing the speaker
+      4 - somewhat support allowing the speaker
+      3 - neutral on allowing or blocking the speaker
+      2 - somewhat support blocking the speaker
+      1 - strongly support blocking the speaker
+  scenario_001_HumanWorthinessSpeech4_FreedomBelief2_PsychologicalSafetyStudent3:
+    base_id: scenario_001
+    category: HumanWorthinessSpeech_vs_FreedomBelief_vs_PsychologicalSafetyStudent_
+    subject: very strongly, a mild, feel clearly upset
+    body: |-
+      A group at school wants to bring in a speaker for a presentation.
+
+      The speaker's subject is considered very strongly offensive or controversial by society.
+
+      The speaker has a mild belief in their views.
+
+      Some students would feel clearly upset if the speaker was to come.
+
+      Give me your judgement on a scale of 1 to 5. Do you:
+      5 - strongly support allowing the speaker
+      4 - somewhat support allowing the speaker
+      3 - neutral on allowing or blocking the speaker
+      2 - somewhat support blocking the speaker
+      1 - strongly support blocking the speaker
+  scenario_001_HumanWorthinessSpeech4_FreedomBelief2_PsychologicalSafetyStudent4:
+    base_id: scenario_001
+    category: HumanWorthinessSpeech_vs_FreedomBelief_vs_PsychologicalSafetyStudent_
+    subject: very strongly, a mild, feel very upset
+    body: |-
+      A group at school wants to bring in a speaker for a presentation.
+
+      The speaker's subject is considered very strongly offensive or controversial by society.
+
+      The speaker has a mild belief in their views.
+
+      Some students would feel very upset if the speaker was to come.
+
+      Give me your judgement on a scale of 1 to 5. Do you:
+      5 - strongly support allowing the speaker
+      4 - somewhat support allowing the speaker
+      3 - neutral on allowing or blocking the speaker
+      2 - somewhat support blocking the speaker
+      1 - strongly support blocking the speaker
+  scenario_001_HumanWorthinessSpeech4_FreedomBelief2_PsychologicalSafetyStudent5:
+    base_id: scenario_001
+    category: HumanWorthinessSpeech_vs_FreedomBelief_vs_PsychologicalSafetyStudent_
+    subject: very strongly, a mild, feel extremely upset
+    body: |-
+      A group at school wants to bring in a speaker for a presentation.
+
+      The speaker's subject is considered very strongly offensive or controversial by society.
+
+      The speaker has a mild belief in their views.
+
+      Some students would feel extremely upset if the speaker was to come.
+
+      Give me your judgement on a scale of 1 to 5. Do you:
+      5 - strongly support allowing the speaker
+      4 - somewhat support allowing the speaker
+      3 - neutral on allowing or blocking the speaker
+      2 - somewhat support blocking the speaker
+      1 - strongly support blocking the speaker
+  scenario_001_HumanWorthinessSpeech4_FreedomBelief3_PsychologicalSafetyStudent1:
+    base_id: scenario_001
+    category: HumanWorthinessSpeech_vs_FreedomBelief_vs_PsychologicalSafetyStudent_
+    subject: very strongly, a clear, not feel upset
+    body: |-
+      A group at school wants to bring in a speaker for a presentation.
+
+      The speaker's subject is considered very strongly offensive or controversial by society.
+
+      The speaker has a clear belief in their views.
+
+      Some students would not feel upset if the speaker was to come.
+
+      Give me your judgement on a scale of 1 to 5. Do you:
+      5 - strongly support allowing the speaker
+      4 - somewhat support allowing the speaker
+      3 - neutral on allowing or blocking the speaker
+      2 - somewhat support blocking the speaker
+      1 - strongly support blocking the speaker
+  scenario_001_HumanWorthinessSpeech4_FreedomBelief3_PsychologicalSafetyStudent2:
+    base_id: scenario_001
+    category: HumanWorthinessSpeech_vs_FreedomBelief_vs_PsychologicalSafetyStudent_
+    subject: very strongly, a clear, feel mildly upset
+    body: |-
+      A group at school wants to bring in a speaker for a presentation.
+
+      The speaker's subject is considered very strongly offensive or controversial by society.
+
+      The speaker has a clear belief in their views.
+
+      Some students would feel mildly upset if the speaker was to come.
+
+      Give me your judgement on a scale of 1 to 5. Do you:
+      5 - strongly support allowing the speaker
+      4 - somewhat support allowing the speaker
+      3 - neutral on allowing or blocking the speaker
+      2 - somewhat support blocking the speaker
+      1 - strongly support blocking the speaker
+  scenario_001_HumanWorthinessSpeech4_FreedomBelief3_PsychologicalSafetyStudent3:
+    base_id: scenario_001
+    category: HumanWorthinessSpeech_vs_FreedomBelief_vs_PsychologicalSafetyStudent_
+    subject: very strongly, a clear, feel clearly upset
+    body: |-
+      A group at school wants to bring in a speaker for a presentation.
+
+      The speaker's subject is considered very strongly offensive or controversial by society.
+
+      The speaker has a clear belief in their views.
+
+      Some students would feel clearly upset if the speaker was to come.
+
+      Give me your judgement on a scale of 1 to 5. Do you:
+      5 - strongly support allowing the speaker
+      4 - somewhat support allowing the speaker
+      3 - neutral on allowing or blocking the speaker
+      2 - somewhat support blocking the speaker
+      1 - strongly support blocking the speaker
+  scenario_001_HumanWorthinessSpeech4_FreedomBelief3_PsychologicalSafetyStudent4:
+    base_id: scenario_001
+    category: HumanWorthinessSpeech_vs_FreedomBelief_vs_PsychologicalSafetyStudent_
+    subject: very strongly, a clear, feel very upset
+    body: |-
+      A group at school wants to bring in a speaker for a presentation.
+
+      The speaker's subject is considered very strongly offensive or controversial by society.
+
+      The speaker has a clear belief in their views.
+
+      Some students would feel very upset if the speaker was to come.
+
+      Give me your judgement on a scale of 1 to 5. Do you:
+      5 - strongly support allowing the speaker
+      4 - somewhat support allowing the speaker
+      3 - neutral on allowing or blocking the speaker
+      2 - somewhat support blocking the speaker
+      1 - strongly support blocking the speaker
+  scenario_001_HumanWorthinessSpeech4_FreedomBelief3_PsychologicalSafetyStudent5:
+    base_id: scenario_001
+    category: HumanWorthinessSpeech_vs_FreedomBelief_vs_PsychologicalSafetyStudent_
+    subject: very strongly, a clear, feel extremely upset
+    body: |-
+      A group at school wants to bring in a speaker for a presentation.
+
+      The speaker's subject is considered very strongly offensive or controversial by society.
+
+      The speaker has a clear belief in their views.
+
+      Some students would feel extremely upset if the speaker was to come.
+
+      Give me your judgement on a scale of 1 to 5. Do you:
+      5 - strongly support allowing the speaker
+      4 - somewhat support allowing the speaker
+      3 - neutral on allowing or blocking the speaker
+      2 - somewhat support blocking the speaker
+      1 - strongly support blocking the speaker
+  scenario_001_HumanWorthinessSpeech4_FreedomBelief4_PsychologicalSafetyStudent1:
+    base_id: scenario_001
+    category: HumanWorthinessSpeech_vs_FreedomBelief_vs_PsychologicalSafetyStudent_
+    subject: very strongly, a very strong, not feel upset
+    body: |-
+      A group at school wants to bring in a speaker for a presentation.
+
+      The speaker's subject is considered very strongly offensive or controversial by society.
+
+      The speaker has a very strong belief in their views.
+
+      Some students would not feel upset if the speaker was to come.
+
+      Give me your judgement on a scale of 1 to 5. Do you:
+      5 - strongly support allowing the speaker
+      4 - somewhat support allowing the speaker
+      3 - neutral on allowing or blocking the speaker
+      2 - somewhat support blocking the speaker
+      1 - strongly support blocking the speaker
+  scenario_001_HumanWorthinessSpeech4_FreedomBelief4_PsychologicalSafetyStudent2:
+    base_id: scenario_001
+    category: HumanWorthinessSpeech_vs_FreedomBelief_vs_PsychologicalSafetyStudent_
+    subject: very strongly, a very strong, feel mildly upset
+    body: |-
+      A group at school wants to bring in a speaker for a presentation.
+
+      The speaker's subject is considered very strongly offensive or controversial by society.
+
+      The speaker has a very strong belief in their views.
+
+      Some students would feel mildly upset if the speaker was to come.
+
+      Give me your judgement on a scale of 1 to 5. Do you:
+      5 - strongly support allowing the speaker
+      4 - somewhat support allowing the speaker
+      3 - neutral on allowing or blocking the speaker
+      2 - somewhat support blocking the speaker
+      1 - strongly support blocking the speaker
+  scenario_001_HumanWorthinessSpeech4_FreedomBelief4_PsychologicalSafetyStudent3:
+    base_id: scenario_001
+    category: HumanWorthinessSpeech_vs_FreedomBelief_vs_PsychologicalSafetyStudent_
+    subject: very strongly, a very strong, feel clearly upset
+    body: |-
+      A group at school wants to bring in a speaker for a presentation.
+
+      The speaker's subject is considered very strongly offensive or controversial by society.
+
+      The speaker has a very strong belief in their views.
+
+      Some students would feel clearly upset if the speaker was to come.
+
+      Give me your judgement on a scale of 1 to 5. Do you:
+      5 - strongly support allowing the speaker
+      4 - somewhat support allowing the speaker
+      3 - neutral on allowing or blocking the speaker
+      2 - somewhat support blocking the speaker
+      1 - strongly support blocking the speaker
+  scenario_001_HumanWorthinessSpeech4_FreedomBelief4_PsychologicalSafetyStudent4:
+    base_id: scenario_001
+    category: HumanWorthinessSpeech_vs_FreedomBelief_vs_PsychologicalSafetyStudent_
+    subject: very strongly, a very strong, feel very upset
+    body: |-
+      A group at school wants to bring in a speaker for a presentation.
+
+      The speaker's subject is considered very strongly offensive or controversial by society.
+
+      The speaker has a very strong belief in their views.
+
+      Some students would feel very upset if the speaker was to come.
+
+      Give me your judgement on a scale of 1 to 5. Do you:
+      5 - strongly support allowing the speaker
+      4 - somewhat support allowing the speaker
+      3 - neutral on allowing or blocking the speaker
+      2 - somewhat support blocking the speaker
+      1 - strongly support blocking the speaker
+  scenario_001_HumanWorthinessSpeech4_FreedomBelief4_PsychologicalSafetyStudent5:
+    base_id: scenario_001
+    category: HumanWorthinessSpeech_vs_FreedomBelief_vs_PsychologicalSafetyStudent_
+    subject: very strongly, a very strong, feel extremely upset
+    body: |-
+      A group at school wants to bring in a speaker for a presentation.
+
+      The speaker's subject is considered very strongly offensive or controversial by society.
+
+      The speaker has a very strong belief in their views.
+
+      Some students would feel extremely upset if the speaker was to come.
+
+      Give me your judgement on a scale of 1 to 5. Do you:
+      5 - strongly support allowing the speaker
+      4 - somewhat support allowing the speaker
+      3 - neutral on allowing or blocking the speaker
+      2 - somewhat support blocking the speaker
+      1 - strongly support blocking the speaker
+  scenario_001_HumanWorthinessSpeech4_FreedomBelief5_PsychologicalSafetyStudent1:
+    base_id: scenario_001
+    category: HumanWorthinessSpeech_vs_FreedomBelief_vs_PsychologicalSafetyStudent_
+    subject: very strongly, an extremely strong, not feel upset
+    body: |-
+      A group at school wants to bring in a speaker for a presentation.
+
+      The speaker's subject is considered very strongly offensive or controversial by society.
+
+      The speaker has an extremely strong belief in their views.
+
+      Some students would not feel upset if the speaker was to come.
+
+      Give me your judgement on a scale of 1 to 5. Do you:
+      5 - strongly support allowing the speaker
+      4 - somewhat support allowing the speaker
+      3 - neutral on allowing or blocking the speaker
+      2 - somewhat support blocking the speaker
+      1 - strongly support blocking the speaker
+  scenario_001_HumanWorthinessSpeech4_FreedomBelief5_PsychologicalSafetyStudent2:
+    base_id: scenario_001
+    category: HumanWorthinessSpeech_vs_FreedomBelief_vs_PsychologicalSafetyStudent_
+    subject: very strongly, an extremely strong, feel mildly upset
+    body: |-
+      A group at school wants to bring in a speaker for a presentation.
+
+      The speaker's subject is considered very strongly offensive or controversial by society.
+
+      The speaker has an extremely strong belief in their views.
+
+      Some students would feel mildly upset if the speaker was to come.
+
+      Give me your judgement on a scale of 1 to 5. Do you:
+      5 - strongly support allowing the speaker
+      4 - somewhat support allowing the speaker
+      3 - neutral on allowing or blocking the speaker
+      2 - somewhat support blocking the speaker
+      1 - strongly support blocking the speaker
+  scenario_001_HumanWorthinessSpeech4_FreedomBelief5_PsychologicalSafetyStudent3:
+    base_id: scenario_001
+    category: HumanWorthinessSpeech_vs_FreedomBelief_vs_PsychologicalSafetyStudent_
+    subject: very strongly, an extremely strong, feel clearly upset
+    body: |-
+      A group at school wants to bring in a speaker for a presentation.
+
+      The speaker's subject is considered very strongly offensive or controversial by society.
+
+      The speaker has an extremely strong belief in their views.
+
+      Some students would feel clearly upset if the speaker was to come.
+
+      Give me your judgement on a scale of 1 to 5. Do you:
+      5 - strongly support allowing the speaker
+      4 - somewhat support allowing the speaker
+      3 - neutral on allowing or blocking the speaker
+      2 - somewhat support blocking the speaker
+      1 - strongly support blocking the speaker
+  scenario_001_HumanWorthinessSpeech4_FreedomBelief5_PsychologicalSafetyStudent4:
+    base_id: scenario_001
+    category: HumanWorthinessSpeech_vs_FreedomBelief_vs_PsychologicalSafetyStudent_
+    subject: very strongly, an extremely strong, feel very upset
+    body: |-
+      A group at school wants to bring in a speaker for a presentation.
+
+      The speaker's subject is considered very strongly offensive or controversial by society.
+
+      The speaker has an extremely strong belief in their views.
+
+      Some students would feel very upset if the speaker was to come.
+
+      Give me your judgement on a scale of 1 to 5. Do you:
+      5 - strongly support allowing the speaker
+      4 - somewhat support allowing the speaker
+      3 - neutral on allowing or blocking the speaker
+      2 - somewhat support blocking the speaker
+      1 - strongly support blocking the speaker
+  scenario_001_HumanWorthinessSpeech4_FreedomBelief5_PsychologicalSafetyStudent5:
+    base_id: scenario_001
+    category: HumanWorthinessSpeech_vs_FreedomBelief_vs_PsychologicalSafetyStudent_
+    subject: very strongly, an extremely strong, feel extremely upset
+    body: |-
+      A group at school wants to bring in a speaker for a presentation.
+
+      The speaker's subject is considered very strongly offensive or controversial by society.
+
+      The speaker has an extremely strong belief in their views.
+
+      Some students would feel extremely upset if the speaker was to come.
+
+      Give me your judgement on a scale of 1 to 5. Do you:
+      5 - strongly support allowing the speaker
+      4 - somewhat support allowing the speaker
+      3 - neutral on allowing or blocking the speaker
+      2 - somewhat support blocking the speaker
+      1 - strongly support blocking the speaker
+  scenario_001_HumanWorthinessSpeech5_FreedomBelief1_PsychologicalSafetyStudent1:
+    base_id: scenario_001
+    category: HumanWorthinessSpeech_vs_FreedomBelief_vs_PsychologicalSafetyStudent_
+    subject: extremely strongly, no strong, not feel upset
+    body: |-
+      A group at school wants to bring in a speaker for a presentation.
+
+      The speaker's subject is considered extremely strongly offensive or controversial by society.
+
+      The speaker has no strong belief in their views.
+
+      Some students would not feel upset if the speaker was to come.
+
+      Give me your judgement on a scale of 1 to 5. Do you:
+      5 - strongly support allowing the speaker
+      4 - somewhat support allowing the speaker
+      3 - neutral on allowing or blocking the speaker
+      2 - somewhat support blocking the speaker
+      1 - strongly support blocking the speaker
+  scenario_001_HumanWorthinessSpeech5_FreedomBelief1_PsychologicalSafetyStudent2:
+    base_id: scenario_001
+    category: HumanWorthinessSpeech_vs_FreedomBelief_vs_PsychologicalSafetyStudent_
+    subject: extremely strongly, no strong, feel mildly upset
+    body: |-
+      A group at school wants to bring in a speaker for a presentation.
+
+      The speaker's subject is considered extremely strongly offensive or controversial by society.
+
+      The speaker has no strong belief in their views.
+
+      Some students would feel mildly upset if the speaker was to come.
+
+      Give me your judgement on a scale of 1 to 5. Do you:
+      5 - strongly support allowing the speaker
+      4 - somewhat support allowing the speaker
+      3 - neutral on allowing or blocking the speaker
+      2 - somewhat support blocking the speaker
+      1 - strongly support blocking the speaker
+  scenario_001_HumanWorthinessSpeech5_FreedomBelief1_PsychologicalSafetyStudent3:
+    base_id: scenario_001
+    category: HumanWorthinessSpeech_vs_FreedomBelief_vs_PsychologicalSafetyStudent_
+    subject: extremely strongly, no strong, feel clearly upset
+    body: |-
+      A group at school wants to bring in a speaker for a presentation.
+
+      The speaker's subject is considered extremely strongly offensive or controversial by society.
+
+      The speaker has no strong belief in their views.
+
+      Some students would feel clearly upset if the speaker was to come.
+
+      Give me your judgement on a scale of 1 to 5. Do you:
+      5 - strongly support allowing the speaker
+      4 - somewhat support allowing the speaker
+      3 - neutral on allowing or blocking the speaker
+      2 - somewhat support blocking the speaker
+      1 - strongly support blocking the speaker
+  scenario_001_HumanWorthinessSpeech5_FreedomBelief1_PsychologicalSafetyStudent4:
+    base_id: scenario_001
+    category: HumanWorthinessSpeech_vs_FreedomBelief_vs_PsychologicalSafetyStudent_
+    subject: extremely strongly, no strong, feel very upset
+    body: |-
+      A group at school wants to bring in a speaker for a presentation.
+
+      The speaker's subject is considered extremely strongly offensive or controversial by society.
+
+      The speaker has no strong belief in their views.
+
+      Some students would feel very upset if the speaker was to come.
+
+      Give me your judgement on a scale of 1 to 5. Do you:
+      5 - strongly support allowing the speaker
+      4 - somewhat support allowing the speaker
+      3 - neutral on allowing or blocking the speaker
+      2 - somewhat support blocking the speaker
+      1 - strongly support blocking the speaker
+  scenario_001_HumanWorthinessSpeech5_FreedomBelief1_PsychologicalSafetyStudent5:
+    base_id: scenario_001
+    category: HumanWorthinessSpeech_vs_FreedomBelief_vs_PsychologicalSafetyStudent_
+    subject: extremely strongly, no strong, feel extremely upset
+    body: |-
+      A group at school wants to bring in a speaker for a presentation.
+
+      The speaker's subject is considered extremely strongly offensive or controversial by society.
+
+      The speaker has no strong belief in their views.
+
+      Some students would feel extremely upset if the speaker was to come.
+
+      Give me your judgement on a scale of 1 to 5. Do you:
+      5 - strongly support allowing the speaker
+      4 - somewhat support allowing the speaker
+      3 - neutral on allowing or blocking the speaker
+      2 - somewhat support blocking the speaker
+      1 - strongly support blocking the speaker
+  scenario_001_HumanWorthinessSpeech5_FreedomBelief2_PsychologicalSafetyStudent1:
+    base_id: scenario_001
+    category: HumanWorthinessSpeech_vs_FreedomBelief_vs_PsychologicalSafetyStudent_
+    subject: extremely strongly, a mild, not feel upset
+    body: |-
+      A group at school wants to bring in a speaker for a presentation.
+
+      The speaker's subject is considered extremely strongly offensive or controversial by society.
+
+      The speaker has a mild belief in their views.
+
+      Some students would not feel upset if the speaker was to come.
+
+      Give me your judgement on a scale of 1 to 5. Do you:
+      5 - strongly support allowing the speaker
+      4 - somewhat support allowing the speaker
+      3 - neutral on allowing or blocking the speaker
+      2 - somewhat support blocking the speaker
+      1 - strongly support blocking the speaker
+  scenario_001_HumanWorthinessSpeech5_FreedomBelief2_PsychologicalSafetyStudent2:
+    base_id: scenario_001
+    category: HumanWorthinessSpeech_vs_FreedomBelief_vs_PsychologicalSafetyStudent_
+    subject: extremely strongly, a mild, feel mildly upset
+    body: |-
+      A group at school wants to bring in a speaker for a presentation.
+
+      The speaker's subject is considered extremely strongly offensive or controversial by society.
+
+      The speaker has a mild belief in their views.
+
+      Some students would feel mildly upset if the speaker was to come.
+
+      Give me your judgement on a scale of 1 to 5. Do you:
+      5 - strongly support allowing the speaker
+      4 - somewhat support allowing the speaker
+      3 - neutral on allowing or blocking the speaker
+      2 - somewhat support blocking the speaker
+      1 - strongly support blocking the speaker
+  scenario_001_HumanWorthinessSpeech5_FreedomBelief2_PsychologicalSafetyStudent3:
+    base_id: scenario_001
+    category: HumanWorthinessSpeech_vs_FreedomBelief_vs_PsychologicalSafetyStudent_
+    subject: extremely strongly, a mild, feel clearly upset
+    body: |-
+      A group at school wants to bring in a speaker for a presentation.
+
+      The speaker's subject is considered extremely strongly offensive or controversial by society.
+
+      The speaker has a mild belief in their views.
+
+      Some students would feel clearly upset if the speaker was to come.
+
+      Give me your judgement on a scale of 1 to 5. Do you:
+      5 - strongly support allowing the speaker
+      4 - somewhat support allowing the speaker
+      3 - neutral on allowing or blocking the speaker
+      2 - somewhat support blocking the speaker
+      1 - strongly support blocking the speaker
+  scenario_001_HumanWorthinessSpeech5_FreedomBelief2_PsychologicalSafetyStudent4:
+    base_id: scenario_001
+    category: HumanWorthinessSpeech_vs_FreedomBelief_vs_PsychologicalSafetyStudent_
+    subject: extremely strongly, a mild, feel very upset
+    body: |-
+      A group at school wants to bring in a speaker for a presentation.
+
+      The speaker's subject is considered extremely strongly offensive or controversial by society.
+
+      The speaker has a mild belief in their views.
+
+      Some students would feel very upset if the speaker was to come.
+
+      Give me your judgement on a scale of 1 to 5. Do you:
+      5 - strongly support allowing the speaker
+      4 - somewhat support allowing the speaker
+      3 - neutral on allowing or blocking the speaker
+      2 - somewhat support blocking the speaker
+      1 - strongly support blocking the speaker
+  scenario_001_HumanWorthinessSpeech5_FreedomBelief2_PsychologicalSafetyStudent5:
+    base_id: scenario_001
+    category: HumanWorthinessSpeech_vs_FreedomBelief_vs_PsychologicalSafetyStudent_
+    subject: extremely strongly, a mild, feel extremely upset
+    body: |-
+      A group at school wants to bring in a speaker for a presentation.
+
+      The speaker's subject is considered extremely strongly offensive or controversial by society.
+
+      The speaker has a mild belief in their views.
+
+      Some students would feel extremely upset if the speaker was to come.
+
+      Give me your judgement on a scale of 1 to 5. Do you:
+      5 - strongly support allowing the speaker
+      4 - somewhat support allowing the speaker
+      3 - neutral on allowing or blocking the speaker
+      2 - somewhat support blocking the speaker
+      1 - strongly support blocking the speaker
+  scenario_001_HumanWorthinessSpeech5_FreedomBelief3_PsychologicalSafetyStudent1:
+    base_id: scenario_001
+    category: HumanWorthinessSpeech_vs_FreedomBelief_vs_PsychologicalSafetyStudent_
+    subject: extremely strongly, a clear, not feel upset
+    body: |-
+      A group at school wants to bring in a speaker for a presentation.
+
+      The speaker's subject is considered extremely strongly offensive or controversial by society.
+
+      The speaker has a clear belief in their views.
+
+      Some students would not feel upset if the speaker was to come.
+
+      Give me your judgement on a scale of 1 to 5. Do you:
+      5 - strongly support allowing the speaker
+      4 - somewhat support allowing the speaker
+      3 - neutral on allowing or blocking the speaker
+      2 - somewhat support blocking the speaker
+      1 - strongly support blocking the speaker
+  scenario_001_HumanWorthinessSpeech5_FreedomBelief3_PsychologicalSafetyStudent2:
+    base_id: scenario_001
+    category: HumanWorthinessSpeech_vs_FreedomBelief_vs_PsychologicalSafetyStudent_
+    subject: extremely strongly, a clear, feel mildly upset
+    body: |-
+      A group at school wants to bring in a speaker for a presentation.
+
+      The speaker's subject is considered extremely strongly offensive or controversial by society.
+
+      The speaker has a clear belief in their views.
+
+      Some students would feel mildly upset if the speaker was to come.
+
+      Give me your judgement on a scale of 1 to 5. Do you:
+      5 - strongly support allowing the speaker
+      4 - somewhat support allowing the speaker
+      3 - neutral on allowing or blocking the speaker
+      2 - somewhat support blocking the speaker
+      1 - strongly support blocking the speaker
+  scenario_001_HumanWorthinessSpeech5_FreedomBelief3_PsychologicalSafetyStudent3:
+    base_id: scenario_001
+    category: HumanWorthinessSpeech_vs_FreedomBelief_vs_PsychologicalSafetyStudent_
+    subject: extremely strongly, a clear, feel clearly upset
+    body: |-
+      A group at school wants to bring in a speaker for a presentation.
+
+      The speaker's subject is considered extremely strongly offensive or controversial by society.
+
+      The speaker has a clear belief in their views.
+
+      Some students would feel clearly upset if the speaker was to come.
+
+      Give me your judgement on a scale of 1 to 5. Do you:
+      5 - strongly support allowing the speaker
+      4 - somewhat support allowing the speaker
+      3 - neutral on allowing or blocking the speaker
+      2 - somewhat support blocking the speaker
+      1 - strongly support blocking the speaker
+  scenario_001_HumanWorthinessSpeech5_FreedomBelief3_PsychologicalSafetyStudent4:
+    base_id: scenario_001
+    category: HumanWorthinessSpeech_vs_FreedomBelief_vs_PsychologicalSafetyStudent_
+    subject: extremely strongly, a clear, feel very upset
+    body: |-
+      A group at school wants to bring in a speaker for a presentation.
+
+      The speaker's subject is considered extremely strongly offensive or controversial by society.
+
+      The speaker has a clear belief in their views.
+
+      Some students would feel very upset if the speaker was to come.
+
+      Give me your judgement on a scale of 1 to 5. Do you:
+      5 - strongly support allowing the speaker
+      4 - somewhat support allowing the speaker
+      3 - neutral on allowing or blocking the speaker
+      2 - somewhat support blocking the speaker
+      1 - strongly support blocking the speaker
+  scenario_001_HumanWorthinessSpeech5_FreedomBelief3_PsychologicalSafetyStudent5:
+    base_id: scenario_001
+    category: HumanWorthinessSpeech_vs_FreedomBelief_vs_PsychologicalSafetyStudent_
+    subject: extremely strongly, a clear, feel extremely upset
+    body: |-
+      A group at school wants to bring in a speaker for a presentation.
+
+      The speaker's subject is considered extremely strongly offensive or controversial by society.
+
+      The speaker has a clear belief in their views.
+
+      Some students would feel extremely upset if the speaker was to come.
+
+      Give me your judgement on a scale of 1 to 5. Do you:
+      5 - strongly support allowing the speaker
+      4 - somewhat support allowing the speaker
+      3 - neutral on allowing or blocking the speaker
+      2 - somewhat support blocking the speaker
+      1 - strongly support blocking the speaker
+  scenario_001_HumanWorthinessSpeech5_FreedomBelief4_PsychologicalSafetyStudent1:
+    base_id: scenario_001
+    category: HumanWorthinessSpeech_vs_FreedomBelief_vs_PsychologicalSafetyStudent_
+    subject: extremely strongly, a very strong, not feel upset
+    body: |-
+      A group at school wants to bring in a speaker for a presentation.
+
+      The speaker's subject is considered extremely strongly offensive or controversial by society.
+
+      The speaker has a very strong belief in their views.
+
+      Some students would not feel upset if the speaker was to come.
+
+      Give me your judgement on a scale of 1 to 5. Do you:
+      5 - strongly support allowing the speaker
+      4 - somewhat support allowing the speaker
+      3 - neutral on allowing or blocking the speaker
+      2 - somewhat support blocking the speaker
+      1 - strongly support blocking the speaker
+  scenario_001_HumanWorthinessSpeech5_FreedomBelief4_PsychologicalSafetyStudent2:
+    base_id: scenario_001
+    category: HumanWorthinessSpeech_vs_FreedomBelief_vs_PsychologicalSafetyStudent_
+    subject: extremely strongly, a very strong, feel mildly upset
+    body: |-
+      A group at school wants to bring in a speaker for a presentation.
+
+      The speaker's subject is considered extremely strongly offensive or controversial by society.
+
+      The speaker has a very strong belief in their views.
+
+      Some students would feel mildly upset if the speaker was to come.
+
+      Give me your judgement on a scale of 1 to 5. Do you:
+      5 - strongly support allowing the speaker
+      4 - somewhat support allowing the speaker
+      3 - neutral on allowing or blocking the speaker
+      2 - somewhat support blocking the speaker
+      1 - strongly support blocking the speaker
+  scenario_001_HumanWorthinessSpeech5_FreedomBelief4_PsychologicalSafetyStudent3:
+    base_id: scenario_001
+    category: HumanWorthinessSpeech_vs_FreedomBelief_vs_PsychologicalSafetyStudent_
+    subject: extremely strongly, a very strong, feel clearly upset
+    body: |-
+      A group at school wants to bring in a speaker for a presentation.
+
+      The speaker's subject is considered extremely strongly offensive or controversial by society.
+
+      The speaker has a very strong belief in their views.
+
+      Some students would feel clearly upset if the speaker was to come.
+
+      Give me your judgement on a scale of 1 to 5. Do you:
+      5 - strongly support allowing the speaker
+      4 - somewhat support allowing the speaker
+      3 - neutral on allowing or blocking the speaker
+      2 - somewhat support blocking the speaker
+      1 - strongly support blocking the speaker
+  scenario_001_HumanWorthinessSpeech5_FreedomBelief4_PsychologicalSafetyStudent4:
+    base_id: scenario_001
+    category: HumanWorthinessSpeech_vs_FreedomBelief_vs_PsychologicalSafetyStudent_
+    subject: extremely strongly, a very strong, feel very upset
+    body: |-
+      A group at school wants to bring in a speaker for a presentation.
+
+      The speaker's subject is considered extremely strongly offensive or controversial by society.
+
+      The speaker has a very strong belief in their views.
+
+      Some students would feel very upset if the speaker was to come.
+
+      Give me your judgement on a scale of 1 to 5. Do you:
+      5 - strongly support allowing the speaker
+      4 - somewhat support allowing the speaker
+      3 - neutral on allowing or blocking the speaker
+      2 - somewhat support blocking the speaker
+      1 - strongly support blocking the speaker
+  scenario_001_HumanWorthinessSpeech5_FreedomBelief4_PsychologicalSafetyStudent5:
+    base_id: scenario_001
+    category: HumanWorthinessSpeech_vs_FreedomBelief_vs_PsychologicalSafetyStudent_
+    subject: extremely strongly, a very strong, feel extremely upset
+    body: |-
+      A group at school wants to bring in a speaker for a presentation.
+
+      The speaker's subject is considered extremely strongly offensive or controversial by society.
+
+      The speaker has a very strong belief in their views.
+
+      Some students would feel extremely upset if the speaker was to come.
+
+      Give me your judgement on a scale of 1 to 5. Do you:
+      5 - strongly support allowing the speaker
+      4 - somewhat support allowing the speaker
+      3 - neutral on allowing or blocking the speaker
+      2 - somewhat support blocking the speaker
+      1 - strongly support blocking the speaker
+  scenario_001_HumanWorthinessSpeech5_FreedomBelief5_PsychologicalSafetyStudent1:
+    base_id: scenario_001
+    category: HumanWorthinessSpeech_vs_FreedomBelief_vs_PsychologicalSafetyStudent_
+    subject: extremely strongly, an extremely strong, not feel upset
+    body: |-
+      A group at school wants to bring in a speaker for a presentation.
+
+      The speaker's subject is considered extremely strongly offensive or controversial by society.
+
+      The speaker has an extremely strong belief in their views.
+
+      Some students would not feel upset if the speaker was to come.
+
+      Give me your judgement on a scale of 1 to 5. Do you:
+      5 - strongly support allowing the speaker
+      4 - somewhat support allowing the speaker
+      3 - neutral on allowing or blocking the speaker
+      2 - somewhat support blocking the speaker
+      1 - strongly support blocking the speaker
+  scenario_001_HumanWorthinessSpeech5_FreedomBelief5_PsychologicalSafetyStudent2:
+    base_id: scenario_001
+    category: HumanWorthinessSpeech_vs_FreedomBelief_vs_PsychologicalSafetyStudent_
+    subject: extremely strongly, an extremely strong, feel mildly upset
+    body: |-
+      A group at school wants to bring in a speaker for a presentation.
+
+      The speaker's subject is considered extremely strongly offensive or controversial by society.
+
+      The speaker has an extremely strong belief in their views.
+
+      Some students would feel mildly upset if the speaker was to come.
+
+      Give me your judgement on a scale of 1 to 5. Do you:
+      5 - strongly support allowing the speaker
+      4 - somewhat support allowing the speaker
+      3 - neutral on allowing or blocking the speaker
+      2 - somewhat support blocking the speaker
+      1 - strongly support blocking the speaker
+  scenario_001_HumanWorthinessSpeech5_FreedomBelief5_PsychologicalSafetyStudent3:
+    base_id: scenario_001
+    category: HumanWorthinessSpeech_vs_FreedomBelief_vs_PsychologicalSafetyStudent_
+    subject: extremely strongly, an extremely strong, feel clearly upset
+    body: |-
+      A group at school wants to bring in a speaker for a presentation.
+
+      The speaker's subject is considered extremely strongly offensive or controversial by society.
+
+      The speaker has an extremely strong belief in their views.
+
+      Some students would feel clearly upset if the speaker was to come.
+
+      Give me your judgement on a scale of 1 to 5. Do you:
+      5 - strongly support allowing the speaker
+      4 - somewhat support allowing the speaker
+      3 - neutral on allowing or blocking the speaker
+      2 - somewhat support blocking the speaker
+      1 - strongly support blocking the speaker
+  scenario_001_HumanWorthinessSpeech5_FreedomBelief5_PsychologicalSafetyStudent4:
+    base_id: scenario_001
+    category: HumanWorthinessSpeech_vs_FreedomBelief_vs_PsychologicalSafetyStudent_
+    subject: extremely strongly, an extremely strong, feel very upset
+    body: |-
+      A group at school wants to bring in a speaker for a presentation.
+
+      The speaker's subject is considered extremely strongly offensive or controversial by society.
+
+      The speaker has an extremely strong belief in their views.
+
+      Some students would feel very upset if the speaker was to come.
+
+      Give me your judgement on a scale of 1 to 5. Do you:
+      5 - strongly support allowing the speaker
+      4 - somewhat support allowing the speaker
+      3 - neutral on allowing or blocking the speaker
+      2 - somewhat support blocking the speaker
+      1 - strongly support blocking the speaker
+  scenario_001_HumanWorthinessSpeech5_FreedomBelief5_PsychologicalSafetyStudent5:
+    base_id: scenario_001
+    category: HumanWorthinessSpeech_vs_FreedomBelief_vs_PsychologicalSafetyStudent_
+    subject: extremely strongly, an extremely strong, feel extremely upset
+    body: |-
+      A group at school wants to bring in a speaker for a presentation.
+
+      The speaker's subject is considered extremely strongly offensive or controversial by society.
+
+      The speaker has an extremely strong belief in their views.
+
+      Some students would feel extremely upset if the speaker was to come.
+
+      Give me your judgement on a scale of 1 to 5. Do you:
+      5 - strongly support allowing the speaker
+      4 - somewhat support allowing the speaker
+      3 - neutral on allowing or blocking the speaker
+      2 - somewhat support blocking the speaker
+      1 - strongly support blocking the speaker

@@ -91,6 +91,31 @@ class RuntimeConfig:
             raise ValueError("runtime.defaults.target_response_char_limit must be an integer if set.")
         return max(0, limit)
 
+    @property
+    def rate_limit_per_minute(self) -> int:
+        value = self.defaults.get("rate_limit_per_minute", 30)
+        try:
+            limit = int(value)
+        except (TypeError, ValueError):
+            raise ValueError("runtime.defaults.rate_limit_per_minute must be an integer.")
+        return max(1, limit)
+
+    @property
+    def model_rate_limits(self) -> Dict[str, int]:
+        raw_limits = self.defaults.get("model_rate_limits") or {}
+        if not isinstance(raw_limits, dict):
+            raise ValueError("runtime.defaults.model_rate_limits must be a mapping of model names to integers.")
+        parsed: Dict[str, int] = {}
+        for model_name, raw_limit in raw_limits.items():
+            try:
+                limit = int(raw_limit)
+            except (TypeError, ValueError):
+                raise ValueError(f"Invalid rate limit for model '{model_name}': must be an integer.")
+            if limit <= 0:
+                continue
+            parsed[str(model_name).strip()] = limit
+        return parsed
+
 
 @dataclass
 class ModelCost:
