@@ -448,27 +448,48 @@
 
 ---
 
-## Stage 15: Data Export & CLI Compatibility [ ]
+## Stage 15: Data Export & CLI Compatibility [x]
 
-**Goal:** Enable bulk data export and maintain CLI tool compatibility.
+> **Spec:** [011-stage-15-data-export/spec.md](./011-stage-15-data-export/spec.md) | **Plan:** [011-stage-15-data-export/plan.md](./011-stage-15-data-export/plan.md) | **Tasks:** [011-stage-15-data-export/tasks.md](./011-stage-15-data-export/tasks.md)
 
-**Deliverables:**
-- Export API endpoints (Parquet, JSON Lines)
-- CLI-compatible export format (transcripts/*.md, manifest.yaml)
-- Definition markdown serializer
-- Flexible aggregation API
-- Cohort analysis support
-- Download URL generation with expiry
+**Goal:** Enable round-trip data exchange between Cloud ValueRank and the CLI devtool.
+
+**Deliverables (MVP Scope - P1):**
+- ✅ **Export Definition as Markdown**: Download definitions in devtool-compatible `.md` format with frontmatter, preamble, template, dimensions, and matching rules
+- ✅ **Import Definition from Markdown**: Upload `.md` files from devtool to create new definitions, with validation and name conflict resolution
+- ✅ **Export Scenarios as YAML**: Download generated scenarios in CLI-compatible `.yaml` format for use with `probe.py`
+- ✅ REST endpoints: `GET /api/export/definitions/:id/md`, `GET /api/export/definitions/:id/scenarios.yaml`, `POST /api/import/definition`
+- ✅ GraphQL mutations: `exportDefinitionAsMd`, `exportScenariosAsYaml`
+- ✅ Export/import services with comprehensive test coverage
+- ✅ UI components: ExportButton dropdown, import via drag-and-drop with conflict resolution
+
+**Deferred (P2/P3):**
+- Bulk export (multiple definitions)
+- Bundle export (definition + scenarios in zip)
+- Download URLs with expiry
+- YAML import (scenarios → definition)
+- Aggregation/results export
+
+**Test Coverage:**
+- API: 72 test files, 819+ tests passing
+- Web: 62 test files, 646 tests passing
+- Export/import specific: md.ts 100%, yaml.ts 91%, import/md.ts 100%
 
 **Exit Criteria:**
-- Can export runs in multiple formats
-- Exported data can be used with CLI tool
-- Custom aggregation queries work
-- Cohort comparisons functional
+- ✅ Can export definitions as devtool-compatible `.md` files
+- ✅ Can import definitions from devtool `.md` files
+- ✅ Can export scenarios as CLI-compatible `.yaml` files
+- ✅ MD round-trip parsing validated (integration tests)
+- ✅ YAML CLI compatibility validated (integration tests)
+- ✅ Name conflict resolution with alternative name suggestions
+
+**Phase 6 Complete:** Round-trip data exchange with CLI devtool enabled.
 
 ---
 
-## Stage 16: Scale & Efficiency [ ]
+## Stage 16: Scale & Efficiency [DEFERRED]
+
+> **Deferred:** Postponed until scale requirements emerge.
 
 **Goal:** Make it cheaper to run the system at scale.
 
@@ -482,8 +503,6 @@
 - Can run sampled evaluations for quick iteration
 - Batch processing reduces per-run overhead
 - Can track actual vs estimated costs
-
-**Phase 6 Complete:** System can scale efficiently for larger experiments.
 
 ---
 
@@ -524,13 +543,14 @@ Stage 1 (Scaffolding)
             │                       └── Stage 12 (MCP Read) ─── PHASE 3 COMPLETE
             │                           └── Stage 13 (Run Comparison) ─── PHASE 4 COMPLETE
             │                               └── Stage 14 (MCP Write) ─── PHASE 5 COMPLETE
+            │                                   └── Stage 15 (Data Export) ─── PHASE 6 COMPLETE
             │
             └── Stage 5 (Queue System)
                 └── Stage 6 (Python Workers)
                     └── Stage 9 (Run Execution + CSV Export)
 
 Stage 2b (Transcript Versioning) must complete before Stage 9
-Stage 15 (Export) depends on: Stages 9, 11
+Stage 15 (Export) depends on: Stages 9, 11 ─── COMPLETE
 Stage 16 (Scale) depends on: Stage 9, can be done in parallel with later stages
 Stage 17 (Deployment) can start after Stage 9
 ```
@@ -547,7 +567,8 @@ Stage 17 (Deployment) can start after Stage 9
 | **Analysis** | 11-12 | Auto-analysis, visualizations, MCP read | **Phase 3: Automated Analysis** |
 | **Comparison** | 13 | Run comparison, delta analysis | **Phase 4: Comparison** |
 | **AI Authoring** | 14 | MCP write tools | **Phase 5: AI-Assisted Authoring** |
-| **Scale** | 15-16 | Export, batch processing, sampling | **Phase 6: Scale & Efficiency** |
+| **Data Exchange** | 15 | CLI compatibility, export/import | **Phase 6: CLI Interop** |
+| **Scale** | 16 | Batch processing, sampling, cost tracking | *(deferred)* |
 | **Ship** | 17 | Production deployment | - |
 
 ---
