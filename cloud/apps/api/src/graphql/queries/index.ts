@@ -6,3 +6,6 @@ import './run.js';
 import './user.js';
 import './queue.js';
 import './tag.js';
+import './models.js';
+import './health.js';
+import './scenarios.js';

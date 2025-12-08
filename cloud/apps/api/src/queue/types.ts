@@ -5,7 +5,7 @@
  */
 
 // Job type union
-export type JobType = 'probe_scenario' | 'analyze_basic' | 'analyze_deep';
+export type JobType = 'probe_scenario' | 'summarize_transcript' | 'analyze_basic' | 'analyze_deep' | 'expand_scenarios';
 
 // Job data interfaces
 export type ProbeScenarioJobData = {
@@ -19,6 +19,12 @@ export type ProbeScenarioJobData = {
   };
 };
 
+export type SummarizeTranscriptJobData = {
+  runId: string;
+  transcriptId: string;
+  summaryModelId?: string; // Optional: defaults to configured summary model
+};
+
 export type AnalyzeBasicJobData = {
   runId: string;
   transcriptIds: string[];
@@ -29,8 +35,13 @@ export type AnalyzeDeepJobData = {
   analysisType: 'correlations' | 'pca' | 'outliers';
 };
 
+export type ExpandScenariosJobData = {
+  definitionId: string;
+  triggeredBy: 'create' | 'update' | 'fork';
+};
+
 // Job data union type
-export type JobData = ProbeScenarioJobData | AnalyzeBasicJobData | AnalyzeDeepJobData;
+export type JobData = ProbeScenarioJobData | SummarizeTranscriptJobData | AnalyzeBasicJobData | AnalyzeDeepJobData | ExpandScenariosJobData;
 
 // Job options interface
 export type JobOptions = {
@@ -50,6 +61,12 @@ export const DEFAULT_JOB_OPTIONS: Record<JobType, JobOptions> = {
     retryBackoff: true,
     expireInSeconds: 300, // 5 minutes
   },
+  'summarize_transcript': {
+    retryLimit: 3,
+    retryDelay: 10,
+    retryBackoff: true,
+    expireInSeconds: 120, // 2 minutes (summaries are quick)
+  },
   'analyze_basic': {
     retryLimit: 3,
     retryDelay: 10,
@@ -61,6 +78,13 @@ export const DEFAULT_JOB_OPTIONS: Record<JobType, JobOptions> = {
     retryDelay: 30,
     retryBackoff: true,
     expireInSeconds: 1800, // 30 minutes
+  },
+  'expand_scenarios': {
+    retryLimit: 2,
+    retryDelay: 10,
+    retryBackoff: true,
+    expireInSeconds: 300, // 5 minutes
+    singletonKey: 'definition', // Only one expansion per definition at a time
   },
 };
 
