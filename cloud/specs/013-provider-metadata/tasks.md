@@ -111,14 +111,14 @@
 
 ### Settings UI
 
-- [ ] T041 [US2] Update `apps/web/src/pages/Settings.tsx` to add tabs navigation
-- [ ] T042 [US2] Create `apps/web/src/components/settings/SettingsTabs.tsx` for tab layout
-- [ ] T043 [US2] Create `apps/web/src/components/settings/ModelsPanel.tsx` with provider-grouped table
-- [ ] T044 [US2] Create `apps/web/src/components/settings/ProviderCard.tsx` for provider display
-- [ ] T045 [US2] Create `apps/web/src/components/settings/ModelRow.tsx` for model display
-- [ ] T046 [US2] Create `apps/web/src/components/settings/ModelForm.tsx` for add/edit dialog
-- [ ] T047 [US2] Add deprecate confirmation dialog to ModelsPanel
-- [ ] T048 [US2] Wire up mutations to UI actions (create, update, deprecate)
+- [X] T041 [US2] Update `apps/web/src/pages/Settings.tsx` to add tabs navigation
+- [X] T042 [US2] Create `apps/web/src/components/ui/Tabs.tsx` for tab layout
+- [X] T043 [US2] Create `apps/web/src/components/settings/ModelsPanel.tsx` with provider-grouped table
+- [X] T044 [US2] ProviderCard implemented in ModelsPanel.tsx
+- [X] T045 [US2] ModelRow implemented in ModelsPanel.tsx
+- [X] T046 [US2] ModelFormModal implemented in ModelsPanel.tsx
+- [X] T047 [US2] Deprecate action with visual feedback in ModelsPanel
+- [X] T048 [US2] Wire up mutations to UI actions (create, update, deprecate, reactivate)
 
 **Checkpoint**: User Story 2 complete - admin can manage models via UI
 
@@ -132,16 +132,16 @@
 
 ### Backend
 
-- [ ] T049 [US3] Add setDefaultModel mutation to `apps/api/src/graphql/mutations/llm.ts`
-- [ ] T050 [US3] Add validation: only one default per provider (transaction to clear old default)
-- [ ] T051 [US3] Add defaultModel field resolver to LlmProvider type
-- [ ] T052 [US3] Update `apps/api/tests/graphql/llm-mutations.test.ts` with default tests
+- [X] T049 [US3] setDefaultModel mutation already in `apps/api/src/graphql/mutations/llm.ts` (Phase 4)
+- [X] T050 [US3] Validation for one default per provider in setDefaultLlmModel mutation
+- [X] T051 [US3] defaultModel field resolver in `apps/api/src/graphql/types/llm-provider.ts`
+- [X] T052 [US3] Tests in `apps/api/tests/graphql/llm-mutations.test.ts`
 
 ### Frontend
 
-- [ ] T053 [US3] Add "Set as Default" action to ModelRow component
-- [ ] T054 [US3] Add default badge indicator to ModelRow
-- [ ] T055 [US3] Update run creation to fetch and pre-select default models
+- [X] T053 [US3] "Set as Default" action in ModelsPanel ModelRow
+- [X] T054 [US3] Default badge indicator in ModelsPanel ModelRow
+- [X] T055 [US3] RunForm pre-selects default models on load
 
 **Checkpoint**: User Story 3 complete - defaults work in UI and run creation
 

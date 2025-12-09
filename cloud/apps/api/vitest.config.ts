@@ -9,6 +9,11 @@ export default defineConfig({
     // Run test files sequentially to avoid database conflicts
     // (multiple test files clean and create the same LLM tables)
     fileParallelism: false,
+    // Also run tests within each file sequentially for database isolation
+    sequence: { concurrent: false },
+    // Force single-threaded execution for database tests
+    pool: 'forks',
+    poolOptions: { forks: { singleFork: true } },
     reporters: ['default', 'json'],
     outputFile: {
       json: 'coverage/test-results.json',

@@ -43,6 +43,7 @@ builder.queryField('availableModels', (t) =>
         versions: [m.modelId], // Single version from database
         defaultVersion: m.modelId,
         isAvailable: m.isAvailable,
+        isDefault: m.isDefault, // Include default status for UI pre-selection
       }));
 
       ctx.log.debug(
