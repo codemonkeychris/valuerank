@@ -136,6 +136,13 @@ export function getProvider(providerId: string): LLMProvider | undefined {
 }
 
 /**
+ * Get list of available provider IDs (those with configured API keys).
+ */
+export function getAvailableProviders(): string[] {
+  return LLM_PROVIDERS.filter((p) => isProviderConfigured(p.envKey)).map((p) => p.id);
+}
+
+/**
  * Get model info with full model ID (provider:model format).
  */
 export function parseModelId(fullModelId: string): { providerId: string; modelId: string } | null {

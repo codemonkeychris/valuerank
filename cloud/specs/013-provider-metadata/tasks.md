@@ -14,8 +14,8 @@
 
 **Purpose**: Project initialization and branch setup
 
-- [ ] T001 Create feature branch `feat/013-provider-metadata`
-- [ ] T002 Verify Docker postgres is running on port 5433
+- [X] T001 Create feature branch `feat/013-provider-metadata`
+- [X] T002 Verify Docker postgres is running on port 5433
 
 **Checkpoint**: Development environment ready
 
@@ -29,44 +29,44 @@
 
 ### Database Schema
 
-- [ ] T003 Add `LlmProvider` model to `packages/db/prisma/schema.prisma` per data-model.md
-- [ ] T004 Add `LlmModel` model to `packages/db/prisma/schema.prisma` per data-model.md
-- [ ] T005 Add `LlmModelStatus` enum to `packages/db/prisma/schema.prisma`
-- [ ] T006 Add `SystemSetting` model to `packages/db/prisma/schema.prisma` per data-model.md
-- [ ] T007 Generate Prisma migration: `npx prisma migrate dev --name add-llm-providers`
-- [ ] T008 Add query helpers in `packages/db/src/queries/llm.ts`
-- [ ] T009 Export new queries from `packages/db/src/queries/index.ts`
+- [X] T003 Add `LlmProvider` model to `packages/db/prisma/schema.prisma` per data-model.md
+- [X] T004 Add `LlmModel` model to `packages/db/prisma/schema.prisma` per data-model.md
+- [X] T005 Add `LlmModelStatus` enum to `packages/db/prisma/schema.prisma`
+- [X] T006 Add `SystemSetting` model to `packages/db/prisma/schema.prisma` per data-model.md
+- [X] T007 Generate Prisma migration: `npx prisma migrate dev --name add-llm-providers`
+- [X] T008 Add query helpers in `packages/db/src/queries/llm.ts`
+- [X] T009 Export new queries from `packages/db/src/queries/index.ts`
 
 ### Database Seed
 
-- [ ] T010 Add provider seed data to `packages/db/prisma/seed.ts` per data-model.md
-- [ ] T011 Add model seed data to `packages/db/prisma/seed.ts` per data-model.md
-- [ ] T012 Add system settings seed data to `packages/db/prisma/seed.ts`
-- [ ] T013 Run seed and verify: `npm run db:seed`
+- [X] T010 Add provider seed data to `packages/db/prisma/seed.ts` per data-model.md
+- [X] T011 Add model seed data to `packages/db/prisma/seed.ts` per data-model.md
+- [X] T012 Add system settings seed data to `packages/db/prisma/seed.ts`
+- [X] T013 Run seed and verify: `npm run db:seed`
 
 ### GraphQL Types
 
-- [ ] T014 [P] Create `apps/api/src/graphql/types/llm-provider.ts` per contracts/llm-schema.graphql
-- [ ] T015 [P] Create `apps/api/src/graphql/types/llm-model.ts` per contracts/llm-schema.graphql
-- [ ] T016 [P] Create `apps/api/src/graphql/types/system-setting.ts` per contracts/llm-schema.graphql
-- [ ] T017 Create `apps/api/src/graphql/types/inputs/llm.ts` for input types
-- [ ] T018 Export types from `apps/api/src/graphql/types/index.ts`
-- [ ] T019 Create `apps/api/src/graphql/dataloaders/llm.ts` for provider/model loading
+- [X] T014 [P] Create `apps/api/src/graphql/types/llm-provider.ts` per contracts/llm-schema.graphql
+- [X] T015 [P] Create `apps/api/src/graphql/types/llm-model.ts` per contracts/llm-schema.graphql
+- [X] T016 [P] Create `apps/api/src/graphql/types/system-setting.ts` per contracts/llm-schema.graphql
+- [X] T017 Create `apps/api/src/graphql/types/inputs/llm.ts` for input types
+- [X] T018 Export types from `apps/api/src/graphql/types/index.ts`
+- [X] T019 Create `apps/api/src/graphql/dataloaders/llm.ts` for provider/model loading
 
 ### GraphQL Queries
 
-- [ ] T020 Create `apps/api/src/graphql/queries/llm.ts` with llmProviders query
-- [ ] T021 Add llmModels query to `apps/api/src/graphql/queries/llm.ts`
-- [ ] T022 Add llmModel query to `apps/api/src/graphql/queries/llm.ts`
-- [ ] T023 Add systemSettings query to `apps/api/src/graphql/queries/llm.ts`
-- [ ] T024 Add infraModel query to `apps/api/src/graphql/queries/llm.ts`
-- [ ] T025 Export queries from `apps/api/src/graphql/queries/index.ts`
+- [X] T020 Create `apps/api/src/graphql/queries/llm.ts` with llmProviders query
+- [X] T021 Add llmModels query to `apps/api/src/graphql/queries/llm.ts`
+- [X] T022 Add llmModel query to `apps/api/src/graphql/queries/llm.ts`
+- [X] T023 Add systemSettings query to `apps/api/src/graphql/queries/llm.ts`
+- [X] T024 Add infraModel query to `apps/api/src/graphql/queries/llm.ts`
+- [X] T025 Export queries from `apps/api/src/graphql/queries/index.ts`
 
 ### Foundation Tests
 
-- [ ] T026 [P] Create `packages/db/tests/llm.test.ts` for query helpers
-- [ ] T027 [P] Create `apps/api/tests/graphql/llm-queries.test.ts` for queries
-- [ ] T028 Run tests and verify: `npm test`
+- [X] T026 [P] Create `packages/db/tests/llm.test.ts` for query helpers
+- [X] T027 [P] Create `apps/api/tests/graphql/llm-queries.test.ts` for queries
+- [X] T028 Run tests and verify: `npm test`
 
 **Checkpoint**: Foundation ready - database seeded, GraphQL queries working
 
