@@ -106,12 +106,12 @@
 
 ### Implementation for User Story 3
 
-- [ ] T032 [US3] Create `apps/api/src/mcp/tools/list-llm-providers.ts` with Zod input schema
-- [ ] T033 [US3] Implement provider listing with model counts (delegate to `packages/db/src/queries/llm.ts`)
-- [ ] T034 [US3] Implement `include_models` parameter support
-- [ ] T035 [US3] Ensure response under 3KB (no models) / 8KB (with models)
-- [ ] T036 [US3] Register tool via `addToolRegistrar`
-- [ ] T037 [US3] Write test `apps/api/tests/mcp/tools/list-llm-providers.test.ts`
+- [X] T032 [US3] Create `apps/api/src/mcp/tools/list-llm-providers.ts` with Zod input schema
+- [X] T033 [US3] Implement provider listing with model counts (delegate to `packages/db/src/queries/llm.ts`)
+- [X] T034 [US3] Implement `include_models` parameter support
+- [X] T035 [US3] Ensure response under 3KB (no models) / 8KB (with models)
+- [X] T036 [US3] Register tool via `addToolRegistrar`
+- [X] T037 [US3] Write test `apps/api/tests/mcp/tools/list-llm-providers.test.ts`
 
 **Checkpoint**: User Story 3 should be fully functional and testable independently
 
@@ -125,17 +125,17 @@
 
 ### Implementation for User Story 4
 
-- [ ] T038 [US4] Create `apps/api/src/mcp/tools/list-llm-models.ts` with Zod input schema
-- [ ] T039 [US4] Implement model listing with filters (provider_id, status, available_only)
-- [ ] T040 [US4] Add `isAvailable` computation (check API key env vars)
-- [ ] T041 [US4] Ensure response under 5KB
-- [ ] T042 [US4] Register tool via `addToolRegistrar`
-- [ ] T043 [US4] Write test `apps/api/tests/mcp/tools/list-llm-models.test.ts`
+- [X] T038 [US4] Create `apps/api/src/mcp/tools/list-llm-models.ts` with Zod input schema
+- [X] T039 [US4] Implement model listing with filters (provider_id, status, available_only)
+- [X] T040 [US4] Add `isAvailable` computation (check API key env vars)
+- [X] T041 [US4] Ensure response under 5KB
+- [X] T042 [US4] Register tool via `addToolRegistrar`
+- [X] T043 [US4] Write test `apps/api/tests/mcp/tools/list-llm-models.test.ts`
 
 ### get_llm_model Tool
 
-- [ ] T044 [P] [US4] Create `apps/api/src/mcp/tools/get-llm-model.ts` with dual lookup (id OR provider+modelId)
-- [ ] T045 [P] [US4] Write test `apps/api/tests/mcp/tools/get-llm-model.test.ts`
+- [X] T044 [P] [US4] Create `apps/api/src/mcp/tools/get-llm-model.ts` with dual lookup (id OR provider+modelId)
+- [X] T045 [P] [US4] Write test `apps/api/tests/mcp/tools/get-llm-model.test.ts`
 
 **Checkpoint**: User Story 4 should be fully functional and testable independently
 
@@ -149,12 +149,12 @@
 
 ### Implementation for User Story 5
 
-- [ ] T046 [US5] Create `apps/api/src/mcp/tools/create-llm-model.ts` with Zod input schema
-- [ ] T047 [US5] Implement validation (provider exists, no duplicate model_id)
-- [ ] T048 [US5] Delegate to `createModel` in `packages/db/src/queries/llm.ts`
-- [ ] T049 [US5] Add audit logging for create_llm_model action
-- [ ] T050 [US5] Register tool via `addToolRegistrar`
-- [ ] T051 [US5] Write test `apps/api/tests/mcp/tools/create-llm-model.test.ts`
+- [X] T046 [US5] Create `apps/api/src/mcp/tools/create-llm-model.ts` with Zod input schema
+- [X] T047 [US5] Implement validation (provider exists, no duplicate model_id)
+- [X] T048 [US5] Delegate to `createModel` in `packages/db/src/queries/llm.ts`
+- [X] T049 [US5] Add audit logging for create_llm_model action
+- [X] T050 [US5] Register tool via `addToolRegistrar`
+- [X] T051 [US5] Write test `apps/api/tests/mcp/tools/create-llm-model.test.ts`
 
 **Checkpoint**: User Story 5 should be fully functional and testable independently
 
@@ -168,12 +168,12 @@
 
 ### Implementation for User Story 6
 
-- [ ] T052 [US6] Create `apps/api/src/mcp/tools/update-llm-model.ts` with Zod input schema
-- [ ] T053 [US6] Implement validation (model exists, immutable fields rejected)
-- [ ] T054 [US6] Delegate to `updateModel` in `packages/db/src/queries/llm.ts`
-- [ ] T055 [US6] Add audit logging for update_llm_model action
-- [ ] T056 [US6] Register tool via `addToolRegistrar`
-- [ ] T057 [US6] Write test `apps/api/tests/mcp/tools/update-llm-model.test.ts`
+- [X] T052 [US6] Create `apps/api/src/mcp/tools/update-llm-model.ts` with Zod input schema
+- [X] T053 [US6] Implement validation (model exists, immutable fields rejected)
+- [X] T054 [US6] Delegate to `updateModel` in `packages/db/src/queries/llm.ts`
+- [X] T055 [US6] Add audit logging for update_llm_model action
+- [X] T056 [US6] Register tool via `addToolRegistrar`
+- [X] T057 [US6] Write test `apps/api/tests/mcp/tools/update-llm-model.test.ts`
 
 **Checkpoint**: User Story 6 should be fully functional and testable independently
 
@@ -187,19 +187,19 @@
 
 ### Implementation for User Story 7
 
-- [ ] T058 [US7] Create `apps/api/src/mcp/tools/deprecate-llm-model.ts` with Zod input schema
-- [ ] T059 [US7] Delegate to `deprecateModel` in `packages/db/src/queries/llm.ts`
-- [ ] T060 [US7] Return both deprecated model and new default (if applicable)
-- [ ] T061 [US7] Add audit logging for deprecate_llm_model action
-- [ ] T062 [US7] Register tool via `addToolRegistrar`
-- [ ] T063 [US7] Write test `apps/api/tests/mcp/tools/deprecate-llm-model.test.ts`
+- [X] T058 [US7] Create `apps/api/src/mcp/tools/deprecate-llm-model.ts` with Zod input schema
+- [X] T059 [US7] Delegate to `deprecateModel` in `packages/db/src/queries/llm.ts`
+- [X] T060 [US7] Return both deprecated model and new default (if applicable)
+- [X] T061 [US7] Add audit logging for deprecate_llm_model action
+- [X] T062 [US7] Register tool via `addToolRegistrar`
+- [X] T063 [US7] Write test `apps/api/tests/mcp/tools/deprecate-llm-model.test.ts`
 
 ### Reactivate Tool
 
-- [ ] T064 [P] [US7] Create `apps/api/src/mcp/tools/reactivate-llm-model.ts`
-- [ ] T065 [P] [US7] Delegate to `reactivateModel` in `packages/db/src/queries/llm.ts`
-- [ ] T066 [P] [US7] Add audit logging for reactivate_llm_model action
-- [ ] T067 [P] [US7] Write test `apps/api/tests/mcp/tools/reactivate-llm-model.test.ts`
+- [X] T064 [P] [US7] Create `apps/api/src/mcp/tools/reactivate-llm-model.ts`
+- [X] T065 [P] [US7] Delegate to `reactivateModel` in `packages/db/src/queries/llm.ts`
+- [X] T066 [P] [US7] Add audit logging for reactivate_llm_model action
+- [X] T067 [P] [US7] Write test `apps/api/tests/mcp/tools/reactivate-llm-model.test.ts`
 
 **Checkpoint**: User Story 7 should be fully functional and testable independently
 
@@ -213,13 +213,13 @@
 
 ### Implementation for User Story 8
 
-- [ ] T068 [US8] Create `apps/api/src/mcp/tools/set-default-llm-model.ts` with Zod input schema
-- [ ] T069 [US8] Implement validation (model is ACTIVE, not DEPRECATED)
-- [ ] T070 [US8] Delegate to `setDefaultModel` in `packages/db/src/queries/llm.ts`
-- [ ] T071 [US8] Return both new default and previous default
-- [ ] T072 [US8] Add audit logging for set_default_llm_model action
-- [ ] T073 [US8] Register tool via `addToolRegistrar`
-- [ ] T074 [US8] Write test `apps/api/tests/mcp/tools/set-default-llm-model.test.ts`
+- [X] T068 [US8] Create `apps/api/src/mcp/tools/set-default-llm-model.ts` with Zod input schema
+- [X] T069 [US8] Implement validation (model is ACTIVE, not DEPRECATED)
+- [X] T070 [US8] Delegate to `setDefaultModel` in `packages/db/src/queries/llm.ts`
+- [X] T071 [US8] Return both new default and previous default
+- [X] T072 [US8] Add audit logging for set_default_llm_model action
+- [X] T073 [US8] Register tool via `addToolRegistrar`
+- [X] T074 [US8] Write test `apps/api/tests/mcp/tools/set-default-llm-model.test.ts`
 
 **Checkpoint**: User Story 8 should be fully functional and testable independently
 
@@ -233,12 +233,12 @@
 
 ### Implementation for User Story 9
 
-- [ ] T075 [US9] Create `apps/api/src/mcp/tools/update-llm-provider.ts` with Zod input schema
-- [ ] T076 [US9] Implement validation (provider exists, maxParallelRequests >= 1)
-- [ ] T077 [US9] Delegate to `updateProvider` in `packages/db/src/queries/llm.ts`
-- [ ] T078 [US9] Add audit logging for update_llm_provider action
-- [ ] T079 [US9] Register tool via `addToolRegistrar`
-- [ ] T080 [US9] Write test `apps/api/tests/mcp/tools/update-llm-provider.test.ts`
+- [X] T075 [US9] Create `apps/api/src/mcp/tools/update-llm-provider.ts` with Zod input schema
+- [X] T076 [US9] Implement validation (provider exists, maxParallelRequests >= 1)
+- [X] T077 [US9] Delegate to `updateProvider` in `packages/db/src/queries/llm.ts`
+- [X] T078 [US9] Add audit logging for update_llm_provider action
+- [X] T079 [US9] Register tool via `addToolRegistrar`
+- [X] T080 [US9] Write test `apps/api/tests/mcp/tools/update-llm-provider.test.ts`
 
 **Checkpoint**: User Story 9 should be fully functional and testable independently
 
@@ -252,12 +252,12 @@
 
 ### Implementation for User Story 10
 
-- [ ] T081 [US10] Create `apps/api/src/mcp/tools/set-infra-model.ts` with Zod input schema
-- [ ] T082 [US10] Implement validation (purpose in allowed list, model exists)
-- [ ] T083 [US10] Delegate to `upsertSetting` in `packages/db/src/queries/llm.ts`
-- [ ] T084 [US10] Add audit logging for set_infra_model action
-- [ ] T085 [US10] Register tool via `addToolRegistrar`
-- [ ] T086 [US10] Write test `apps/api/tests/mcp/tools/set-infra-model.test.ts`
+- [X] T081 [US10] Create `apps/api/src/mcp/tools/set-infra-model.ts` with Zod input schema
+- [X] T082 [US10] Implement validation (purpose in allowed list, model exists)
+- [X] T083 [US10] Delegate to `upsertSetting` in `packages/db/src/queries/llm.ts`
+- [X] T084 [US10] Add audit logging for set_infra_model action
+- [X] T085 [US10] Register tool via `addToolRegistrar`
+- [X] T086 [US10] Write test `apps/api/tests/mcp/tools/set-infra-model.test.ts`
 
 **Checkpoint**: User Story 10 should be fully functional and testable independently
 
@@ -271,12 +271,12 @@
 
 ### Implementation for User Story 11
 
-- [ ] T087 [US11] Create `apps/api/src/mcp/tools/list-system-settings.ts` with Zod input schema
-- [ ] T088 [US11] Implement listing with optional key filter
-- [ ] T089 [US11] Delegate to `getAllSettings`/`getSettingByKey` in `packages/db/src/queries/llm.ts`
-- [ ] T090 [US11] Ensure response under 2KB
-- [ ] T091 [US11] Register tool via `addToolRegistrar`
-- [ ] T092 [US11] Write test `apps/api/tests/mcp/tools/list-system-settings.test.ts`
+- [X] T087 [US11] Create `apps/api/src/mcp/tools/list-system-settings.ts` with Zod input schema
+- [X] T088 [US11] Implement listing with optional key filter
+- [X] T089 [US11] Delegate to `getAllSettings`/`getSettingByKey` in `packages/db/src/queries/llm.ts`
+- [X] T090 [US11] Ensure response under 2KB
+- [X] T091 [US11] Register tool via `addToolRegistrar`
+- [X] T092 [US11] Write test `apps/api/tests/mcp/tools/list-system-settings.test.ts`
 
 **Checkpoint**: User Story 11 should be fully functional and testable independently
 
@@ -288,15 +288,15 @@
 
 ### Test Coverage
 
-- [ ] T093 Run full test suite: `npm test`
-- [ ] T094 Verify 80% coverage on new MCP tools: `npm run test:coverage`
-- [ ] T095 [P] Fix any failing tests or coverage gaps
+- [X] T093 Run full test suite: `npm test`
+- [X] T094 Verify 80% coverage on new MCP tools: `npm run test:coverage`
+- [X] T095 [P] Fix any failing tests or coverage gaps
 
 ### Integration Verification
 
-- [ ] T096 Verify all 13 new tools registered in MCP server (check logs on startup)
+- [X] T096 Verify all 13 new tools registered in MCP server (check logs on startup)
 - [ ] T097 Run quickstart.md manual tests with Claude Desktop
-- [ ] T098 Verify response sizes within limits (per spec FR-030, FR-032, FR-037, FR-043)
+- [X] T098 Verify response sizes within limits (per spec FR-030, FR-032, FR-037, FR-043)
 
 ### Documentation
 
