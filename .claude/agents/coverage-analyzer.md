@@ -63,8 +63,8 @@ This project has both TypeScript/JavaScript and Python code organized as follows
 
 1. **Run tests and capture output**:
    ```bash
-   # TypeScript/JavaScript tests
-   cd cloud && npm run test:coverage --workspaces 2>&1 | tee /tmp/test-output.log
+   # TypeScript/JavaScript tests (use turbo to respect per-package vitest configs)
+   cd cloud && DATABASE_URL="postgresql://valuerank:valuerank@localhost:5433/valuerank_test" JWT_SECRET="test-secret-that-is-at-least-32-characters-long" npx turbo run test:coverage 2>&1 | tee /tmp/test-output.log
 
    # Python tests (workers)
    cd cloud/workers && PYTHONPATH=. pytest --cov=. --cov-report=term 2>&1 | tee /tmp/python-test-output.log
@@ -131,14 +131,19 @@ ls -la cloud/workers/.coverage 2>/dev/null
 If coverage data doesn't exist or is stale (>1 hour old), run coverage tests and capture output:
 
 ```bash
-# Run TypeScript/JavaScript coverage
-cd cloud && npm run test:coverage --workspaces 2>&1 | tee /tmp/test-output.log
+# Run TypeScript/JavaScript coverage using turbo (REQUIRED - npm workspaces doesn't work)
+# This ensures each package uses its own vitest config (web uses jsdom, api uses node)
+cd cloud && DATABASE_URL="postgresql://valuerank:valuerank@localhost:5433/valuerank_test" JWT_SECRET="test-secret-that-is-at-least-32-characters-long" npx turbo run test:coverage 2>&1 | tee /tmp/test-output.log
 
 # Run Python coverage
 cd cloud/workers && PYTHONPATH=. pytest --cov=. --cov-report=term 2>&1 | tee /tmp/python-test-output.log
 ```
 
-**CRITICAL**: Always capture output to a file for parsing by the helper scripts.
+**CRITICAL**:
+- Always use `npx turbo run test:coverage` NOT `npm run test:coverage --workspaces`
+- The web tests require jsdom environment which is only configured in `apps/web/vitest.config.ts`
+- Running vitest directly from root without turbo will fail for web tests with "document is not defined"
+- Always capture output to a file for parsing by the helper scripts.
 
 ### Step 2: Parse Test Execution Results
 
