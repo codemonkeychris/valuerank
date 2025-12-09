@@ -86,13 +86,13 @@
 
 ### Implementation for User Story 2
 
-- [ ] T025 [US2] Create `apps/api/src/mcp/tools/delete-run.ts` with Zod input schema
-- [ ] T026 [US2] Implement run existence check (not already deleted)
-- [ ] T027 [US2] Implement job cancellation for RUNNING/PENDING runs via PgBoss
-- [ ] T028 [US2] Implement cascading soft-delete (run + transcripts + analysis_results in transaction)
-- [ ] T029 [US2] Add audit logging for delete_run action
-- [ ] T030 [US2] Register tool via `addToolRegistrar`
-- [ ] T031 [US2] Write test `apps/api/tests/mcp/tools/delete-run.test.ts`
+- [X] T025 [US2] Create `apps/api/src/mcp/tools/delete-run.ts` with Zod input schema
+- [X] T026 [US2] Implement run existence check (not already deleted)
+- [X] T027 [US2] Implement job cancellation for RUNNING/PENDING runs via PgBoss
+- [X] T028 [US2] Implement cascading soft-delete (run + transcripts + analysis_results in transaction)
+- [X] T029 [US2] Add audit logging for delete_run action
+- [X] T030 [US2] Register tool via `addToolRegistrar`
+- [X] T031 [US2] Write test `apps/api/tests/mcp/tools/delete-run.test.ts`
 
 **Checkpoint**: User Story 2 should be fully functional and testable independently
 

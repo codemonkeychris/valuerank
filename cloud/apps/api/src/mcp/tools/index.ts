@@ -34,6 +34,7 @@ import './start-run.js';
 import './generate-scenarios-preview.js';
 // Feature 014 - Delete Tools
 import './delete-definition.js';
+import './delete-run.js';
 
 /**
  * Registers all MCP tools on the given server
