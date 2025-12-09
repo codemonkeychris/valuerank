@@ -14,7 +14,6 @@ import { registerAllTools } from './tools/index.js';
 import { registerAllResources } from './resources/index.js';
 import { mcpAuthMiddleware } from './auth.js';
 import { mcpRateLimiter } from './rate-limit.js';
-import { protectedResourceMetadata } from './oauth/index.js';
 
 const log = createLogger('mcp:router');
 
@@ -36,10 +35,6 @@ export function createMcpRouter(): Router {
   const mcpServer = getMcpServer();
   registerAllTools(mcpServer);
   registerAllResources(mcpServer);
-
-  // Protected Resource Metadata (RFC 9728) - no auth required
-  // Claude.ai fetches this to discover the authorization server
-  router.get('/.well-known/resource.json', protectedResourceMetadata);
 
   // HEAD request for protocol version check - no auth required
   // Claude.ai uses this to verify MCP compatibility

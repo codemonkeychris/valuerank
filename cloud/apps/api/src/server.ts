@@ -9,7 +9,7 @@ import { importRouter } from './routes/import.js';
 import { authMiddleware, graphqlAuthMiddleware } from './auth/index.js';
 import { yoga } from './graphql/index.js';
 import { createMcpRouter } from './mcp/index.js';
-import { createOAuthRouter, authorizationServerMetadata, startAuthCodeCleanup } from './mcp/oauth/index.js';
+import { createOAuthRouter, authorizationServerMetadata, protectedResourceMetadata, startAuthCodeCleanup } from './mcp/oauth/index.js';
 import { createLogger, AppError } from '@valuerank/shared';
 
 // Extend Express Request to include logger
@@ -56,12 +56,14 @@ export function createServer() {
   app.use('/api/export', exportRouter);
   app.use('/api/import', importRouter);
 
-  // OAuth 2.1 endpoints for MCP authentication (RFC 8414, 7591)
+  // OAuth 2.1 endpoints for MCP authentication (RFC 8414, 7591, 9728)
   // - Authorization Server Metadata at /.well-known/oauth-authorization-server
+  // - Protected Resource Metadata at /.well-known/oauth-protected-resource
   // - Dynamic Client Registration at /oauth/register
   // - Authorization at /oauth/authorize
   // - Token at /oauth/token
   app.get('/.well-known/oauth-authorization-server', authorizationServerMetadata);
+  app.get('/.well-known/oauth-protected-resource', protectedResourceMetadata);
   app.use('/oauth', createOAuthRouter());
 
   // Start auth code cleanup interval
