@@ -15,6 +15,10 @@ const app = createServer();
 describe('LLM GraphQL Mutations', () => {
   let testUser: { id: string; email: string };
   let apiKey: string;
+  const testPrefix = `llm-m-${Date.now()}`; // Unique prefix for this test run
+  const createdProviderIds: string[] = [];
+  const createdModelIds: string[] = [];
+  const createdSettingKeys: string[] = [];
 
   beforeAll(async () => {
     // Create test user
@@ -38,23 +42,65 @@ describe('LLM GraphQL Mutations', () => {
   });
 
   afterAll(async () => {
-    // Clean up
+    // Clean up test-specific data
+    if (createdSettingKeys.length > 0) {
+      await db.systemSetting.deleteMany({ where: { key: { in: createdSettingKeys } } });
+    }
+    if (createdModelIds.length > 0) {
+      await db.llmModel.deleteMany({ where: { id: { in: createdModelIds } } });
+    }
+    if (createdProviderIds.length > 0) {
+      await db.llmProvider.deleteMany({ where: { id: { in: createdProviderIds } } });
+    }
     await db.apiKey.deleteMany({ where: { userId: testUser.id } });
     await db.user.delete({ where: { id: testUser.id } });
   });
 
   beforeEach(async () => {
-    // Clean LLM data before each test
-    await db.systemSetting.deleteMany();
-    await db.llmModel.deleteMany();
-    await db.llmProvider.deleteMany();
+    // Clean up data created in previous test (within same file)
+    if (createdSettingKeys.length > 0) {
+      await db.systemSetting.deleteMany({ where: { key: { in: createdSettingKeys } } });
+      createdSettingKeys.length = 0;
+    }
+    if (createdModelIds.length > 0) {
+      await db.llmModel.deleteMany({ where: { id: { in: createdModelIds } } });
+      createdModelIds.length = 0;
+    }
+    if (createdProviderIds.length > 0) {
+      await db.llmProvider.deleteMany({ where: { id: { in: createdProviderIds } } });
+      createdProviderIds.length = 0;
+    }
   });
+
+  // Helper to create provider with unique name
+  async function createTestProvider(name: string, displayName: string) {
+    const provider = await db.llmProvider.create({
+      data: { name: `${testPrefix}-${name}`, displayName },
+    });
+    createdProviderIds.push(provider.id);
+    return provider;
+  }
+
+  // Helper to create model
+  async function createTestModel(providerId: string, modelId: string, displayName: string, extra?: object) {
+    const model = await db.llmModel.create({
+      data: {
+        providerId,
+        modelId: `${testPrefix}-${modelId}`,
+        displayName,
+        costInputPerMillion: 1.0,
+        costOutputPerMillion: 2.0,
+        ...extra,
+      },
+    });
+    createdModelIds.push(model.id);
+    return model;
+  }
 
   describe('createLlmModel mutation', () => {
     it('creates a new model', async () => {
-      const provider = await db.llmProvider.create({
-        data: { name: 'openai', displayName: 'OpenAI' },
-      });
+      const provider = await createTestProvider('create-model', 'OpenAI');
+      const newModelId = `${testPrefix}-new-gpt-4o-mini`;
 
       const response = await request(app)
         .post('/graphql')
@@ -76,7 +122,7 @@ describe('LLM GraphQL Mutations', () => {
           variables: {
             input: {
               providerId: provider.id,
-              modelId: 'gpt-4o-mini',
+              modelId: newModelId,
               displayName: 'GPT-4o Mini',
               costInputPerMillion: 0.15,
               costOutputPerMillion: 0.6,
@@ -88,7 +134,8 @@ describe('LLM GraphQL Mutations', () => {
       expect(response.body.errors).toBeUndefined();
 
       const model = response.body.data.createLlmModel;
-      expect(model.modelId).toBe('gpt-4o-mini');
+      createdModelIds.push(model.id); // Track for cleanup
+      expect(model.modelId).toBe(newModelId);
       expect(model.displayName).toBe('GPT-4o Mini');
       expect(model.costInputPerMillion).toBe(0.15);
       expect(model.costOutputPerMillion).toBe(0.6);
@@ -97,20 +144,14 @@ describe('LLM GraphQL Mutations', () => {
     });
 
     it('creates model as default when setAsDefault is true', async () => {
-      const provider = await db.llmProvider.create({
-        data: { name: 'openai', displayName: 'OpenAI' },
-      });
+      const provider = await createTestProvider('create-default', 'OpenAI');
       // Create existing default
-      await db.llmModel.create({
-        data: {
-          providerId: provider.id,
-          modelId: 'gpt-4o',
-          displayName: 'GPT-4o',
-          costInputPerMillion: 2.5,
-          costOutputPerMillion: 10.0,
-          isDefault: true,
-        },
+      const existingModel = await createTestModel(provider.id, 'existing-gpt-4o', 'GPT-4o', {
+        costInputPerMillion: 2.5,
+        costOutputPerMillion: 10.0,
+        isDefault: true,
       });
+      const newModelId = `${testPrefix}-new-default-model`;
 
       const response = await request(app)
         .post('/graphql')
@@ -128,7 +169,7 @@ describe('LLM GraphQL Mutations', () => {
           variables: {
             input: {
               providerId: provider.id,
-              modelId: 'gpt-4o-mini',
+              modelId: newModelId,
               displayName: 'GPT-4o Mini',
               costInputPerMillion: 0.15,
               costOutputPerMillion: 0.6,
@@ -138,11 +179,13 @@ describe('LLM GraphQL Mutations', () => {
         });
 
       expect(response.status).toBe(200);
-      expect(response.body.data.createLlmModel.isDefault).toBe(true);
+      const model = response.body.data.createLlmModel;
+      createdModelIds.push(model.id); // Track for cleanup
+      expect(model.isDefault).toBe(true);
 
       // Verify old default was cleared
-      const oldDefault = await db.llmModel.findFirst({
-        where: { modelId: 'gpt-4o' },
+      const oldDefault = await db.llmModel.findUnique({
+        where: { id: existingModel.id },
       });
       expect(oldDefault?.isDefault).toBe(false);
     });
@@ -150,17 +193,10 @@ describe('LLM GraphQL Mutations', () => {
 
   describe('updateLlmModel mutation', () => {
     it('updates model properties', async () => {
-      const provider = await db.llmProvider.create({
-        data: { name: 'openai', displayName: 'OpenAI' },
-      });
-      const model = await db.llmModel.create({
-        data: {
-          providerId: provider.id,
-          modelId: 'gpt-4o',
-          displayName: 'GPT-4o',
-          costInputPerMillion: 2.5,
-          costOutputPerMillion: 10.0,
-        },
+      const provider = await createTestProvider('update-model', 'OpenAI');
+      const model = await createTestModel(provider.id, 'update-gpt-4o', 'GPT-4o', {
+        costInputPerMillion: 2.5,
+        costOutputPerMillion: 10.0,
       });
 
       const response = await request(app)
@@ -193,17 +229,10 @@ describe('LLM GraphQL Mutations', () => {
 
   describe('deprecateLlmModel mutation', () => {
     it('deprecates a model', async () => {
-      const provider = await db.llmProvider.create({
-        data: { name: 'openai', displayName: 'OpenAI' },
-      });
-      const model = await db.llmModel.create({
-        data: {
-          providerId: provider.id,
-          modelId: 'gpt-4o',
-          displayName: 'GPT-4o',
-          costInputPerMillion: 2.5,
-          costOutputPerMillion: 10.0,
-        },
+      const provider = await createTestProvider('deprecate-model', 'OpenAI');
+      const model = await createTestModel(provider.id, 'deprecate-gpt-4o', 'GPT-4o', {
+        costInputPerMillion: 2.5,
+        costOutputPerMillion: 10.0,
       });
 
       const response = await request(app)
@@ -233,27 +262,15 @@ describe('LLM GraphQL Mutations', () => {
     });
 
     it('promotes new default when deprecating the default model', async () => {
-      const provider = await db.llmProvider.create({
-        data: { name: 'openai', displayName: 'OpenAI' },
+      const provider = await createTestProvider('deprecate-default', 'OpenAI');
+      const defaultModel = await createTestModel(provider.id, 'deprecate-def-gpt-4o', 'GPT-4o', {
+        costInputPerMillion: 2.5,
+        costOutputPerMillion: 10.0,
+        isDefault: true,
       });
-      const defaultModel = await db.llmModel.create({
-        data: {
-          providerId: provider.id,
-          modelId: 'gpt-4o',
-          displayName: 'GPT-4o',
-          costInputPerMillion: 2.5,
-          costOutputPerMillion: 10.0,
-          isDefault: true,
-        },
-      });
-      const otherModel = await db.llmModel.create({
-        data: {
-          providerId: provider.id,
-          modelId: 'gpt-4o-mini',
-          displayName: 'GPT-4o Mini',
-          costInputPerMillion: 0.15,
-          costOutputPerMillion: 0.6,
-        },
+      const otherModel = await createTestModel(provider.id, 'deprecate-other-gpt', 'GPT-4o Mini', {
+        costInputPerMillion: 0.15,
+        costOutputPerMillion: 0.6,
       });
 
       const response = await request(app)
@@ -287,18 +304,11 @@ describe('LLM GraphQL Mutations', () => {
 
   describe('reactivateLlmModel mutation', () => {
     it('reactivates a deprecated model', async () => {
-      const provider = await db.llmProvider.create({
-        data: { name: 'openai', displayName: 'OpenAI' },
-      });
-      const model = await db.llmModel.create({
-        data: {
-          providerId: provider.id,
-          modelId: 'gpt-4o',
-          displayName: 'GPT-4o',
-          costInputPerMillion: 2.5,
-          costOutputPerMillion: 10.0,
-          status: 'DEPRECATED',
-        },
+      const provider = await createTestProvider('reactivate-model', 'OpenAI');
+      const model = await createTestModel(provider.id, 'reactivate-gpt-4o', 'GPT-4o', {
+        costInputPerMillion: 2.5,
+        costOutputPerMillion: 10.0,
+        status: 'DEPRECATED',
       });
 
       const response = await request(app)
@@ -323,17 +333,10 @@ describe('LLM GraphQL Mutations', () => {
 
   describe('setDefaultLlmModel mutation', () => {
     it('sets a model as default', async () => {
-      const provider = await db.llmProvider.create({
-        data: { name: 'openai', displayName: 'OpenAI' },
-      });
-      const model = await db.llmModel.create({
-        data: {
-          providerId: provider.id,
-          modelId: 'gpt-4o',
-          displayName: 'GPT-4o',
-          costInputPerMillion: 2.5,
-          costOutputPerMillion: 10.0,
-        },
+      const provider = await createTestProvider('set-default', 'OpenAI');
+      const model = await createTestModel(provider.id, 'setdef-gpt-4o', 'GPT-4o', {
+        costInputPerMillion: 2.5,
+        costOutputPerMillion: 10.0,
       });
 
       const response = await request(app)
@@ -362,27 +365,15 @@ describe('LLM GraphQL Mutations', () => {
     });
 
     it('clears previous default when setting new default', async () => {
-      const provider = await db.llmProvider.create({
-        data: { name: 'openai', displayName: 'OpenAI' },
+      const provider = await createTestProvider('set-new-default', 'OpenAI');
+      const oldDefault = await createTestModel(provider.id, 'old-def-gpt-4o', 'GPT-4o', {
+        costInputPerMillion: 2.5,
+        costOutputPerMillion: 10.0,
+        isDefault: true,
       });
-      const oldDefault = await db.llmModel.create({
-        data: {
-          providerId: provider.id,
-          modelId: 'gpt-4o',
-          displayName: 'GPT-4o',
-          costInputPerMillion: 2.5,
-          costOutputPerMillion: 10.0,
-          isDefault: true,
-        },
-      });
-      const newModel = await db.llmModel.create({
-        data: {
-          providerId: provider.id,
-          modelId: 'gpt-4o-mini',
-          displayName: 'GPT-4o Mini',
-          costInputPerMillion: 0.15,
-          costOutputPerMillion: 0.6,
-        },
+      const newModel = await createTestModel(provider.id, 'new-def-gpt-4o-mini', 'GPT-4o Mini', {
+        costInputPerMillion: 0.15,
+        costOutputPerMillion: 0.6,
       });
 
       const response = await request(app)
@@ -418,9 +409,7 @@ describe('LLM GraphQL Mutations', () => {
 
   describe('updateLlmProvider mutation', () => {
     it('updates provider settings', async () => {
-      const provider = await db.llmProvider.create({
-        data: { name: 'openai', displayName: 'OpenAI' },
-      });
+      const provider = await createTestProvider('update-provider', 'OpenAI');
 
       const response = await request(app)
         .post('/graphql')
@@ -455,6 +444,8 @@ describe('LLM GraphQL Mutations', () => {
 
   describe('updateSystemSetting mutation', () => {
     it('creates new setting', async () => {
+      const settingKey = `${testPrefix}-test_setting`;
+
       const response = await request(app)
         .post('/graphql')
         .set('X-API-Key', apiKey)
@@ -469,21 +460,24 @@ describe('LLM GraphQL Mutations', () => {
           `,
           variables: {
             input: {
-              key: 'test_setting',
+              key: settingKey,
               value: { foo: 'bar', number: 42 },
             },
           },
         });
 
+      createdSettingKeys.push(settingKey); // Track for cleanup
       expect(response.status).toBe(200);
-      expect(response.body.data.updateSystemSetting.key).toBe('test_setting');
+      expect(response.body.data.updateSystemSetting.key).toBe(settingKey);
       expect(response.body.data.updateSystemSetting.value).toEqual({ foo: 'bar', number: 42 });
     });
 
     it('updates existing setting', async () => {
+      const settingKey = `${testPrefix}-existing_setting`;
       await db.systemSetting.create({
-        data: { key: 'existing_setting', value: { old: true } },
+        data: { key: settingKey, value: { old: true } },
       });
+      createdSettingKeys.push(settingKey);
 
       const response = await request(app)
         .post('/graphql')
@@ -499,7 +493,7 @@ describe('LLM GraphQL Mutations', () => {
           `,
           variables: {
             input: {
-              key: 'existing_setting',
+              key: settingKey,
               value: { new: true },
             },
           },

@@ -201,11 +201,11 @@
 
 ### Python Workers
 
-- [ ] T070 [US6] Add `RATE_LIMITED` error code to `workers/common/errors.py`
-- [ ] T071 [US6] Add rate limit detection to `workers/common/llm_adapters.py` `_post_json()`
-- [ ] T072 [US6] Implement exponential backoff (30s, 60s, 90s, 120s) in `_post_json()`
-- [ ] T073 [US6] Update error classification to detect rate limit strings
-- [ ] T074 [US6] Create `workers/tests/test_rate_limit.py` for retry logic
+- [X] T070 [US6] Add `RATE_LIMITED` error code to `workers/common/errors.py`
+- [X] T071 [US6] Add rate limit detection to `workers/common/llm_adapters.py` `_post_json()`
+- [X] T072 [US6] Implement exponential backoff (30s, 60s, 90s, 120s) in `_post_json()`
+- [X] T073 [US6] Update error classification to detect rate limit strings
+- [X] T074 [US6] Create `workers/tests/test_rate_limit.py` for retry logic
 
 **Checkpoint**: User Story 6 complete - workers retry rate limits gracefully
 
@@ -219,17 +219,17 @@
 
 ### Python Workers
 
-- [ ] T075 [US7] Create `workers/common/models.py` with model metadata fetching
-- [ ] T076 [US7] Add cost calculation helper: `calculate_cost(input_tokens, output_tokens, model)`
-- [ ] T077 [US7] Update `workers/probe.py` to fetch model costs at job start
-- [ ] T078 [US7] Add `estimatedCost` to probe output
-- [ ] T079 [US7] Add cost snapshot to transcript content JSON
-- [ ] T080 [US7] Create `workers/tests/test_cost_tracking.py`
+- [X] T075 [US7] ~~Create `workers/common/models.py`~~ → Cost data passed from TypeScript API instead
+- [X] T076 [US7] Add cost calculation helper in `workers/common/cost.py`
+- [X] T077 [US7] Update `workers/probe.py` to accept modelCost in input
+- [X] T078 [US7] Add `costSnapshot` to probe output
+- [X] T079 [US7] Add cost snapshot to transcript content JSON
+- [X] T080 [US7] Create `workers/tests/test_cost_tracking.py` (11 tests)
 
 ### Frontend
 
-- [ ] T081 [US7] Add cost display to run details view
-- [ ] T082 [US7] Show cost breakdown per model in run summary
+- [X] T081 [US7] Add cost display to run details view (total cost in stats summary)
+- [X] T082 [US7] Show cost breakdown per model in run summary
 
 **Checkpoint**: User Story 7 complete - cost tracking end-to-end
 
@@ -239,10 +239,10 @@
 
 **Purpose**: Final cleanup and validation
 
-- [ ] T083 [P] Update `apps/api/src/config/models.ts` to remove hardcoded model list (deprecated)
-- [ ] T084 [P] Add structured logging for all new endpoints per constitution
-- [ ] T085 Run full test suite: `npm test`
-- [ ] T086 Run Python worker tests: `cd workers && PYTHONPATH=. pytest tests/ -v`
+- [X] T083 [P] ~~Update `apps/api/src/config/models.ts`~~ → models.ts kept for backward compatibility, DB is source of truth
+- [X] T084 [P] Structured logging already present in all new code per constitution
+- [X] T085 Run full test suite: API: 869 passed, 1 skipped
+- [X] T086 Run Python worker tests: 172 passed
 - [ ] T087 Manual validation per quickstart.md
 - [ ] T088 Update API documentation if needed
 

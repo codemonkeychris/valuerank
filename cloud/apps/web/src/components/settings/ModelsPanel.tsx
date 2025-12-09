@@ -435,7 +435,7 @@ function ModelFormModal({
 
           <div className="grid grid-cols-2 gap-4">
             <Input
-              label="Cost per 1M Input Tokens ($)"
+              label="Cost per 1M Input ($)"
               type="number"
               step="0.01"
               min="0"
@@ -445,7 +445,7 @@ function ModelFormModal({
               required={!isEditing}
             />
             <Input
-              label="Cost per 1M Output Tokens ($)"
+              label="Cost per 1M Output ($)"
               type="number"
               step="0.01"
               min="0"
