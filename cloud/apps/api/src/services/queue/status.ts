@@ -49,26 +49,10 @@ export async function getQueueStatus(): Promise<QueueStatus> {
       GROUP BY name, state
     `;
 
-    // Also get archived job counts (completed/failed) - may not exist in all pgboss versions
-    let archiveCounts: Array<{ name: string; state: string; count: bigint }> = [];
-    try {
-      archiveCounts = await db.$queryRaw<Array<{
-        name: string;
-        state: string;
-        count: bigint;
-      }>>`
-        SELECT name, state, COUNT(*) as count
-        FROM pgboss.archive
-        WHERE name IN ('probe_scenario', 'summarize_transcript', 'analyze_basic', 'analyze_deep', 'expand_scenarios')
-          AND archived_on > NOW() - INTERVAL '24 hours'
-        GROUP BY name, state
-      `;
-    } catch {
-      // Archive table may not exist - that's OK, just use job table
-      log.debug('Archive table not available, using job table only');
-    }
+    // Note: PgBoss v10+ no longer uses a separate archive table.
+    // All jobs (including completed/failed) stay in pgboss.job with different states.
 
-    // Combine and organize by job type
+    // Organize by job type
     const jobTypeMap = new Map<string, JobTypeStatus>();
     const knownTypes = ['probe_scenario', 'summarize_transcript', 'analyze_basic', 'analyze_deep', 'expand_scenarios'];
 
@@ -104,19 +88,6 @@ export async function getQueueStatus(): Promise<QueueStatus> {
           case 'cancelled':
             status.failed += count;
             break;
-        }
-      }
-    }
-
-    // Process archive counts (last 24 hours)
-    for (const row of archiveCounts) {
-      const status = jobTypeMap.get(row.name);
-      if (status) {
-        const count = Number(row.count);
-        if (row.state === 'completed') {
-          status.completed += count;
-        } else if (['failed', 'expired', 'cancelled'].includes(row.state)) {
-          status.failed += count;
         }
       }
     }

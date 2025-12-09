@@ -32,10 +32,8 @@ describe('Queue Status Service', () => {
 
   describe('getQueueStatus', () => {
     it('returns empty counts when no jobs exist', async () => {
-      // Mock empty results
-      vi.mocked(db.$queryRaw)
-        .mockResolvedValueOnce([]) // job table
-        .mockResolvedValueOnce([]); // archive table
+      // Mock empty results - only one query now (no archive table in PgBoss v10+)
+      vi.mocked(db.$queryRaw).mockResolvedValueOnce([]);
 
       const status = await getQueueStatus();
 
@@ -51,11 +49,9 @@ describe('Queue Status Service', () => {
     });
 
     it('counts pending jobs from created state', async () => {
-      vi.mocked(db.$queryRaw)
-        .mockResolvedValueOnce([
-          { name: 'probe_scenario', state: 'created', count: BigInt(5) },
-        ])
-        .mockResolvedValueOnce([]);
+      vi.mocked(db.$queryRaw).mockResolvedValueOnce([
+        { name: 'probe_scenario', state: 'created', count: BigInt(5) },
+      ]);
 
       const status = await getQueueStatus();
 
@@ -65,11 +61,9 @@ describe('Queue Status Service', () => {
     });
 
     it('counts pending jobs from retry state', async () => {
-      vi.mocked(db.$queryRaw)
-        .mockResolvedValueOnce([
-          { name: 'probe_scenario', state: 'retry', count: BigInt(3) },
-        ])
-        .mockResolvedValueOnce([]);
+      vi.mocked(db.$queryRaw).mockResolvedValueOnce([
+        { name: 'probe_scenario', state: 'retry', count: BigInt(3) },
+      ]);
 
       const status = await getQueueStatus();
 
@@ -78,11 +72,9 @@ describe('Queue Status Service', () => {
     });
 
     it('counts active jobs', async () => {
-      vi.mocked(db.$queryRaw)
-        .mockResolvedValueOnce([
-          { name: 'analyze_basic', state: 'active', count: BigInt(2) },
-        ])
-        .mockResolvedValueOnce([]);
+      vi.mocked(db.$queryRaw).mockResolvedValueOnce([
+        { name: 'analyze_basic', state: 'active', count: BigInt(2) },
+      ]);
 
       const status = await getQueueStatus();
 
@@ -92,11 +84,9 @@ describe('Queue Status Service', () => {
     });
 
     it('counts completed jobs from job table', async () => {
-      vi.mocked(db.$queryRaw)
-        .mockResolvedValueOnce([
-          { name: 'analyze_deep', state: 'completed', count: BigInt(10) },
-        ])
-        .mockResolvedValueOnce([]);
+      vi.mocked(db.$queryRaw).mockResolvedValueOnce([
+        { name: 'analyze_deep', state: 'completed', count: BigInt(10) },
+      ]);
 
       const status = await getQueueStatus();
 
@@ -106,11 +96,9 @@ describe('Queue Status Service', () => {
     });
 
     it('counts failed jobs from failed state', async () => {
-      vi.mocked(db.$queryRaw)
-        .mockResolvedValueOnce([
-          { name: 'probe_scenario', state: 'failed', count: BigInt(2) },
-        ])
-        .mockResolvedValueOnce([]);
+      vi.mocked(db.$queryRaw).mockResolvedValueOnce([
+        { name: 'probe_scenario', state: 'failed', count: BigInt(2) },
+      ]);
 
       const status = await getQueueStatus();
 
@@ -120,11 +108,9 @@ describe('Queue Status Service', () => {
     });
 
     it('counts expired jobs as failed', async () => {
-      vi.mocked(db.$queryRaw)
-        .mockResolvedValueOnce([
-          { name: 'probe_scenario', state: 'expired', count: BigInt(1) },
-        ])
-        .mockResolvedValueOnce([]);
+      vi.mocked(db.$queryRaw).mockResolvedValueOnce([
+        { name: 'probe_scenario', state: 'expired', count: BigInt(1) },
+      ]);
 
       const status = await getQueueStatus();
 
@@ -133,11 +119,9 @@ describe('Queue Status Service', () => {
     });
 
     it('counts cancelled jobs as failed', async () => {
-      vi.mocked(db.$queryRaw)
-        .mockResolvedValueOnce([
-          { name: 'analyze_basic', state: 'cancelled', count: BigInt(4) },
-        ])
-        .mockResolvedValueOnce([]);
+      vi.mocked(db.$queryRaw).mockResolvedValueOnce([
+        { name: 'analyze_basic', state: 'cancelled', count: BigInt(4) },
+      ]);
 
       const status = await getQueueStatus();
 
@@ -145,63 +129,31 @@ describe('Queue Status Service', () => {
       expect(basicType?.failed).toBe(4);
     });
 
-    it('includes archive completed counts', async () => {
-      vi.mocked(db.$queryRaw)
-        .mockResolvedValueOnce([])
-        .mockResolvedValueOnce([
-          { name: 'probe_scenario', state: 'completed', count: BigInt(100) },
-        ]);
-
-      const status = await getQueueStatus();
-
-      const probeType = status.jobTypes.find((jt) => jt.type === 'probe_scenario');
-      expect(probeType?.completed).toBe(100);
-    });
-
-    it('includes archive failed counts', async () => {
-      vi.mocked(db.$queryRaw)
-        .mockResolvedValueOnce([])
-        .mockResolvedValueOnce([
-          { name: 'analyze_deep', state: 'failed', count: BigInt(5) },
-        ]);
-
-      const status = await getQueueStatus();
-
-      const deepType = status.jobTypes.find((jt) => jt.type === 'analyze_deep');
-      expect(deepType?.failed).toBe(5);
-    });
-
-    it('combines job and archive counts', async () => {
-      vi.mocked(db.$queryRaw)
-        .mockResolvedValueOnce([
-          { name: 'probe_scenario', state: 'created', count: BigInt(10) },
-          { name: 'probe_scenario', state: 'active', count: BigInt(3) },
-          { name: 'probe_scenario', state: 'completed', count: BigInt(50) },
-        ])
-        .mockResolvedValueOnce([
-          { name: 'probe_scenario', state: 'completed', count: BigInt(200) },
-          { name: 'probe_scenario', state: 'failed', count: BigInt(5) },
-        ]);
+    it('counts all job states from single job table query', async () => {
+      // PgBoss v10+ keeps all jobs in one table with different states
+      vi.mocked(db.$queryRaw).mockResolvedValueOnce([
+        { name: 'probe_scenario', state: 'created', count: BigInt(10) },
+        { name: 'probe_scenario', state: 'active', count: BigInt(3) },
+        { name: 'probe_scenario', state: 'completed', count: BigInt(50) },
+        { name: 'probe_scenario', state: 'failed', count: BigInt(5) },
+      ]);
 
       const status = await getQueueStatus();
 
       const probeType = status.jobTypes.find((jt) => jt.type === 'probe_scenario');
       expect(probeType?.pending).toBe(10);
       expect(probeType?.active).toBe(3);
-      expect(probeType?.completed).toBe(250); // 50 + 200
+      expect(probeType?.completed).toBe(50);
       expect(probeType?.failed).toBe(5);
     });
 
     it('aggregates counts across all job types', async () => {
-      vi.mocked(db.$queryRaw)
-        .mockResolvedValueOnce([
-          { name: 'probe_scenario', state: 'created', count: BigInt(5) },
-          { name: 'analyze_basic', state: 'active', count: BigInt(2) },
-          { name: 'analyze_deep', state: 'completed', count: BigInt(10) },
-        ])
-        .mockResolvedValueOnce([
-          { name: 'probe_scenario', state: 'failed', count: BigInt(1) },
-        ]);
+      vi.mocked(db.$queryRaw).mockResolvedValueOnce([
+        { name: 'probe_scenario', state: 'created', count: BigInt(5) },
+        { name: 'probe_scenario', state: 'failed', count: BigInt(1) },
+        { name: 'analyze_basic', state: 'active', count: BigInt(2) },
+        { name: 'analyze_deep', state: 'completed', count: BigInt(10) },
+      ]);
 
       const status = await getQueueStatus();
 
@@ -212,11 +164,9 @@ describe('Queue Status Service', () => {
     });
 
     it('ignores unknown job types', async () => {
-      vi.mocked(db.$queryRaw)
-        .mockResolvedValueOnce([
-          { name: 'unknown:job', state: 'created', count: BigInt(100) },
-        ])
-        .mockResolvedValueOnce([]);
+      vi.mocked(db.$queryRaw).mockResolvedValueOnce([
+        { name: 'unknown:job', state: 'created', count: BigInt(100) },
+      ]);
 
       const status = await getQueueStatus();
 
@@ -246,9 +196,7 @@ describe('Queue Status Service', () => {
         isRunning: true,
         isPaused: true,
       });
-      vi.mocked(db.$queryRaw)
-        .mockResolvedValueOnce([])
-        .mockResolvedValueOnce([]);
+      vi.mocked(db.$queryRaw).mockResolvedValueOnce([]);
 
       const status = await getQueueStatus();
 
@@ -261,9 +209,7 @@ describe('Queue Status Service', () => {
         isRunning: false,
         isPaused: false,
       });
-      vi.mocked(db.$queryRaw)
-        .mockResolvedValueOnce([])
-        .mockResolvedValueOnce([]);
+      vi.mocked(db.$queryRaw).mockResolvedValueOnce([]);
 
       const status = await getQueueStatus();
 

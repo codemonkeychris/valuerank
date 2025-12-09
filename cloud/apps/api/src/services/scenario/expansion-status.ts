@@ -83,53 +83,8 @@ export async function getDefinitionExpansionStatus(
       };
     }
 
-    // Check archive for recent completed jobs (archive table may not exist in all pgboss versions)
-    try {
-      const archivedJobs = await db.$queryRaw<Array<{
-        id: string;
-        state: string;
-        data: { definitionId: string; triggeredBy: string };
-        created_on: Date;
-        completed_on: Date | null;
-        output: unknown;
-      }>>`
-        SELECT id, state, data, created_on, completed_on, output
-        FROM pgboss.archive
-        WHERE name = 'expand_scenarios'
-          AND data->>'definitionId' = ${definitionId}
-          AND archived_on > NOW() - INTERVAL '1 hour'
-        ORDER BY created_on DESC
-        LIMIT 1
-      `;
-
-      const archivedJob = archivedJobs[0];
-      if (archivedJob) {
-        let status: ExpansionJobStatus = 'completed';
-        let error: string | null = null;
-
-        if (['failed', 'expired', 'cancelled'].includes(archivedJob.state)) {
-          status = 'failed';
-          if (archivedJob.output) {
-            const output = archivedJob.output as { message?: string };
-            error = output.message ?? 'Unknown error';
-          }
-        }
-
-        return {
-          definitionId,
-          status,
-          jobId: archivedJob.id,
-          triggeredBy: archivedJob.data?.triggeredBy ?? null,
-          createdAt: archivedJob.created_on,
-          completedAt: archivedJob.completed_on,
-          error,
-          scenarioCount,
-        };
-      }
-    } catch {
-      // Archive table may not exist - that's OK
-      log.debug({ definitionId }, 'Archive table not available');
-    }
+    // Note: PgBoss v10+ no longer uses a separate archive table.
+    // All jobs (including completed/failed) stay in pgboss.job, which we queried above.
 
     // No job found
     return {

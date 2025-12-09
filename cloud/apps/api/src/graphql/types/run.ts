@@ -3,7 +3,6 @@ import { db } from '@valuerank/db';
 import { RunRef, DefinitionRef, TranscriptRef, ExperimentRef } from './refs.js';
 import { RunProgress, TaskResult } from './run-progress.js';
 import { calculatePercentComplete } from '../../services/run/index.js';
-import { getBoss } from '../../queue/boss.js';
 import { AnalysisResultRef } from './analysis.js';
 
 // Re-export for backward compatibility
@@ -67,23 +66,21 @@ builder.objectType(RunRef, {
         const limit = args.limit ?? 5;
 
         try {
-          const boss = getBoss();
-
-          // Query completed jobs from PgBoss archive
-          // PgBoss stores completed jobs in pgboss.archive table
+          // Query completed/failed jobs from PgBoss job table
+          // Note: PgBoss v10+ no longer uses a separate archive table
           const completedJobs = await db.$queryRaw<Array<{
             id: string;
             data: { runId: string; scenarioId: string; modelId: string };
             state: string;
-            completedon: Date | null;
+            completed_on: Date | null;
             output: unknown;
           }>>`
-            SELECT id, data, state, completedon, output
-            FROM pgboss.archive
+            SELECT id, data, state, completed_on, output
+            FROM pgboss.job
             WHERE name = 'probe_scenario'
               AND data->>'runId' = ${run.id}
               AND state IN ('completed', 'failed')
-            ORDER BY completedon DESC NULLS LAST
+            ORDER BY completed_on DESC NULLS LAST
             LIMIT ${limit}
           `;
 
@@ -92,7 +89,7 @@ builder.objectType(RunRef, {
             modelId: job.data.modelId,
             status: (job.state === 'completed' ? 'COMPLETED' : 'FAILED') as 'PENDING' | 'RUNNING' | 'COMPLETED' | 'FAILED',
             error: job.state === 'failed' ? String(job.output) : null,
-            completedAt: job.completedon,
+            completedAt: job.completed_on,
           }));
         } catch {
           // If PgBoss tables don't exist or query fails, return empty array
@@ -214,13 +211,13 @@ builder.objectType(RunRef, {
             return firstJob.state === 'active' ? 'computing' : 'pending';
           }
 
-          // Check for failed jobs
+          // Check for failed jobs in the job table (PgBoss v10+ keeps all jobs in one table)
           const failedJobs = await db.$queryRaw<Array<{ state: string }>>`
-            SELECT state FROM pgboss.archive
+            SELECT state FROM pgboss.job
             WHERE name = 'analyze_basic'
               AND data->>'runId' = ${run.id}
               AND state = 'failed'
-            ORDER BY completedon DESC
+            ORDER BY completed_on DESC
             LIMIT 1
           `;
 
