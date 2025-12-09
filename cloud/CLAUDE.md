@@ -590,6 +590,42 @@ DATABASE_URL="postgresql://valuerank:valuerank@localhost:5433/valuerank" \
 
 ---
 
+## Railway Production Deployment
+
+### Viewing Production Logs
+
+```bash
+# API service logs
+railway logs --service api
+
+# Web service logs
+railway logs --service web
+
+# Postgres logs
+railway logs --service postgres
+```
+
+### SSH into Production
+
+```bash
+# API container
+railway shell --service api
+
+# Postgres container (then use: psql -U postgres -d railway)
+railway shell --service postgres
+```
+
+### Running Seeds in Production
+
+After deploying schema changes that add new tables needing seed data:
+
+```bash
+railway shell --service api
+npx tsx packages/db/prisma/seed.ts
+```
+
+---
+
 ## Quick Reference
 
 ```
@@ -599,4 +635,5 @@ Test coverage:  80% minimum
 Console.log:    NEVER (use logger)
 Error handling: Custom AppError classes
 Imports:        Node → External → Internal → Relative
+Prod logs:      railway logs --service api
 ```
