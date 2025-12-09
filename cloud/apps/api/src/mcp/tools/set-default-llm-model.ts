@@ -18,7 +18,7 @@ const log = createLogger('mcp:tools:set-default-llm-model');
  * Input schema for set_default_llm_model tool
  */
 const SetDefaultLlmModelInputSchema = {
-  id: z.string().uuid().describe('UUID of the model to set as default'),
+  id: z.string().cuid().describe('ID of the model to set as default'),
 };
 
 /**

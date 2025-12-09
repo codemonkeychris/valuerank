@@ -22,7 +22,7 @@ const log = createLogger('mcp:tools:delete-definition');
  * Input schema for delete_definition tool
  */
 const DeleteDefinitionInputSchema = {
-  definition_id: z.string().uuid().describe('UUID of the definition to delete'),
+  definition_id: z.string().cuid().describe('ID of the definition to delete'),
 };
 
 /**

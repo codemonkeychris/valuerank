@@ -18,7 +18,7 @@ const log = createLogger('mcp:tools:reactivate-llm-model');
  * Input schema for reactivate_llm_model tool
  */
 const ReactivateLlmModelInputSchema = {
-  id: z.string().uuid().describe('UUID of the model to reactivate'),
+  id: z.string().cuid().describe('ID of the model to reactivate'),
 };
 
 /**

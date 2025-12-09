@@ -19,7 +19,7 @@ const log = createLogger('mcp:tools:deprecate-llm-model');
  * Input schema for deprecate_llm_model tool
  */
 const DeprecateLlmModelInputSchema = {
-  id: z.string().uuid().describe('UUID of the model to deprecate'),
+  id: z.string().cuid().describe('ID of the model to deprecate'),
 };
 
 /**

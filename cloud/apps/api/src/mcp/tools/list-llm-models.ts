@@ -36,7 +36,7 @@ function isProviderAvailable(providerName: string): boolean {
  * Input schema for list_llm_models tool
  */
 const ListLlmModelsInputSchema = {
-  provider_id: z.string().uuid().optional().describe('Filter by provider ID'),
+  provider_id: z.string().cuid().optional().describe('Filter by provider ID'),
   provider_name: z.string().optional().describe('Filter by provider name (e.g., "openai", "anthropic")'),
   status: z
     .enum(['active', 'deprecated', 'all'])

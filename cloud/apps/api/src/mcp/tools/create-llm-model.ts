@@ -18,7 +18,7 @@ const log = createLogger('mcp:tools:create-llm-model');
  * Input schema for create_llm_model tool
  */
 const CreateLlmModelInputSchema = {
-  provider_id: z.string().uuid().describe('UUID of the provider this model belongs to'),
+  provider_id: z.string().cuid().describe('ID of the provider this model belongs to'),
   model_id: z
     .string()
     .min(1)

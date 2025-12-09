@@ -18,7 +18,7 @@ const log = createLogger('mcp:tools:update-llm-provider');
  * Input schema for update_llm_provider tool
  */
 const UpdateLlmProviderInputSchema = {
-  id: z.string().uuid().describe('UUID of the provider to update'),
+  id: z.string().cuid().describe('ID of the provider to update'),
   max_parallel_requests: z
     .number()
     .int()

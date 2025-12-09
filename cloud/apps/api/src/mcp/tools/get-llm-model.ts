@@ -38,7 +38,7 @@ function isProviderAvailable(providerName: string): boolean {
  * Either id OR (provider_name + model_id) must be provided
  */
 const GetLlmModelInputSchema = {
-  id: z.string().uuid().optional().describe('UUID of the model (alternative to provider_name + model_id)'),
+  id: z.string().cuid().optional().describe('ID of the model (alternative to provider_name + model_id)'),
   provider_name: z
     .string()
     .optional()

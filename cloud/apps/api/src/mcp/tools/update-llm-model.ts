@@ -18,7 +18,7 @@ const log = createLogger('mcp:tools:update-llm-model');
  * Input schema for update_llm_model tool
  */
 const UpdateLlmModelInputSchema = {
-  id: z.string().uuid().describe('UUID of the model to update'),
+  id: z.string().cuid().describe('ID of the model to update'),
   display_name: z
     .string()
     .min(1)

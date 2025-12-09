@@ -23,7 +23,7 @@ const log = createLogger('mcp:tools:delete-run');
  * Input schema for delete_run tool
  */
 const DeleteRunInputSchema = {
-  run_id: z.string().uuid().describe('UUID of the run to delete'),
+  run_id: z.string().cuid().describe('ID of the run to delete'),
 };
 
 /**
