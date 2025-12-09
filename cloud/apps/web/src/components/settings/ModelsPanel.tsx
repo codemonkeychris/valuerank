@@ -9,7 +9,7 @@ import {
   Edit2,
   ChevronDown,
   ChevronRight,
-  Check,
+  Settings,
   X,
 } from 'lucide-react';
 import { Button } from '../ui/Button';
@@ -24,6 +24,7 @@ import {
   DEPRECATE_LLM_MODEL_MUTATION,
   REACTIVATE_LLM_MODEL_MUTATION,
   SET_DEFAULT_LLM_MODEL_MUTATION,
+  UPDATE_LLM_PROVIDER_MUTATION,
   LlmProvidersQueryResult,
   LlmProvider,
   LlmModel,
@@ -36,6 +37,7 @@ export function ModelsPanel() {
   const [isAddModelOpen, setIsAddModelOpen] = useState(false);
   const [editingModel, setEditingModel] = useState<LlmModel | null>(null);
   const [selectedProvider, setSelectedProvider] = useState<LlmProvider | null>(null);
+  const [editingProvider, setEditingProvider] = useState<LlmProvider | null>(null);
 
   const [{ data, fetching, error }, reexecuteQuery] = useQuery<LlmProvidersQueryResult>({
     query: LLM_PROVIDERS_QUERY,
@@ -46,6 +48,7 @@ export function ModelsPanel() {
   const [, deprecateModel] = useMutation(DEPRECATE_LLM_MODEL_MUTATION);
   const [, reactivateModel] = useMutation(REACTIVATE_LLM_MODEL_MUTATION);
   const [, setDefaultModel] = useMutation(SET_DEFAULT_LLM_MODEL_MUTATION);
+  const [, updateProvider] = useMutation(UPDATE_LLM_PROVIDER_MUTATION);
 
   const toggleProvider = (providerId: string) => {
     setExpandedProviders((prev) => {
@@ -84,6 +87,15 @@ export function ModelsPanel() {
 
   const handleSetDefault = async (id: string) => {
     await setDefaultModel({ id });
+    reexecuteQuery({ requestPolicy: 'network-only' });
+  };
+
+  const handleUpdateProvider = async (
+    id: string,
+    input: { requestsPerMinute?: number; maxParallelRequests?: number }
+  ) => {
+    await updateProvider({ id, input });
+    setEditingProvider(null);
     reexecuteQuery({ requestPolicy: 'network-only' });
   };
 
@@ -128,6 +140,7 @@ export function ModelsPanel() {
             onDeprecateModel={handleDeprecateModel}
             onReactivateModel={handleReactivateModel}
             onSetDefault={handleSetDefault}
+            onEditSettings={() => setEditingProvider(provider)}
           />
         ))}
       </div>
@@ -150,6 +163,14 @@ export function ModelsPanel() {
           onSave={(input) => handleUpdateModel(editingModel.id, input as UpdateLlmModelInput)}
         />
       )}
+
+      {editingProvider && (
+        <ProviderSettingsModal
+          provider={editingProvider}
+          onClose={() => setEditingProvider(null)}
+          onSave={(input) => handleUpdateProvider(editingProvider.id, input)}
+        />
+      )}
     </>
   );
 }
@@ -163,6 +184,7 @@ function ProviderCard({
   onDeprecateModel,
   onReactivateModel,
   onSetDefault,
+  onEditSettings,
 }: {
   provider: LlmProvider;
   isExpanded: boolean;
@@ -172,6 +194,7 @@ function ProviderCard({
   onDeprecateModel: (id: string) => void;
   onReactivateModel: (id: string) => void;
   onSetDefault: (id: string) => void;
+  onEditSettings: () => void;
 }) {
   const activeModels = provider.models.filter((m) => m.status === 'ACTIVE');
   const deprecatedModels = provider.models.filter((m) => m.status === 'DEPRECATED');
@@ -212,9 +235,17 @@ function ProviderCard({
       {isExpanded && (
         <div className="border-t border-gray-200">
           <div className="px-6 py-3 bg-gray-50 flex justify-between items-center">
-            <span className="text-sm text-gray-500">
+            <button
+              onClick={(e) => {
+                e.stopPropagation();
+                onEditSettings();
+              }}
+              className="text-sm text-gray-500 hover:text-gray-700 flex items-center gap-1 group"
+              title="Edit rate limits"
+            >
+              <Settings className="w-4 h-4 text-gray-400 group-hover:text-gray-600" />
               Rate limit: {provider.requestsPerMinute}/min, {provider.maxParallelRequests} parallel
-            </span>
+            </button>
             <Button variant="ghost" size="sm" onClick={onAddModel}>
               <Plus className="w-4 h-4 mr-1" />
               Add Model
@@ -443,6 +474,105 @@ function ModelFormModal({
             </Button>
             <Button type="submit" variant="primary" disabled={!isValid || isSaving} isLoading={isSaving}>
               {isEditing ? 'Save Changes' : 'Add Model'}
+            </Button>
+          </div>
+        </form>
+      </div>
+    </div>
+  );
+}
+
+function ProviderSettingsModal({
+  provider,
+  onClose,
+  onSave,
+}: {
+  provider: LlmProvider;
+  onClose: () => void;
+  onSave: (input: { requestsPerMinute?: number; maxParallelRequests?: number }) => Promise<void>;
+}) {
+  const [requestsPerMinute, setRequestsPerMinute] = useState(provider.requestsPerMinute.toString());
+  const [maxParallelRequests, setMaxParallelRequests] = useState(
+    provider.maxParallelRequests.toString()
+  );
+  const [isSaving, setIsSaving] = useState(false);
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsSaving(true);
+
+    await onSave({
+      requestsPerMinute: parseInt(requestsPerMinute, 10),
+      maxParallelRequests: parseInt(maxParallelRequests, 10),
+    });
+
+    setIsSaving(false);
+  };
+
+  const hasChanges =
+    parseInt(requestsPerMinute, 10) !== provider.requestsPerMinute ||
+    parseInt(maxParallelRequests, 10) !== provider.maxParallelRequests;
+
+  const isValid =
+    requestsPerMinute &&
+    maxParallelRequests &&
+    parseInt(requestsPerMinute, 10) > 0 &&
+    parseInt(maxParallelRequests, 10) > 0;
+
+  return (
+    <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
+      <div className="bg-white rounded-lg shadow-xl max-w-md w-full p-6">
+        <div className="flex justify-between items-center mb-4">
+          <h3 className="text-lg font-medium text-gray-900">
+            {provider.displayName} Settings
+          </h3>
+          <button onClick={onClose} className="text-gray-400 hover:text-gray-600">
+            <X className="w-5 h-5" />
+          </button>
+        </div>
+
+        <form onSubmit={handleSubmit} className="space-y-4">
+          <Input
+            label="Rate Limit (requests/minute)"
+            type="number"
+            min="1"
+            max="10000"
+            value={requestsPerMinute}
+            onChange={(e) => setRequestsPerMinute(e.target.value)}
+            required
+          />
+
+          <Input
+            label="Max Parallel Requests"
+            type="number"
+            min="1"
+            max="100"
+            value={maxParallelRequests}
+            onChange={(e) => setMaxParallelRequests(e.target.value)}
+            required
+          />
+
+          <div className="p-3 bg-blue-50 rounded-lg text-sm text-blue-700">
+            <p>
+              <strong>Rate Limit:</strong> Maximum API calls per minute to this provider.
+            </p>
+            <p className="mt-1">
+              <strong>Parallel Requests:</strong> Maximum concurrent API calls. Set to 1 for
+              conservative usage that avoids rate limit errors.
+            </p>
+          </div>
+
+          <div className="flex justify-end gap-3 pt-4">
+            <Button type="button" variant="secondary" onClick={onClose} disabled={isSaving}>
+              Cancel
+            </Button>
+            <Button
+              type="submit"
+              variant="primary"
+              disabled={!isValid || !hasChanges || isSaving}
+              isLoading={isSaving}
+            >
+              Save Settings
             </Button>
           </div>
         </form>
