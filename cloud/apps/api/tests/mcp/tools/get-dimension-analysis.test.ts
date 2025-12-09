@@ -31,7 +31,7 @@ describe('get_dimension_analysis tool', () => {
     });
     testRunId = run.id;
 
-    // Create analysis result with dimension data
+    // Create analysis result with dimension data (matching Python worker output)
     const analysis = await db.analysisResult.create({
       data: {
         runId: testRunId,
@@ -41,27 +41,13 @@ describe('get_dimension_analysis tool', () => {
         status: 'CURRENT',
         output: {
           dimensionAnalysis: {
-            rankedDimensions: [
-              { dimension: 'safety', importance: 0.85, divergenceScore: 0.42 },
-              { dimension: 'ethics', importance: 0.72, divergenceScore: 0.35 },
-              { dimension: 'capability', importance: 0.65, divergenceScore: 0.28 },
-            ],
-            correlations: [
-              { dimension1: 'safety', dimension2: 'ethics', correlation: 0.78 },
-              { dimension1: 'safety', dimension2: 'capability', correlation: -0.15 },
-            ],
-            mostDivisive: [
-              {
-                dimension: 'safety',
-                variance: 0.45,
-                modelRange: { min: 0.55, max: 0.92 },
-              },
-              {
-                dimension: 'ethics',
-                variance: 0.32,
-                modelRange: { min: 0.48, max: 0.85 },
-              },
-            ],
+            dimensions: {
+              safety: { effectSize: 0.85, pValue: 0.001, significant: true, rank: 1 },
+              ethics: { effectSize: 0.72, pValue: 0.01, significant: true, rank: 2 },
+              capability: { effectSize: 0.65, pValue: 0.05, significant: true, rank: 3 },
+            },
+            varianceExplained: 0.42,
+            method: 'kruskal_wallis',
           },
         },
       },
@@ -93,11 +79,11 @@ describe('get_dimension_analysis tool', () => {
       expect(result.runId).toBe(testRunId);
       expect(result.analysisStatus).toBe('completed');
       expect(result.rankedDimensions.length).toBe(3);
-      expect(result.correlations.length).toBe(2);
-      expect(result.mostDivisive.length).toBe(2);
+      expect(result.varianceExplained).toBe(0.42);
+      expect(result.method).toBe('kruskal_wallis');
     });
 
-    it('includes correct ranked dimensions', async () => {
+    it('includes correct ranked dimensions sorted by rank', async () => {
       const analysis = await db.analysisResult.findUnique({
         where: { id: testAnalysisId },
       });
@@ -105,32 +91,14 @@ describe('get_dimension_analysis tool', () => {
       const result = formatDimensionAnalysis(testRunId, analysis);
 
       expect(result.rankedDimensions[0].dimension).toBe('safety');
-      expect(result.rankedDimensions[0].importance).toBe(0.85);
-      expect(result.rankedDimensions[0].divergenceScore).toBe(0.42);
-    });
+      expect(result.rankedDimensions[0].effectSize).toBe(0.85);
+      expect(result.rankedDimensions[0].pValue).toBe(0.001);
+      expect(result.rankedDimensions[0].significant).toBe(true);
+      expect(result.rankedDimensions[0].rank).toBe(1);
 
-    it('includes correlations', async () => {
-      const analysis = await db.analysisResult.findUnique({
-        where: { id: testAnalysisId },
-      });
-
-      const result = formatDimensionAnalysis(testRunId, analysis);
-
-      expect(result.correlations[0].dimension1).toBe('safety');
-      expect(result.correlations[0].dimension2).toBe('ethics');
-      expect(result.correlations[0].correlation).toBe(0.78);
-    });
-
-    it('includes most divisive dimensions', async () => {
-      const analysis = await db.analysisResult.findUnique({
-        where: { id: testAnalysisId },
-      });
-
-      const result = formatDimensionAnalysis(testRunId, analysis);
-
-      expect(result.mostDivisive[0].dimension).toBe('safety');
-      expect(result.mostDivisive[0].variance).toBe(0.45);
-      expect(result.mostDivisive[0].modelRange).toEqual({ min: 0.55, max: 0.92 });
+      // Verify sorting by rank
+      expect(result.rankedDimensions[1].dimension).toBe('ethics');
+      expect(result.rankedDimensions[2].dimension).toBe('capability');
     });
 
     it('returns pending status when no analysis', () => {
@@ -138,26 +106,28 @@ describe('get_dimension_analysis tool', () => {
 
       expect(result.analysisStatus).toBe('pending');
       expect(result.rankedDimensions).toEqual([]);
-      expect(result.correlations).toEqual([]);
-      expect(result.mostDivisive).toEqual([]);
+      expect(result.varianceExplained).toBe(0);
+      expect(result.method).toBe('unknown');
     });
 
     it('truncates large dimension lists', () => {
-      const manyDimensions = Array(20)
-        .fill(null)
-        .map((_, i) => ({
-          dimension: `dim-${i}`,
-          importance: 0.5,
-          divergenceScore: 0.3,
-        }));
+      const manyDimensions: Record<string, { effectSize: number; pValue: number; significant: boolean; rank: number }> = {};
+      for (let i = 0; i < 20; i++) {
+        manyDimensions[`dim-${i}`] = {
+          effectSize: 0.5 - i * 0.02,
+          pValue: 0.05,
+          significant: true,
+          rank: i + 1,
+        };
+      }
 
       const mockAnalysis = {
         status: 'CURRENT',
         output: {
           dimensionAnalysis: {
-            rankedDimensions: manyDimensions,
-            correlations: [],
-            mostDivisive: [],
+            dimensions: manyDimensions,
+            varianceExplained: 0.6,
+            method: 'kruskal_wallis',
           },
         },
       };
@@ -166,6 +136,24 @@ describe('get_dimension_analysis tool', () => {
 
       // Should be truncated to 10
       expect(result.rankedDimensions.length).toBe(10);
+    });
+
+    it('handles empty dimensions object', () => {
+      const mockAnalysis = {
+        status: 'CURRENT',
+        output: {
+          dimensionAnalysis: {
+            dimensions: {},
+            varianceExplained: 0,
+            method: 'kruskal_wallis',
+          },
+        },
+      };
+
+      const result = formatDimensionAnalysis(testRunId, mockAnalysis);
+
+      expect(result.rankedDimensions).toEqual([]);
+      expect(result.varianceExplained).toBe(0);
     });
   });
 });

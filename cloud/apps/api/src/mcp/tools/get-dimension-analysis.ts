@@ -27,21 +27,16 @@ const GetDimensionAnalysisInputSchema = {
 type DimensionAnalysisOutput = {
   runId: string;
   analysisStatus: 'completed' | 'pending' | 'failed';
+  // Ranked dimensions by effect size (from Python worker)
   rankedDimensions: Array<{
     dimension: string;
-    importance: number;
-    divergenceScore: number;
+    effectSize: number;
+    pValue: number;
+    significant: boolean;
+    rank: number;
   }>;
-  correlations: Array<{
-    dimension1: string;
-    dimension2: string;
-    correlation: number;
-  }>;
-  mostDivisive: Array<{
-    dimension: string;
-    variance: number;
-    modelRange: { min: number; max: number };
-  }>;
+  varianceExplained: number;
+  method: string;
 };
 
 /**
@@ -79,8 +74,8 @@ function formatDimensionAnalysis(
       runId,
       analysisStatus: 'pending',
       rankedDimensions: [],
-      correlations: [],
-      mostDivisive: [],
+      varianceExplained: 0,
+      method: 'unknown',
     };
   }
 
@@ -93,35 +88,37 @@ function formatDimensionAnalysis(
 
   const output = safeJsonObject<{
     dimensionAnalysis?: {
-      rankedDimensions?: Array<{
-        dimension: string;
-        importance: number;
-        divergenceScore: number;
+      dimensions?: Record<string, {
+        effectSize: number;
+        pValue: number;
+        significant: boolean;
+        rank: number;
       }>;
-      correlations?: Array<{
-        dimension1: string;
-        dimension2: string;
-        correlation: number;
-      }>;
-      mostDivisive?: Array<{
-        dimension: string;
-        variance: number;
-        modelRange: { min: number; max: number };
-      }>;
+      varianceExplained?: number;
+      method?: string;
     };
   }>(analysis.output);
 
   const dimensionData = output?.dimensionAnalysis;
+  const dimensions = dimensionData?.dimensions || {};
+
+  // Convert dimensions object to ranked array
+  const rankedDimensions = Object.entries(dimensions)
+    .map(([dimension, data]) => ({
+      dimension,
+      effectSize: data.effectSize,
+      pValue: data.pValue,
+      significant: data.significant,
+      rank: data.rank,
+    }))
+    .sort((a, b) => a.rank - b.rank);
 
   return {
     runId,
     analysisStatus: status,
-    rankedDimensions: truncateArray(
-      safeJsonArray(dimensionData?.rankedDimensions),
-      10
-    ),
-    correlations: truncateArray(safeJsonArray(dimensionData?.correlations), 10),
-    mostDivisive: truncateArray(safeJsonArray(dimensionData?.mostDivisive), 5),
+    rankedDimensions: truncateArray(rankedDimensions, 10),
+    varianceExplained: dimensionData?.varianceExplained || 0,
+    method: dimensionData?.method || 'unknown',
   };
 }
 
@@ -135,10 +132,10 @@ function registerGetDimensionAnalysisTool(server: McpServer): void {
     'get_dimension_analysis',
     {
       description: `Get dimension-level analysis for a run.
-Shows which dimensions drive model divergence, including:
-- Ranked dimensions by importance
-- Dimension correlations
-- Most divisive dimensions
+Shows which scenario dimensions have the most impact on model decisions:
+- Ranked dimensions by effect size (Kruskal-Wallis test)
+- Statistical significance (p-values)
+- Total variance explained
 Limited to 2KB token budget.`,
       inputSchema: GetDimensionAnalysisInputSchema,
     },
