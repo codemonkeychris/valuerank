@@ -245,8 +245,52 @@
 - [X] T086 Run Python worker tests: 172 passed
 - [ ] T087 Manual validation per quickstart.md
 - [ ] T088 Update API documentation if needed
+- [X] T089 Convert to Prisma Migrate for safe production deployments
 
 **Checkpoint**: Feature complete and tested
+
+---
+
+## Production Deployment: Prisma Migrate Baseline
+
+⚠️ **ONE-TIME SETUP REQUIRED** before first deployment with migrations.
+
+Production already has tables from the initial `prisma db push`. We need to tell Prisma that the baseline migration (`0_init`) is already applied.
+
+### On First Deploy (Railway)
+
+**IMPORTANT: The deploy will fail on the first attempt** because `prisma migrate deploy` will try to run `0_init` which creates tables that already exist.
+
+**Step 1**: Merge/deploy the branch (deploy will fail - this is expected)
+
+**Step 2**: SSH into Railway and mark baseline as applied:
+```bash
+railway shell
+# Then inside the container:
+npx prisma migrate resolve --applied 0_init --schema=packages/db/prisma/schema.prisma
+```
+
+**Step 3**: Redeploy (or restart the service) - now it will succeed
+
+This tells Prisma: "0_init is already done, don't run it again."
+
+The redeploy will:
+1. Check migrations table
+2. See `0_init` is marked applied
+3. Run only `20241208000000_add_provider_metadata` (the new tables)
+4. Start the API
+
+### How It Works Going Forward
+
+1. **Dockerfile.api** now runs `prisma migrate deploy` before starting the API
+2. Each deploy checks for pending migrations and applies them automatically
+3. New schema changes: run `prisma migrate dev --name <description>` locally, commit migration files
+
+### Local Development
+
+- `prisma db push` still works for quick iterations
+- Test DB uses `prisma migrate reset` or `prisma db push` (either works)
+- Run `prisma migrate dev` when ready to create a migration for production
 
 ---
 
