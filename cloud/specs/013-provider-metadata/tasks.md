@@ -106,8 +106,8 @@
 
 ### Frontend Operations
 
-- [ ] T039 [US2] Create `apps/web/src/api/operations/llm.ts` with GraphQL operations
-- [ ] T040 [US2] Add types for LlmProvider, LlmModel in `apps/web/src/types/llm.ts`
+- [X] T039 [US2] Create `apps/web/src/api/operations/llm.ts` with GraphQL operations
+- [X] T040 [US2] Add types for LlmProvider, LlmModel in `apps/web/src/types/llm.ts`
 
 ### Settings UI
 
