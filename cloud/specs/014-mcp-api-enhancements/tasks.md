@@ -14,9 +14,9 @@
 
 **Purpose**: Initialize feature branch and verify development environment
 
-- [ ] T001 Create feature branch `feat/014-mcp-api-enhancements` from main
-- [ ] T002 Verify Docker PostgreSQL running on port 5433
-- [ ] T003 Run `npm run db:test:setup` to ensure test database ready
+- [X] T001 Create feature branch `feat/014-mcp-api-enhancements` from main
+- [X] T002 Verify Docker PostgreSQL running on port 5433
+- [X] T003 Run `npm run db:test:setup` to ensure test database ready
 
 **Checkpoint**: Development environment ready
 
@@ -30,29 +30,29 @@
 
 ### Schema Migration
 
-- [ ] T004 Add `deletedAt` field to Transcript model in `packages/db/prisma/schema.prisma`
-- [ ] T005 Add `deletedAt` field to AnalysisResult model in `packages/db/prisma/schema.prisma`
-- [ ] T006 Add `@@index([deletedAt])` to Transcript model
-- [ ] T007 Add `@@index([deletedAt])` to AnalysisResult model
-- [ ] T008 Create migration: `npx prisma migrate dev --name add_soft_delete_transcript_analysis`
-- [ ] T009 Apply migration to test database
+- [X] T004 Add `deletedAt` field to Transcript model in `packages/db/prisma/schema.prisma`
+- [X] T005 Add `deletedAt` field to AnalysisResult model in `packages/db/prisma/schema.prisma`
+- [X] T006 Add `@@index([deletedAt])` to Transcript model
+- [X] T007 Add `@@index([deletedAt])` to AnalysisResult model
+- [X] T008 Create migration: `npx prisma migrate dev --name add_soft_delete_transcript_analysis`
+- [X] T009 Apply migration to test database
 
 ### Query Updates
 
-- [ ] T010 Add soft delete helpers to `packages/db/src/queries/definition.ts` (softDeleteDefinition)
-- [ ] T011 Add soft delete helpers to `packages/db/src/queries/run.ts` (softDeleteRun, cancelRunJobs)
-- [ ] T012 [P] Update Transcript queries in `packages/db/src/queries/` to filter `deletedAt: null`
-- [ ] T013 [P] Update AnalysisResult queries in `packages/db/src/queries/` to filter `deletedAt: null`
+- [X] T010 Add soft delete helpers to `packages/db/src/queries/definition.ts` (softDeleteDefinition)
+- [X] T011 Add soft delete helpers to `packages/db/src/queries/run.ts` (softDeleteRun, cancelRunJobs)
+- [X] T012 [P] Update Transcript queries in `packages/db/src/queries/` to filter `deletedAt: null`
+- [X] T013 [P] Update AnalysisResult queries in `packages/db/src/queries/` to filter `deletedAt: null`
 
 ### Audit Logging Extension
 
-- [ ] T014 Extend `AuditAction` type in `apps/api/src/services/mcp/audit.ts` with new action types
-- [ ] T015 Add `createDeleteAudit` helper function for delete operations
-- [ ] T016 Add `createLlmAudit` helper function for LLM management operations
+- [X] T014 Extend `AuditAction` type in `apps/api/src/services/mcp/audit.ts` with new action types
+- [X] T015 Add `createDeleteAudit` helper function for delete operations
+- [X] T016 Add `createLlmAudit` helper function for LLM management operations
 
 ### Shared Types
 
-- [ ] T017 Create `DeleteResult` type in `packages/db/src/types/index.ts`
+- [X] T017 Create `DeleteResult` type in `packages/db/src/types/index.ts`
 
 **Checkpoint**: Foundation ready - user story implementation can now begin
 
