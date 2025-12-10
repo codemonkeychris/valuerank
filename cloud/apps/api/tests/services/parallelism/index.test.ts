@@ -4,7 +4,8 @@
  * Tests provider-specific queue routing and parallelism enforcement.
  */
 
-import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
+import { describe, it, expect, beforeEach, afterEach, beforeAll, afterAll, vi } from 'vitest';
+import { PgBoss } from 'pg-boss';
 import { db } from '@valuerank/db';
 import {
   getProviderQueueName,
@@ -14,6 +15,10 @@ import {
   getProviderLimits,
   getAllProviderQueues,
   clearCache,
+  createProviderQueues,
+  registerProviderQueueHandlers,
+  getActiveJobsPerProvider,
+  hasProviderCapacity,
 } from '../../../src/services/parallelism/index.js';
 
 describe('Parallelism Service', () => {
@@ -412,6 +417,209 @@ describe('Parallelism Queue Routing', () => {
     it('uses default queue for models without provider mapping', async () => {
       const queueName = await getQueueNameForModel('unmapped-model');
       expect(queueName).toBe('probe_scenario');
+    });
+  });
+});
+
+describe('Parallelism PgBoss Integration', () => {
+  let bossModule: typeof import('../../../src/queue/boss.js');
+  let boss: PgBoss;
+  const createdProviderIds: string[] = [];
+
+  beforeAll(async () => {
+    // Import and start PgBoss
+    bossModule = await import('../../../src/queue/boss.js');
+    await bossModule.startBoss();
+    boss = bossModule.getBoss();
+  });
+
+  afterAll(async () => {
+    // Clean up providers
+    if (createdProviderIds.length > 0) {
+      await db.llmProvider.deleteMany({
+        where: { id: { in: createdProviderIds } },
+      });
+    }
+
+    // Stop PgBoss
+    await bossModule.stopBoss();
+  });
+
+  beforeEach(() => {
+    clearCache();
+  });
+
+  describe('createProviderQueues', () => {
+    it('creates queues for all enabled providers', async () => {
+      // Create a test provider
+      const provider = await db.llmProvider.create({
+        data: {
+          name: `test-create-queue-${Date.now()}`,
+          displayName: 'Test Create Queue Provider',
+          maxParallelRequests: 3,
+          requestsPerMinute: 30,
+          isEnabled: true,
+        },
+      });
+      createdProviderIds.push(provider.id);
+
+      clearCache();
+      await createProviderQueues(boss);
+
+      // Verify queue was created by checking we can send to it
+      const queueName = `probe_${provider.name}`;
+      const jobId = await boss.send(queueName, { test: true });
+      expect(jobId).toBeDefined();
+    });
+  });
+
+  describe('registerProviderQueueHandlers', () => {
+    it('registers handlers for all provider queues', async () => {
+      // Create a test provider
+      const provider = await db.llmProvider.create({
+        data: {
+          name: `test-register-handler-${Date.now()}`,
+          displayName: 'Test Register Handler',
+          maxParallelRequests: 2,
+          requestsPerMinute: 20,
+          isEnabled: true,
+        },
+      });
+      createdProviderIds.push(provider.id);
+
+      const queueName = `probe_${provider.name}`;
+      await boss.createQueue(queueName);
+
+      clearCache();
+
+      // Register handlers with a mock handler
+      const mockHandler = vi.fn();
+      await registerProviderQueueHandlers(boss, mockHandler);
+
+      // Unregister to clean up
+      await boss.offWork(queueName);
+    });
+  });
+
+  describe('getActiveJobsPerProvider', () => {
+    it('returns active job counts for providers', async () => {
+      const provider = await db.llmProvider.create({
+        data: {
+          name: `test-active-jobs-${Date.now()}`,
+          displayName: 'Test Active Jobs',
+          maxParallelRequests: 5,
+          requestsPerMinute: 50,
+          isEnabled: true,
+        },
+      });
+      createdProviderIds.push(provider.id);
+
+      const queueName = `probe_${provider.name}`;
+      await boss.createQueue(queueName);
+
+      clearCache();
+      const activeJobs = await getActiveJobsPerProvider(boss);
+
+      // Provider should be in the map (with 0 active jobs since no handler)
+      expect(activeJobs.has(provider.name)).toBe(true);
+      expect(activeJobs.get(provider.name)).toBe(0);
+    });
+
+    it('handles error gracefully and returns zeros', async () => {
+      // Create a mock boss that throws on getQueues
+      const mockBoss = {
+        getQueues: vi.fn().mockRejectedValue(new Error('Connection error')),
+      } as unknown as PgBoss;
+
+      const provider = await db.llmProvider.create({
+        data: {
+          name: `test-active-jobs-error-${Date.now()}`,
+          displayName: 'Test Active Jobs Error',
+          maxParallelRequests: 1,
+          requestsPerMinute: 10,
+          isEnabled: true,
+        },
+      });
+      createdProviderIds.push(provider.id);
+
+      clearCache();
+      const activeJobs = await getActiveJobsPerProvider(mockBoss);
+
+      // Should return zeros on error
+      expect(activeJobs.get(provider.name)).toBe(0);
+    });
+  });
+
+  describe('hasProviderCapacity', () => {
+    it('returns true when provider has capacity', async () => {
+      const provider = await db.llmProvider.create({
+        data: {
+          name: `test-capacity-${Date.now()}`,
+          displayName: 'Test Capacity',
+          maxParallelRequests: 10,
+          requestsPerMinute: 100,
+          isEnabled: true,
+        },
+      });
+      createdProviderIds.push(provider.id);
+
+      const queueName = `probe_${provider.name}`;
+      await boss.createQueue(queueName);
+
+      clearCache();
+      const hasCapacity = await hasProviderCapacity(boss, provider.name);
+
+      // Should have capacity when no jobs are running
+      expect(hasCapacity).toBe(true);
+    });
+
+    it('returns true for unknown provider', async () => {
+      const hasCapacity = await hasProviderCapacity(boss, 'unknown-provider-xyz');
+      expect(hasCapacity).toBe(true);
+    });
+
+    it('returns true when queue not found', async () => {
+      // Create provider but don't create its queue
+      const provider = await db.llmProvider.create({
+        data: {
+          name: `test-no-queue-${Date.now()}`,
+          displayName: 'Test No Queue',
+          maxParallelRequests: 5,
+          requestsPerMinute: 50,
+          isEnabled: true,
+        },
+      });
+      createdProviderIds.push(provider.id);
+
+      clearCache();
+      const hasCapacity = await hasProviderCapacity(boss, provider.name);
+
+      // Should return true when queue doesn't exist
+      expect(hasCapacity).toBe(true);
+    });
+
+    it('handles error gracefully', async () => {
+      // Create a mock boss that throws
+      const mockBoss = {
+        getQueues: vi.fn().mockRejectedValue(new Error('Connection error')),
+      } as unknown as PgBoss;
+
+      const provider = await db.llmProvider.create({
+        data: {
+          name: `test-capacity-error-${Date.now()}`,
+          displayName: 'Test Capacity Error',
+          maxParallelRequests: 5,
+          requestsPerMinute: 50,
+          isEnabled: true,
+        },
+      });
+      createdProviderIds.push(provider.id);
+
+      clearCache();
+      const hasCapacity = await hasProviderCapacity(mockBoss, provider.name);
+
+      // Should return true on error
+      expect(hasCapacity).toBe(true);
     });
   });
 });
