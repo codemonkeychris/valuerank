@@ -45,17 +45,23 @@ builder.queryField('analysisHistory', (t) =>
         defaultValue: 10,
         description: 'Maximum number of results (default: 10)',
       }),
+      offset: t.arg.int({
+        required: false,
+        description: 'Number of results to skip (default: 0)',
+      }),
     },
     resolve: async (_root, args, ctx) => {
       const runId = String(args.runId);
       const limit = args.limit ?? 10;
+      const offset = args.offset ?? 0;
 
-      ctx.log.debug({ runId, limit }, 'Fetching analysis history');
+      ctx.log.debug({ runId, limit, offset }, 'Fetching analysis history');
 
       const analyses = await db.analysisResult.findMany({
         where: { runId },
         orderBy: { createdAt: 'desc' },
         take: limit,
+        skip: offset,
       });
 
       return analyses;
