@@ -85,6 +85,7 @@ builder.mutationField('createDefinition', (t) =>
           name,
           content: processedContent,
           parentId: parentId ?? null,
+          createdByUserId: ctx.user?.id ?? null,
         },
       });
 
@@ -185,6 +186,7 @@ builder.mutationField('forkDefinition', (t) =>
           name,
           content: finalContent,
           parentId,
+          createdByUserId: ctx.user?.id ?? null,
         },
       });
 

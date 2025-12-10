@@ -91,6 +91,7 @@ builder.mutationField('createLlmModel', (t) =>
         costInputPerMillion: args.input.costInputPerMillion,
         costOutputPerMillion: args.input.costOutputPerMillion,
         setAsDefault: args.input.setAsDefault ?? false,
+        createdByUserId: ctx.user?.id ?? null,
       });
 
       ctx.log.info({ modelId: model.id, apiModelId: model.modelId }, 'LLM model created');

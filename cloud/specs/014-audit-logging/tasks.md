@@ -70,23 +70,23 @@
 
 ### GraphQL Schema Extensions
 
-- [ ] T022 [US1] Add createdBy field resolver to Definition type in `apps/api/src/graphql/types/definition.ts`
-- [ ] T023 [P] [US1] Add createdBy field resolver to Run type in `apps/api/src/graphql/types/run.ts`
-- [ ] T024 [P] [US1] Add createdBy field resolver to Tag type in `apps/api/src/graphql/types/tag.ts`
-- [ ] T025 [P] [US1] Add createdBy field resolver to LlmModel type in `apps/api/src/graphql/queries/models.ts`
+- [X] T022 [US1] Add createdBy field resolver to Definition type in `apps/api/src/graphql/types/definition.ts`
+- [X] T023 [P] [US1] Add createdBy field resolver to Run type in `apps/api/src/graphql/types/run.ts`
+- [X] T024 [P] [US1] Add createdBy field resolver to Tag type in `apps/api/src/graphql/types/tag.ts`
+- [X] T025 [P] [US1] Add createdBy field resolver to LlmModel type in `apps/api/src/graphql/types/llm-model.ts`
 
 ### Mutation Updates - Set createdByUserId
 
-- [ ] T026 [US1] Update createDefinition mutation in `apps/api/src/graphql/mutations/definition.ts` to set createdByUserId
-- [ ] T027 [P] [US1] Update forkDefinition mutation in `apps/api/src/graphql/mutations/definition.ts` to set createdByUserId
-- [ ] T028 [P] [US1] Update startRun service in `apps/api/src/services/run/index.ts` to set createdByUserId
-- [ ] T029 [P] [US1] Update createTag mutation in `apps/api/src/graphql/mutations/tag.ts` to set createdByUserId
-- [ ] T030 [P] [US1] Update createLlmModel mutation in `apps/api/src/graphql/mutations/llm.ts` to set createdByUserId
+- [X] T026 [US1] Update createDefinition mutation in `apps/api/src/graphql/mutations/definition.ts` to set createdByUserId
+- [X] T027 [P] [US1] Update forkDefinition mutation in `apps/api/src/graphql/mutations/definition.ts` to set createdByUserId
+- [X] T028 [P] [US1] Update startRun service in `apps/api/src/services/run/start.ts` to set createdByUserId
+- [X] T029 [P] [US1] Update createTag mutation in `apps/api/src/graphql/mutations/tag.ts` to set createdByUserId
+- [X] T030 [P] [US1] Update createLlmModel mutation in `apps/api/src/graphql/mutations/llm.ts` to set createdByUserId
 
 ### Tests
 
-- [ ] T031 [US1] Write test for createdBy field on Definition in `apps/api/tests/graphql/types/definition.test.ts`
-- [ ] T032 [P] [US1] Write test for createdBy field on Run in `apps/api/tests/graphql/types/run.test.ts`
+- [X] T031 [US1] Write test for createdBy field on Definition in `apps/api/tests/graphql/types/audit-fields.test.ts`
+- [X] T032 [P] [US1] Write test for createdBy field on Run in `apps/api/tests/graphql/types/audit-fields.test.ts`
 
 **Checkpoint**: User Story 1 complete - users can query `createdBy` on Definition, Run, Tag, LlmModel
 

@@ -62,7 +62,10 @@ builder.mutationField('createTag', (t) =>
       }
 
       const tag = await db.tag.create({
-        data: { name: normalizedName },
+        data: {
+          name: normalizedName,
+          createdByUserId: ctx.user?.id ?? null,
+        },
       });
 
       ctx.log.info({ tagId: tag.id, name: tag.name }, 'Tag created');

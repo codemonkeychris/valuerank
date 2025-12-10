@@ -8,6 +8,7 @@ import {
   type DefinitionOverrides,
 } from '@valuerank/db';
 import { DefinitionRef, RunRef, ScenarioRef, TagRef } from './refs.js';
+import { UserRef } from './user.js';
 import {
   getDefinitionExpansionStatus,
   type DefinitionExpansionStatus,
@@ -131,6 +132,19 @@ builder.objectType(DefinitionRef, {
       type: 'DateTime',
       nullable: true,
       description: 'When this definition was last accessed (for retention)',
+    }),
+
+    // Audit field: who created this definition
+    createdBy: t.field({
+      type: UserRef,
+      nullable: true,
+      description: 'User who created this definition',
+      resolve: async (definition) => {
+        if (!definition.createdByUserId) return null;
+        return db.user.findUnique({
+          where: { id: definition.createdByUserId },
+        });
+      },
     }),
 
     // Relation: parent (via DataLoader for N+1 prevention)
