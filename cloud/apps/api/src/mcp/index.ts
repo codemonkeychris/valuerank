@@ -14,6 +14,7 @@ import { registerAllTools } from './tools/index.js';
 import { registerAllResources } from './resources/index.js';
 import { mcpAuthMiddleware } from './auth.js';
 import { mcpRateLimiter } from './rate-limit.js';
+import { protectedResourceMetadata } from './oauth/metadata.js';
 
 const log = createLogger('mcp:router');
 
@@ -42,6 +43,10 @@ export function createMcpRouter(): Router {
     res.setHeader('MCP-Protocol-Version', MCP_PROTOCOL_VERSION);
     res.status(200).end();
   });
+
+  // Protected Resource Metadata at MCP path - no auth required
+  // This is the RFC 9728 spec location for resource metadata
+  router.get('/.well-known/resource.json', protectedResourceMetadata);
 
   // Apply rate limiting and auth middleware for all other requests
   router.use(mcpRateLimiter);

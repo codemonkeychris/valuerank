@@ -64,8 +64,22 @@ describe('OAuth Endpoints', () => {
     });
   });
 
-  describe('GET /mcp/.well-known/resource.json', () => {
+  describe('GET /.well-known/oauth-protected-resource', () => {
     it('returns protected resource metadata', async () => {
+      const res = await request(app)
+        .get('/.well-known/oauth-protected-resource')
+        .expect(200);
+
+      expect(res.body.resource).toContain('/mcp');
+      expect(res.body.authorization_servers).toBeInstanceOf(Array);
+      expect(res.body.authorization_servers.length).toBeGreaterThan(0);
+      expect(res.body.scopes_supported).toContain('mcp:read');
+      expect(res.body.bearer_methods_supported).toContain('header');
+    });
+  });
+
+  describe('GET /mcp/.well-known/resource.json', () => {
+    it('returns protected resource metadata at MCP path', async () => {
       const res = await request(app)
         .get('/mcp/.well-known/resource.json')
         .expect(200);
