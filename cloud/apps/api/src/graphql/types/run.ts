@@ -3,6 +3,7 @@ import { db } from '@valuerank/db';
 import { RunRef, DefinitionRef, TranscriptRef, ExperimentRef } from './refs.js';
 import { RunProgress, TaskResult } from './run-progress.js';
 import { ExecutionMetrics } from './execution-metrics.js';
+import { ProbeResultRef, ProbeResultModelSummary } from './probe-result.js';
 import { calculatePercentComplete } from '../../services/run/index.js';
 import { AnalysisResultRef } from './analysis.js';
 import { getAllMetrics, getTotals } from '../../services/rate-limiter/index.js';
@@ -267,6 +268,86 @@ builder.objectType(RunRef, {
           totalQueued,
           estimatedSecondsRemaining,
         };
+      },
+    }),
+
+    // Probe results - detailed success/failure info for each model/scenario
+    probeResults: t.field({
+      type: [ProbeResultRef],
+      args: {
+        status: t.arg.string({
+          required: false,
+          description: 'Filter by status (SUCCESS or FAILED)',
+        }),
+        modelId: t.arg.string({
+          required: false,
+          description: 'Filter by model ID',
+        }),
+      },
+      description: 'Probe results with detailed success/failure information',
+      resolve: async (run, args) => {
+        const where: { runId: string; status?: 'SUCCESS' | 'FAILED'; modelId?: string } = {
+          runId: run.id,
+        };
+        if (args.status === 'SUCCESS' || args.status === 'FAILED') {
+          where.status = args.status;
+        }
+        if (args.modelId) {
+          where.modelId = args.modelId;
+        }
+        return db.probeResult.findMany({
+          where,
+          orderBy: [{ status: 'asc' }, { modelId: 'asc' }, { scenarioId: 'asc' }],
+        });
+      },
+    }),
+
+    // Probe results summary by model
+    probeResultsByModel: t.field({
+      type: [ProbeResultModelSummary],
+      description: 'Summary of probe results grouped by model, with error codes',
+      resolve: async (run) => {
+        // Get all probe results for this run
+        const results = await db.probeResult.findMany({
+          where: { runId: run.id },
+          select: { modelId: true, status: true, errorCode: true },
+        });
+
+        // Group by model
+        const byModel: Record<string, { success: number; failed: number; errorCodes: Set<string> }> = {};
+        for (const result of results) {
+          const modelEntry = byModel[result.modelId] ?? { success: 0, failed: 0, errorCodes: new Set<string>() };
+          byModel[result.modelId] = modelEntry;
+
+          if (result.status === 'SUCCESS') {
+            modelEntry.success++;
+          } else {
+            modelEntry.failed++;
+            if (result.errorCode) {
+              modelEntry.errorCodes.add(result.errorCode);
+            }
+          }
+        }
+
+        // Convert to array
+        return Object.entries(byModel).map(([modelId, data]) => ({
+          modelId,
+          success: data.success,
+          failed: data.failed,
+          errorCodes: Array.from(data.errorCodes),
+        }));
+      },
+    }),
+
+    // Failed probe results only (convenience field)
+    failedProbes: t.field({
+      type: [ProbeResultRef],
+      description: 'Failed probe results with error details',
+      resolve: async (run) => {
+        return db.probeResult.findMany({
+          where: { runId: run.id, status: 'FAILED' },
+          orderBy: [{ modelId: 'asc' }, { errorCode: 'asc' }],
+        });
       },
     }),
   }),

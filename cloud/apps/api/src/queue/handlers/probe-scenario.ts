@@ -19,6 +19,7 @@ import { spawnPython } from '../spawn.js';
 import { incrementCompleted, incrementFailed, isRunPaused, isRunTerminal } from '../../services/run/index.js';
 import { createTranscript, validateTranscript } from '../../services/transcript/index.js';
 import type { ProbeTranscript } from '../../services/transcript/index.js';
+import { recordProbeSuccess, recordProbeFailure } from '../../services/probe-result/index.js';
 import { LLM_PROVIDERS } from '../../config/models.js';
 import { schedule as rateLimitSchedule } from '../../services/rate-limiter/index.js';
 import { getProviderForModel } from '../../services/parallelism/index.js';
@@ -391,7 +392,15 @@ async function processProbeJob(job: PgBoss.Job<ProbeScenarioJobData>): Promise<v
 
       // Use Python's retryable flag if available
       if (!err.retryable) {
-        // Non-retryable error - increment failed count immediately
+        // Non-retryable error - record failure and increment failed count
+        await recordProbeFailure({
+          runId,
+          scenarioId,
+          modelId,
+          errorCode: err.code,
+          errorMessage: err.message,
+          retryCount: 0,
+        });
         const { progress, status } = await incrementFailed(runId);
         log.error({ jobId, runId, progress, status, error: err }, 'Probe job permanently failed');
         return; // Complete job without retrying
@@ -414,6 +423,22 @@ async function processProbeJob(job: PgBoss.Job<ProbeScenarioJobData>): Promise<v
       modelId,
       transcript: output.transcript,
       definitionSnapshot: scenario.definition.content as Prisma.InputJsonValue,
+    });
+
+    // Record probe success in results table
+    // Calculate duration from timestamps
+    const startedAt = new Date(output.transcript.startedAt);
+    const completedAt = new Date(output.transcript.completedAt);
+    const durationMs = completedAt.getTime() - startedAt.getTime();
+
+    await recordProbeSuccess({
+      runId,
+      scenarioId,
+      modelId,
+      transcriptId: transcriptRecord.id,
+      durationMs,
+      inputTokens: output.transcript.totalInputTokens,
+      outputTokens: output.transcript.totalOutputTokens,
     });
 
     // Update progress - increment completed count
@@ -461,6 +486,17 @@ async function processProbeJob(job: PgBoss.Job<ProbeScenarioJobData>): Promise<v
     // 2. Max retries have been reached
     if (!retryable || maxRetriesReached) {
       try {
+        // Record the failure with error details
+        const errorMessage = error instanceof Error ? error.message : String(error);
+        const errorCode = !retryable ? 'NON_RETRYABLE' : 'MAX_RETRIES_EXCEEDED';
+        await recordProbeFailure({
+          runId,
+          scenarioId,
+          modelId,
+          errorCode,
+          errorMessage,
+          retryCount,
+        });
         const { progress, status } = await incrementFailed(runId);
         log.error(
           { jobId, runId, scenarioId, modelId, progress, status, retryCount, err: error },

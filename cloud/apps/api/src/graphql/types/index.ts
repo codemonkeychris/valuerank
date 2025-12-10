@@ -19,6 +19,7 @@ import './tag.js';
 import './queue-status.js';
 import './run-progress.js';
 import './execution-metrics.js';
+import './probe-result.js';
 
 // Model types
 import './available-model.js';

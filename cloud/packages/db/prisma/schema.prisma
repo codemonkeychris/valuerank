@@ -157,6 +157,7 @@ model Run {
   baselineFor     RunComparison[]  @relation("BaselineRun")
   comparisonFor   RunComparison[]  @relation("ComparisonRun")
   scenarioSelections RunScenarioSelection[]
+  probeResults    ProbeResult[]
 
   @@index([definitionId])
   @@index([experimentId])
@@ -220,6 +221,7 @@ model Scenario {
   definition  Definition   @relation(fields: [definitionId], references: [id], onDelete: Cascade)
   transcripts Transcript[]
   runSelections RunScenarioSelection[]
+  probeResults  ProbeResult[]
 
   @@index([definitionId])
   @@map("scenarios")
@@ -239,6 +241,45 @@ model RunScenarioSelection {
   @@index([runId])
   @@index([scenarioId])
   @@map("run_scenario_selections")
+}
+
+// ============================================================================
+// JOB RESULTS (Probe outcome tracking)
+// ============================================================================
+
+model ProbeResult {
+  id          String            @id @default(cuid())
+  runId       String            @map("run_id")
+  scenarioId  String            @map("scenario_id")
+  modelId     String            @map("model_id")
+  status      ProbeResultStatus
+  // Success fields
+  transcriptId   String?        @map("transcript_id")
+  durationMs     Int?           @map("duration_ms")
+  inputTokens    Int?           @map("input_tokens")
+  outputTokens   Int?           @map("output_tokens")
+  // Failure fields
+  errorCode    String?          @map("error_code")
+  errorMessage String?          @map("error_message")
+  retryCount   Int              @default(0) @map("retry_count")
+  // Timestamps
+  createdAt    DateTime         @default(now()) @map("created_at")
+  completedAt  DateTime?        @map("completed_at")
+
+  run      Run      @relation(fields: [runId], references: [id], onDelete: Cascade)
+  scenario Scenario @relation(fields: [scenarioId], references: [id], onDelete: Cascade)
+
+  @@unique([runId, scenarioId, modelId])
+  @@index([runId])
+  @@index([scenarioId])
+  @@index([modelId])
+  @@index([status])
+  @@map("probe_results")
+}
+
+enum ProbeResultStatus {
+  SUCCESS
+  FAILED
 }
 
 // ============================================================================
