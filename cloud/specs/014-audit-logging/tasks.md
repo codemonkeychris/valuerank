@@ -100,21 +100,21 @@
 
 ### GraphQL Schema Extensions
 
-- [ ] T033 [US2] Add deletedBy field resolver to Definition type in `apps/api/src/graphql/types/definition.ts`
-- [ ] T034 [P] [US2] Add deletedBy field resolver to Run type in `apps/api/src/graphql/types/run.ts`
-- [ ] T035 [P] [US2] Add `includeDeleted` argument to definition query in `apps/api/src/graphql/queries/definition.ts`
-- [ ] T036 [P] [US2] Add `includeDeleted` argument to run query in `apps/api/src/graphql/queries/run.ts`
+- [X] T033 [US2] Add deletedBy field resolver to Definition type in `apps/api/src/graphql/types/definition.ts`
+- [X] T034 [P] [US2] Add deletedBy field resolver to Run type in `apps/api/src/graphql/types/run.ts`
+- [X] T035 [P] [US2] Add `includeDeleted` argument to definition query in `apps/api/src/graphql/queries/definition.ts`
+- [X] T036 [P] [US2] Add `includeDeleted` argument to run query in `apps/api/src/graphql/queries/run.ts`
 
 ### Mutation Updates - Set deletedByUserId
 
-- [ ] T037 [US2] Update softDeleteDefinition in `packages/db/src/queries/definition.ts` to accept userId parameter
-- [ ] T038 [US2] Update deleteDefinition mutation in `apps/api/src/graphql/mutations/definition.ts` to pass userId
-- [ ] T039 [P] [US2] Update deleteRun mutation in `apps/api/src/graphql/mutations/run.ts` to set deletedByUserId
+- [X] T037 [US2] Update softDeleteDefinition in `packages/db/src/queries/definitions.ts` to accept userId parameter
+- [X] T038 [US2] Update deleteDefinition mutation in `apps/api/src/graphql/mutations/definition.ts` to pass userId
+- [X] T039 [P] [US2] Update deleteRun mutation in `apps/api/src/graphql/mutations/run.ts` to set deletedByUserId
 
 ### Tests
 
-- [ ] T040 [US2] Write test for deletedBy field on Definition in `apps/api/tests/graphql/mutations/definition.test.ts`
-- [ ] T041 [P] [US2] Write test for deletedBy field on Run in `apps/api/tests/graphql/mutations/run.test.ts`
+- [X] T040 [US2] Write test for deletedBy field on Definition in `apps/api/tests/graphql/types/audit-fields.test.ts`
+- [X] T041 [P] [US2] Write test for deletedBy field on Run in `apps/api/tests/graphql/types/audit-fields.test.ts`
 
 **Checkpoint**: User Story 2 complete - users can query `deletedBy` on soft-deleted entities
 

@@ -147,6 +147,19 @@ builder.objectType(DefinitionRef, {
       },
     }),
 
+    // Audit field: who deleted this definition
+    deletedBy: t.field({
+      type: UserRef,
+      nullable: true,
+      description: 'User who deleted this definition (only populated for soft-deleted records)',
+      resolve: async (definition) => {
+        if (!definition.deletedByUserId) return null;
+        return db.user.findUnique({
+          where: { id: definition.deletedByUserId },
+        });
+      },
+    }),
+
     // Relation: parent (via DataLoader for N+1 prevention)
     parent: t.field({
       type: DefinitionRef,

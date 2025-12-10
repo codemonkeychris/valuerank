@@ -350,4 +350,155 @@ describe('Audit Fields on GraphQL Types', () => {
       });
     });
   });
+
+  describe('deletedBy field', () => {
+    it('deleteDefinition sets deletedByUserId and is queryable with includeDeleted', async () => {
+      // Create a definition to delete
+      const defToDelete = await db.definition.create({
+        data: {
+          name: 'Definition to delete',
+          content: { schema_version: 1, preamble: 'Test' },
+          createdByUserId: testUser.id,
+        },
+      });
+
+      // Delete it via mutation
+      const deleteMutation = `
+        mutation DeleteDef($id: String!) {
+          deleteDefinition(id: $id) {
+            deletedIds
+            count
+          }
+        }
+      `;
+
+      const deleteResponse = await request(app)
+        .post('/graphql')
+        .set('Authorization', getAuthHeader())
+        .send({ query: deleteMutation, variables: { id: defToDelete.id } })
+        .expect(200);
+
+      expect(deleteResponse.body.errors).toBeUndefined();
+      expect(deleteResponse.body.data.deleteDefinition.deletedIds).toContain(defToDelete.id);
+
+      // Query with includeDeleted to see deletedBy
+      const query = `
+        query GetDeletedDefinition($id: ID!) {
+          definition(id: $id, includeDeleted: true) {
+            id
+            deletedBy {
+              id
+              email
+            }
+          }
+        }
+      `;
+
+      const response = await request(app)
+        .post('/graphql')
+        .set('Authorization', getAuthHeader())
+        .send({ query, variables: { id: defToDelete.id } })
+        .expect(200);
+
+      expect(response.body.errors).toBeUndefined();
+      expect(response.body.data.definition).not.toBeNull();
+      expect(response.body.data.definition.deletedBy).toMatchObject({
+        id: TEST_USER.id,
+        email: TEST_USER.email,
+      });
+
+      // Cleanup (hard delete for test purposes)
+      await db.definition.delete({ where: { id: defToDelete.id } });
+    });
+
+    it('deleteRun sets deletedByUserId and is queryable with includeDeleted', async () => {
+      // Create a run to delete
+      const runToDelete = await db.run.create({
+        data: {
+          definitionId: testDefinition.id,
+          status: 'COMPLETED',
+          config: { models: ['gpt-4'] },
+          createdByUserId: testUser.id,
+        },
+      });
+
+      // Delete it via mutation
+      const deleteMutation = `
+        mutation DeleteRun($runId: ID!) {
+          deleteRun(runId: $runId)
+        }
+      `;
+
+      const deleteResponse = await request(app)
+        .post('/graphql')
+        .set('Authorization', getAuthHeader())
+        .send({ query: deleteMutation, variables: { runId: runToDelete.id } })
+        .expect(200);
+
+      expect(deleteResponse.body.errors).toBeUndefined();
+      expect(deleteResponse.body.data.deleteRun).toBe(true);
+
+      // Query with includeDeleted to see deletedBy
+      const query = `
+        query GetDeletedRun($id: ID!) {
+          run(id: $id, includeDeleted: true) {
+            id
+            deletedBy {
+              id
+              email
+            }
+          }
+        }
+      `;
+
+      const response = await request(app)
+        .post('/graphql')
+        .set('Authorization', getAuthHeader())
+        .send({ query, variables: { id: runToDelete.id } })
+        .expect(200);
+
+      expect(response.body.errors).toBeUndefined();
+      expect(response.body.data.run).not.toBeNull();
+      expect(response.body.data.run.deletedBy).toMatchObject({
+        id: TEST_USER.id,
+        email: TEST_USER.email,
+      });
+
+      // Cleanup (hard delete for test purposes)
+      await db.run.delete({ where: { id: runToDelete.id } });
+    });
+
+    it('definition query without includeDeleted hides deleted definitions', async () => {
+      // Create and soft-delete a definition
+      const defToHide = await db.definition.create({
+        data: {
+          name: 'Hidden Definition',
+          content: { schema_version: 1 },
+          deletedAt: new Date(),
+          deletedByUserId: testUser.id,
+        },
+      });
+
+      try {
+        const query = `
+          query GetDefinition($id: ID!) {
+            definition(id: $id) {
+              id
+            }
+          }
+        `;
+
+        const response = await request(app)
+          .post('/graphql')
+          .set('Authorization', getAuthHeader())
+          .send({ query, variables: { id: defToHide.id } })
+          .expect(200);
+
+        expect(response.body.errors).toBeUndefined();
+        expect(response.body.data.definition).toBeNull();
+      } finally {
+        await db.definition.delete({ where: { id: defToHide.id } });
+      }
+    });
+  });
 });

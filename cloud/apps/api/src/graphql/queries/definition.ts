@@ -29,17 +29,22 @@ builder.queryField('definition', (t) =>
     description: 'Fetch a single definition by ID. Returns null if not found.',
     args: {
       id: t.arg.id({ required: true, description: 'Definition ID' }),
+      includeDeleted: t.arg.boolean({
+        required: false,
+        description: 'Include soft-deleted definitions (default: false)',
+      }),
     },
     resolve: async (_root, args, ctx) => {
       const id = String(args.id);
-      ctx.log.debug({ definitionId: id }, 'Fetching definition');
+      const includeDeleted = args.includeDeleted ?? false;
+      ctx.log.debug({ definitionId: id, includeDeleted }, 'Fetching definition');
 
       const definition = await db.definition.findUnique({
         where: { id },
       });
 
-      // Filter out soft-deleted definitions
-      if (!definition || definition.deletedAt !== null) {
+      // Filter out soft-deleted definitions unless includeDeleted is true
+      if (!definition || (!includeDeleted && definition.deletedAt !== null)) {
         ctx.log.debug({ definitionId: id }, 'Definition not found');
         return null;
       }

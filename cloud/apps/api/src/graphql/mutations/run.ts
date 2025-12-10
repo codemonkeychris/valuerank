@@ -269,10 +269,13 @@ builder.mutationField('deleteRun', (t) =>
         throw new NotFoundError('Run', runId);
       }
 
-      // Soft delete by setting deletedAt
+      // Soft delete by setting deletedAt and deletedByUserId
       await db.run.update({
         where: { id: runId },
-        data: { deletedAt: new Date() },
+        data: {
+          deletedAt: new Date(),
+          deletedByUserId: ctx.user.id,
+        },
       });
 
       ctx.log.info({ userId: ctx.user.id, runId }, 'Run deleted (soft)');

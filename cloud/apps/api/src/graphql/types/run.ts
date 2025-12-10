@@ -50,6 +50,19 @@ builder.objectType(RunRef, {
       },
     }),
 
+    // Audit field: who deleted this run
+    deletedBy: t.field({
+      type: UserRef,
+      nullable: true,
+      description: 'User who deleted this run (only populated for soft-deleted records)',
+      resolve: async (run) => {
+        if (!run.deletedByUserId) return null;
+        return db.user.findUnique({
+          where: { id: run.deletedByUserId },
+        });
+      },
+    }),
+
     // Structured progress with percentComplete calculation
     runProgress: t.field({
       type: RunProgress,
