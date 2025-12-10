@@ -13,6 +13,8 @@ import {
   pauseRun as pauseRunService,
   resumeRun as resumeRunService,
   cancelRun as cancelRunService,
+  recoverOrphanedRun as recoverOrphanedRunService,
+  triggerRecovery as triggerRecoveryService,
 } from '../../services/run/index.js';
 import { StartRunInput } from '../types/inputs/start-run.js';
 import { createAuditLog } from '../../services/audit/index.js';
@@ -268,6 +270,162 @@ builder.mutationField('cancelRun', (t) =>
         throw new Error(`Run not found: ${result.id}`);
       }
       return run;
+    },
+  })
+);
+
+// RecoverRunPayload - return type for recoverRun mutation
+const RecoverRunPayload = builder.objectRef<{
+  run: { id: string };
+  action: string;
+  requeuedCount?: number;
+}>('RecoverRunPayload').implement({
+  description: 'Result of recovering an orphaned run',
+  fields: (t) => ({
+    run: t.field({
+      type: RunRef,
+      description: 'The recovered run',
+      resolve: async (parent, _args, ctx) => {
+        const run = await ctx.loaders.run.load(parent.run.id);
+        if (!run) {
+          throw new Error(`Run not found: ${parent.run.id}`);
+        }
+        return run;
+      },
+    }),
+    action: t.exposeString('action', {
+      description: 'The recovery action taken (requeued_probes, triggered_summarization, no_missing_probes, etc.)',
+    }),
+    requeuedCount: t.exposeInt('requeuedCount', {
+      nullable: true,
+      description: 'Number of jobs re-queued (if applicable)',
+    }),
+  }),
+});
+
+// recoverRun mutation - manually trigger recovery for a specific run
+builder.mutationField('recoverRun', (t) =>
+  t.field({
+    type: RecoverRunPayload,
+    description: `
+      Attempt to recover an orphaned run.
+
+      If the run is stuck in RUNNING or SUMMARIZING state with no active jobs,
+      this will re-queue missing probe jobs or summarize jobs as needed.
+
+      Useful for recovering from API restarts or other interruptions.
+
+      Requires authentication.
+    `,
+    args: {
+      runId: t.arg.id({
+        required: true,
+        description: 'The ID of the run to recover',
+      }),
+    },
+    resolve: async (_root, args, ctx) => {
+      if (!ctx.user) {
+        throw new AuthenticationError('Authentication required');
+      }
+
+      const runId = String(args.runId);
+      ctx.log.info({ userId: ctx.user.id, runId }, 'Recovering run via GraphQL');
+
+      // Check run exists
+      const run = await db.run.findFirst({
+        where: {
+          id: runId,
+          deletedAt: null,
+        },
+      });
+
+      if (!run) {
+        throw new NotFoundError('Run', runId);
+      }
+
+      const result = await recoverOrphanedRunService(runId);
+
+      ctx.log.info(
+        { userId: ctx.user.id, runId, action: result.action, requeuedCount: result.requeuedCount },
+        'Run recovery attempted'
+      );
+
+      // Audit log (non-blocking)
+      createAuditLog({
+        action: 'ACTION',
+        entityType: 'Run',
+        entityId: runId,
+        userId: ctx.user.id,
+        metadata: { action: 'recover', recoveryAction: result.action, requeuedCount: result.requeuedCount },
+      });
+
+      return {
+        run: { id: runId },
+        action: result.action,
+        requeuedCount: result.requeuedCount,
+      };
+    },
+  })
+);
+
+// TriggerRecoveryPayload - return type for triggerRecovery mutation
+const TriggerRecoveryPayload = builder.objectRef<{
+  detected: number;
+  recovered: number;
+  errors: number;
+}>('TriggerRecoveryPayload').implement({
+  description: 'Result of triggering system-wide orphaned run recovery',
+  fields: (t) => ({
+    detected: t.exposeInt('detected', {
+      description: 'Number of orphaned runs detected',
+    }),
+    recovered: t.exposeInt('recovered', {
+      description: 'Number of runs successfully recovered',
+    }),
+    errors: t.exposeInt('errors', {
+      description: 'Number of runs that failed to recover',
+    }),
+  }),
+});
+
+// triggerRecovery mutation - manually trigger system-wide recovery scan
+builder.mutationField('triggerRecovery', (t) =>
+  t.field({
+    type: TriggerRecoveryPayload,
+    description: `
+      Trigger a system-wide scan for orphaned runs.
+
+      Detects all runs stuck in RUNNING or SUMMARIZING state with no active jobs,
+      and attempts to recover them by re-queuing missing jobs.
+
+      This is normally run automatically every 5 minutes, but can be triggered manually.
+
+      Requires authentication.
+    `,
+    resolve: async (_root, _args, ctx) => {
+      if (!ctx.user) {
+        throw new AuthenticationError('Authentication required');
+      }
+
+      ctx.log.info({ userId: ctx.user.id }, 'Triggering recovery scan via GraphQL');
+
+      const result = await triggerRecoveryService();
+
+      ctx.log.info(
+        { userId: ctx.user.id, ...result },
+        'Recovery scan completed'
+      );
+
+      // Audit log (non-blocking)
+      createAuditLog({
+        action: 'ACTION',
+        entityType: 'System',
+        entityId: 'recovery',
+        userId: ctx.user.id,
+        metadata: { action: 'triggerRecovery', ...result },
+      });
+
+      return result;
     },
   })
 );

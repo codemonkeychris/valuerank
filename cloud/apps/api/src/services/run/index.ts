@@ -23,3 +23,19 @@ export {
   isRunPaused,
   isRunTerminal,
 } from './control.js';
+
+export {
+  detectOrphanedRuns,
+  recoverOrphanedRun,
+  recoverOrphanedRuns,
+  runStartupRecovery,
+  RECOVERY_INTERVAL_MS,
+} from './recovery.js';
+export type { OrphanedRunInfo, RecoveryResult } from './recovery.js';
+
+export {
+  startRecoveryScheduler,
+  stopRecoveryScheduler,
+  isRecoverySchedulerRunning,
+  triggerRecovery,
+} from './scheduler.js';
