@@ -2,11 +2,16 @@
  * Queue Orchestrator
  *
  * Manages job worker lifecycle and provides queue control operations.
+ * Also manages the run recovery scheduler for handling orphaned runs.
  */
 
 import { createLogger } from '@valuerank/shared';
 import { getBoss, startBoss, stopBoss } from './boss.js';
 import { registerHandlers, getJobTypes } from './handlers/index.js';
+import {
+  startRecoveryScheduler,
+  stopRecoveryScheduler,
+} from '../services/run/scheduler.js';
 
 const log = createLogger('queue:orchestrator');
 
@@ -35,6 +40,9 @@ export async function startOrchestrator(): Promise<void> {
   isRunning = true;
   isPaused = false;
 
+  // Start the recovery scheduler for orphaned runs
+  await startRecoveryScheduler();
+
   log.info({ jobTypes: getJobTypes() }, 'Queue orchestrator started');
 }
 
@@ -49,6 +57,9 @@ export async function stopOrchestrator(): Promise<void> {
   }
 
   log.info('Stopping queue orchestrator');
+
+  // Stop the recovery scheduler first
+  stopRecoveryScheduler();
 
   await stopBoss();
   isRunning = false;
