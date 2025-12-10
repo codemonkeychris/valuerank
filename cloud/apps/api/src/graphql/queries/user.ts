@@ -10,6 +10,9 @@ import { AuthenticationError } from '@valuerank/shared';
 import { UserRef } from '../types/user.js';
 import { ApiKeyRef } from '../types/api-key.js';
 
+const MAX_LIMIT = 100;
+const DEFAULT_LIMIT = 50;
+
 // Query: me - get current authenticated user
 builder.queryField('me', (t) =>
   t.field({
@@ -53,14 +56,29 @@ builder.queryField('apiKeys', (t) =>
 
       Note: Only key prefix is returned, not the full key value.
     `,
-    resolve: async (_root, _args, ctx) => {
+    args: {
+      limit: t.arg.int({
+        required: false,
+        description: `Maximum number of results (default: ${DEFAULT_LIMIT}, max: ${MAX_LIMIT})`,
+      }),
+      offset: t.arg.int({
+        required: false,
+        description: 'Number of results to skip (default: 0)',
+      }),
+    },
+    resolve: async (_root, args, ctx) => {
       if (!ctx.user) {
         throw new AuthenticationError('Authentication required');
       }
 
+      const limit = Math.min(args.limit ?? DEFAULT_LIMIT, MAX_LIMIT);
+      const offset = args.offset ?? 0;
+
       const apiKeys = await db.apiKey.findMany({
         where: { userId: ctx.user.id },
         orderBy: { createdAt: 'desc' },
+        take: limit,
+        skip: offset,
       });
 
       return apiKeys.map((key) => ({

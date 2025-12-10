@@ -157,12 +157,17 @@ builder.queryField('entityAuditHistory', (t) =>
         required: false,
         description: `Maximum number of entries to return (default: ${DEFAULT_LIMIT}, max: ${MAX_LIMIT})`,
       }),
+      offset: t.arg.int({
+        required: false,
+        description: 'Number of entries to skip (default: 0)',
+      }),
     },
     resolve: async (_root, args, ctx) => {
       const limit = Math.min(args.limit ?? DEFAULT_LIMIT, MAX_LIMIT);
+      const offset = args.offset ?? 0;
 
       ctx.log.debug(
-        { entityType: args.entityType, entityId: args.entityId, limit },
+        { entityType: args.entityType, entityId: args.entityId, limit, offset },
         'Querying entity audit history'
       );
 
@@ -173,6 +178,7 @@ builder.queryField('entityAuditHistory', (t) =>
         },
         orderBy: { createdAt: 'desc' },
         take: limit,
+        skip: offset,
       });
 
       ctx.log.debug(

@@ -19,11 +19,16 @@ builder.queryField('tags', (t) =>
         required: false,
         description: `Maximum number of results (default: ${DEFAULT_LIMIT}, max: ${MAX_LIMIT})`,
       }),
+      offset: t.arg.int({
+        required: false,
+        description: 'Number of results to skip (default: 0)',
+      }),
     },
     resolve: async (_root, args, ctx) => {
       const limit = Math.min(args.limit ?? DEFAULT_LIMIT, MAX_LIMIT);
+      const offset = args.offset ?? 0;
 
-      ctx.log.debug({ search: args.search, limit }, 'Listing tags');
+      ctx.log.debug({ search: args.search, limit, offset }, 'Listing tags');
 
       const where = args.search
         ? { name: { contains: args.search.toLowerCase(), mode: 'insensitive' as const } }
@@ -32,6 +37,7 @@ builder.queryField('tags', (t) =>
       const tags = await db.tag.findMany({
         where,
         take: limit,
+        skip: offset,
         orderBy: { name: 'asc' },
       });
 
