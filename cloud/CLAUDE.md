@@ -2,7 +2,14 @@
 
 This document defines the coding standards and architectural principles for the Cloud ValueRank project. All code contributions must adhere to these guidelines.
 
-## Git Push Policy
+## Git Workflow
+
+**ALWAYS use Pull Requests to merge changes to main.** Never commit directly to main.
+
+1. Create a feature branch before making changes
+2. Commit changes to the feature branch
+3. Push the branch and create a PR via `gh pr create`
+4. Wait for human review/approval before merging
 
 **NEVER push to origin without explicit human confirmation.** Always ask before running `git push`.
 
