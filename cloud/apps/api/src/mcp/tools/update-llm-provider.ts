@@ -11,6 +11,8 @@ import { updateProvider, getProviderById } from '@valuerank/db';
 import { createLogger, NotFoundError } from '@valuerank/shared';
 import { logAuditEvent, createLlmAudit } from '../../services/mcp/index.js';
 import { addToolRegistrar } from './registry.js';
+import { getBoss, isBossRunning } from '../../queue/boss.js';
+import { reregisterProviderHandler } from '../../queue/handlers/index.js';
 
 const log = createLogger('mcp:tools:update-llm-provider');
 
@@ -175,6 +177,29 @@ function registerUpdateLlmProviderTool(server: McpServer): void {
           },
           'Provider updated'
         );
+
+        // Re-register queue handler if parallelism settings changed
+        const parallelismChanged =
+          args.max_parallel_requests !== undefined ||
+          args.requests_per_minute !== undefined;
+
+        if (parallelismChanged && isBossRunning()) {
+          try {
+            const boss = getBoss();
+            await reregisterProviderHandler(boss, provider.name);
+            log.info(
+              { requestId, providerName: provider.name },
+              'Queue handler re-registered with new parallelism settings'
+            );
+          } catch (reregisterErr) {
+            // Log but don't fail the update - the settings are saved,
+            // they'll take effect on next API restart if re-registration fails
+            log.error(
+              { err: reregisterErr, requestId, providerName: provider.name },
+              'Failed to re-register queue handler (settings saved, restart required)'
+            );
+          }
+        }
 
         // Audit log
         logAuditEvent(

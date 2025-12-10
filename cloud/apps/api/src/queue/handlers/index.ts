@@ -161,3 +161,85 @@ export async function registerHandlers(boss: PgBoss): Promise<void> {
 export function getJobTypes(): JobType[] {
   return handlerRegistrations.map((h) => h.name);
 }
+
+/**
+ * Re-registers a single provider's probe queue handler with updated settings.
+ * Called when provider parallelism settings are changed via API.
+ *
+ * This function:
+ * 1. Unregisters the existing handler for the provider queue (allows in-flight jobs to complete)
+ * 2. Clears the parallelism cache to reload settings from DB
+ * 3. Registers a new handler with the updated batchSize
+ *
+ * Note: Jobs in the queue are NOT affected - they remain queued and will be processed
+ * by the new handler. In-flight jobs complete normally before the handler is replaced.
+ * PgBoss's offWork() is graceful and does not abort running jobs.
+ *
+ * @param providerName - The provider name (e.g., 'google', 'openai')
+ */
+export async function reregisterProviderHandler(
+  boss: PgBoss,
+  providerName: string
+): Promise<void> {
+  // Import here to avoid circular dependency
+  const { clearCache, getProviderQueueName, loadProviderLimits } = await import(
+    '../../services/parallelism/index.js'
+  );
+  const { reloadLimiters } = await import('../../services/rate-limiter/index.js');
+
+  const queueName = getProviderQueueName(providerName);
+
+  log.info({ provider: providerName, queueName }, 'Re-registering provider queue handler');
+
+  // 1. Get queue stats before unregistering (for logging)
+  let activeCount = 0;
+  let queuedCount = 0;
+  try {
+    const queues = await boss.getQueues();
+    const queueInfo = queues.find((q) => q.name === queueName);
+    if (queueInfo) {
+      activeCount = queueInfo.activeCount;
+      queuedCount = queueInfo.queuedCount;
+    }
+  } catch {
+    // Ignore errors getting stats
+  }
+
+  // 2. Unregister existing handler - this is GRACEFUL:
+  //    - Stops fetching NEW jobs from the queue
+  //    - In-flight jobs continue to completion
+  //    - Jobs in queue remain untouched
+  await boss.offWork(queueName);
+  log.info(
+    { provider: providerName, queueName, activeJobs: activeCount, queuedJobs: queuedCount },
+    'Unregistered existing handler (in-flight jobs will complete)'
+  );
+
+  // 3. Clear caches to force reload from database
+  clearCache();
+
+  // 4. Load fresh limits
+  const limits = await loadProviderLimits();
+  const providerLimits = limits.get(providerName);
+
+  if (!providerLimits) {
+    log.warn({ provider: providerName }, 'Provider not found after cache reload');
+    return;
+  }
+
+  // 5. Register new handler with updated batchSize
+  //    This immediately starts processing queued jobs with the new concurrency
+  const batchSize = providerLimits.maxParallelRequests;
+  const probeHandler = createProbeScenarioHandler();
+
+  await boss.work<ProbeScenarioJobData>(queueName, { batchSize }, probeHandler);
+
+  log.info(
+    { provider: providerName, queueName, batchSize },
+    'Provider queue handler re-registered with new settings'
+  );
+
+  // 6. Reload rate limiters to pick up new settings
+  await reloadLimiters();
+  log.debug({ provider: providerName }, 'Rate limiters reloaded');
+}
