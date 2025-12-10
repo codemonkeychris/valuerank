@@ -23,6 +23,8 @@ import {
   LlmModel,
 } from '@valuerank/db';
 import { createAuditLog } from '../../services/audit/index.js';
+import { getBoss, isBossRunning } from '../../queue/boss.js';
+import { reregisterProviderHandler } from '../../queue/handlers/index.js';
 
 // Result type for model deprecation
 type DeprecateModelResultShape = {
@@ -275,6 +277,28 @@ builder.mutationField('updateLlmProvider', (t) =>
       });
 
       ctx.log.info({ providerId: provider.id }, 'LLM provider updated');
+
+      // Re-register queue handler if parallelism settings changed
+      const parallelismChanged =
+        args.input.maxParallelRequests !== undefined ||
+        args.input.requestsPerMinute !== undefined;
+
+      if (parallelismChanged && isBossRunning()) {
+        try {
+          const boss = getBoss();
+          await reregisterProviderHandler(boss, provider.name);
+          ctx.log.info(
+            { providerName: provider.name },
+            'Queue handler re-registered with new parallelism settings'
+          );
+        } catch (err) {
+          // Log but don't fail - settings are saved, restart will apply them
+          ctx.log.error(
+            { err, providerName: provider.name },
+            'Failed to re-register queue handler (settings saved, restart required)'
+          );
+        }
+      }
 
       // Audit log (non-blocking)
       createAuditLog({
