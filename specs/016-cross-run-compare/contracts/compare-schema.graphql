@@ -1,0 +1,129 @@
+# Cross-Run Comparison GraphQL Schema Extension
+# Feature #016 - Cross-Run Compare
+
+"""
+Batch query for fetching multiple runs with their full analysis data.
+Used for cross-run comparison feature.
+"""
+extend type Query {
+  """
+  Fetch multiple runs with their full analysis data in a single request.
+  Returns runs in the same order as the input IDs.
+  Runs that don't exist or the user can't access are omitted.
+
+  @param ids - Array of run IDs to fetch (maximum 10)
+  @returns Array of Run objects with analysis data
+  @throws ValidationError if more than 10 IDs provided
+  """
+  runsWithAnalysis(ids: [ID!]!): [RunWithAnalysis!]!
+}
+
+"""
+Extended Run type with full analysis data for comparison.
+Includes definition details needed for diff views.
+"""
+type RunWithAnalysis {
+  id: ID!
+  status: RunStatus!
+
+  # Timing
+  createdAt: DateTime!
+  startedAt: DateTime
+  completedAt: DateTime
+
+  # Configuration
+  config: RunConfig!
+
+  # Definition with full content for diff
+  definition: DefinitionForComparison!
+
+  # Analysis data (null if analysis not complete)
+  analysis: AnalysisResult
+  analysisStatus: AnalysisStatus
+
+  # Aggregate metrics for overview
+  transcriptCount: Int!
+  models: [String!]!
+}
+
+"""
+Definition data needed for comparison views.
+Includes preamble and template for diff visualization.
+"""
+type DefinitionForComparison {
+  id: ID!
+  name: String!
+  versionLabel: String
+
+  # Content for diff view
+  preamble: String!
+  template: String!
+
+  # Parent for version tree context
+  parentId: ID
+
+  # Tags for filtering
+  tags: [Tag!]!
+}
+
+"""
+Analysis status enum for filtering and display.
+"""
+enum AnalysisStatus {
+  pending
+  computing
+  completed
+  failed
+}
+
+"""
+Input for comparison statistics request (future use).
+"""
+input ComparisonStatsInput {
+  """Run IDs to compare (2-10 runs)"""
+  runIds: [ID!]!
+
+  """Specific model to focus comparison on (optional)"""
+  modelFilter: String
+
+  """Specific value to focus comparison on (optional)"""
+  valueFilter: String
+}
+
+"""
+Output for comparison statistics (future backend computation).
+Currently computed client-side.
+"""
+type ComparisonStats {
+  """Pairwise comparison results"""
+  runPairs: [RunPairComparison!]!
+
+  """Models present in all runs"""
+  commonModels: [String!]!
+
+  """Models unique to specific runs"""
+  uniqueModels: [UniqueModels!]!
+}
+
+type RunPairComparison {
+  run1Id: ID!
+  run2Id: ID!
+
+  """Cohen's d effect size for mean decision difference"""
+  effectSize: Float!
+  effectInterpretation: String!
+
+  """Mean decision difference (run1 - run2)"""
+  meanDifference: Float!
+
+  """KS statistic for distribution difference (0-1)"""
+  ksStatistic: Float
+
+  """Values with significant win rate changes"""
+  significantValueChanges: [String!]!
+}
+
+type UniqueModels {
+  runId: ID!
+  models: [String!]!
+}
