@@ -11,15 +11,16 @@ import { Runs } from './pages/Runs';
 import { RunDetail } from './pages/RunDetail';
 import { Analysis } from './pages/Analysis';
 import { AnalysisDetail } from './pages/AnalysisDetail';
+import { Compare } from './pages/Compare';
 import { Experiments } from './pages/Experiments';
 import { Settings } from './pages/Settings';
 import { client } from './api/client';
 
 // Protected layout wrapper
-function ProtectedLayout({ children }: { children: React.ReactNode }) {
+function ProtectedLayout({ children, fullWidth = false }: { children: React.ReactNode; fullWidth?: boolean }) {
   return (
     <ProtectedRoute>
-      <Layout>{children}</Layout>
+      <Layout fullWidth={fullWidth}>{children}</Layout>
     </ProtectedRoute>
   );
 }
@@ -87,6 +88,14 @@ function App() {
             element={
               <ProtectedLayout>
                 <AnalysisDetail />
+              </ProtectedLayout>
+            }
+          />
+          <Route
+            path="/compare"
+            element={
+              <ProtectedLayout fullWidth>
+                <Compare />
               </ProtectedLayout>
             }
           />

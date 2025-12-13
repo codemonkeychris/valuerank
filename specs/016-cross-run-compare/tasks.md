@@ -14,9 +14,9 @@
 
 **Purpose**: Create feature branch and verify development environment
 
-- [ ] T001 Create feature branch `feature/cross-run-compare` from main
-- [ ] T002 Verify dev environment running (`npm run dev` in cloud/)
-- [ ] T003 Verify test runs exist with completed analysis (at least 2-3)
+- [X] T001 Create feature branch `feature/cross-run-compare` from main
+- [X] T002 Verify dev environment running (`npm run dev` in cloud/)
+- [X] T003 Verify test runs exist with completed analysis (at least 2-3)
 
 **Checkpoint**: Development environment ready, test data available
 
@@ -30,36 +30,36 @@
 
 ### Types & Contracts
 
-- [ ] T004 [P] Create comparison types in `cloud/apps/web/src/components/compare/types.ts`
+- [X] T004 [P] Create comparison types in `cloud/apps/web/src/components/compare/types.ts`
   - ComparisonConfig, ComparisonFilters, RunWithAnalysis, ComparisonStatistics
-- [ ] T005 [P] Create visualization registry types in `cloud/apps/web/src/components/compare/visualizations/registry.ts`
+- [X] T005 [P] Create visualization registry types in `cloud/apps/web/src/components/compare/visualizations/registry.ts`
   - VisualizationRegistration, ComparisonVisualizationProps
-- [ ] T006 Create GraphQL operations in `cloud/apps/web/src/api/operations/comparison.ts`
+- [X] T006 Create GraphQL operations in `cloud/apps/web/src/api/operations/comparison.ts`
   - RUNS_WITH_ANALYSIS_QUERY, fragment, types
 
 ### Backend Query
 
-- [ ] T007 Add `runsWithAnalysis` query to `cloud/apps/api/src/graphql/queries/run.ts`
+- [X] T007 Add `runsWithAnalysis` query to `cloud/apps/api/src/graphql/queries/run.ts`
   - Limit to 10 runs max, use existing dataloader
-- [ ] T008 Add tests for runsWithAnalysis query in `cloud/apps/api/tests/graphql/queries/run.test.ts`
+- [X] T008 Add tests for runsWithAnalysis query in `cloud/apps/api/tests/graphql/queries/run.test.ts`
 
 ### Statistical Utilities
 
-- [ ] T009 [P] Create lib/statistics directory and index in `cloud/apps/web/src/lib/statistics/index.ts`
-- [ ] T010 [P] Implement Cohen's d calculator in `cloud/apps/web/src/lib/statistics/cohens-d.ts`
+- [X] T009 [P] Create lib/statistics directory and index in `cloud/apps/web/src/lib/statistics/index.ts`
+- [X] T010 [P] Implement Cohen's d calculator in `cloud/apps/web/src/lib/statistics/cohens-d.ts`
   - Include interpretation (negligible/small/medium/large)
-- [ ] T011 [P] Implement KS statistic calculator in `cloud/apps/web/src/lib/statistics/ks-test.ts`
+- [X] T011 [P] Implement KS statistic calculator in `cloud/apps/web/src/lib/statistics/ks-test.ts`
   - Simplified ECDF comparison
-- [ ] T012 Add tests for statistical utilities in `cloud/apps/web/tests/lib/statistics/`
+- [X] T012 Add tests for statistical utilities in `cloud/apps/web/tests/lib/statistics/`
 
 ### Navigation & Routing
 
-- [ ] T013 Add Compare tab to `cloud/apps/web/src/components/layout/NavTabs.tsx`
+- [X] T013 Add Compare tab to `cloud/apps/web/src/components/layout/NavTabs.tsx`
   - Position between Analysis and Experiments
   - Use GitCompare icon from lucide-react
-- [ ] T014 Add /compare route to `cloud/apps/web/src/App.tsx`
+- [X] T014 Add /compare route to `cloud/apps/web/src/App.tsx`
   - Protected route with Layout wrapper
-- [ ] T015 Create empty Compare page stub in `cloud/apps/web/src/pages/Compare.tsx`
+- [X] T015 Create empty Compare page stub in `cloud/apps/web/src/pages/Compare.tsx`
 
 **Checkpoint**: Foundation ready - routing works, types defined, backend query available
 
@@ -73,32 +73,32 @@
 
 ### Implementation for User Story 1
 
-- [ ] T016 [P] [US1] Create useComparisonState hook in `cloud/apps/web/src/hooks/useComparisonState.ts`
+- [X] T016 [P] [US1] Create useComparisonState hook in `cloud/apps/web/src/hooks/useComparisonState.ts`
   - Parse URL params (runs, viz, model, value, display)
   - Update URL on state change
   - Handle invalid IDs gracefully
-- [ ] T017 [P] [US1] Create useComparisonData hook in `cloud/apps/web/src/hooks/useComparisonData.ts`
+- [X] T017 [P] [US1] Create useComparisonData hook in `cloud/apps/web/src/hooks/useComparisonData.ts`
   - Fetch runs with analysis using new GraphQL query
   - Handle loading/error states
   - Validate selected runs have analysis
-- [ ] T018 [US1] Create RunSelectorItem component in `cloud/apps/web/src/components/compare/RunSelectorItem.tsx`
+- [X] T018 [US1] Create RunSelectorItem component in `cloud/apps/web/src/components/compare/RunSelectorItem.tsx`
   - Display run name, definition, models, date, sample size
   - Selection checkbox/toggle
   - Analysis status indicator
-- [ ] T019 [US1] Create RunSelector component in `cloud/apps/web/src/components/compare/RunSelector.tsx`
+- [X] T019 [US1] Create RunSelector component in `cloud/apps/web/src/components/compare/RunSelector.tsx`
   - List available runs with analysis
   - Multi-select with max 10 limit
   - Search/filter functionality
   - Uses RunSelectorItem
-- [ ] T020 [US1] Create ComparisonHeader component in `cloud/apps/web/src/components/compare/ComparisonHeader.tsx`
+- [X] T020 [US1] Create ComparisonHeader component in `cloud/apps/web/src/components/compare/ComparisonHeader.tsx`
   - Display selected runs summary
   - Quick deselect chips
   - Warning if any run lacks complete analysis
-- [ ] T021 [US1] Integrate RunSelector into Compare page `cloud/apps/web/src/pages/Compare.tsx`
+- [X] T021 [US1] Integrate RunSelector into Compare page `cloud/apps/web/src/pages/Compare.tsx`
   - Wire up useComparisonState and useComparisonData
   - Left panel: RunSelector, Right panel: placeholder for visualizations
-- [ ] T022 [US1] Add tests for useComparisonState in `cloud/apps/web/tests/hooks/useComparisonState.test.ts`
-- [ ] T023 [US1] Add tests for RunSelector in `cloud/apps/web/tests/components/compare/RunSelector.test.tsx`
+- [X] T022 [US1] Add tests for useComparisonState in `cloud/apps/web/tests/hooks/useComparisonState.test.ts`
+- [X] T023 [US1] Add tests for RunSelector in `cloud/apps/web/tests/components/compare/RunSelector.test.tsx`
 
 **Checkpoint**: US1 complete - can select runs, URL updates, shareable links work
 
@@ -112,20 +112,20 @@
 
 ### Implementation for User Story 2
 
-- [ ] T024 [US2] Create visualization registry structure in `cloud/apps/web/src/components/compare/visualizations/registry.ts`
+- [x] T024 [US2] Create visualization registry structure in `cloud/apps/web/src/components/compare/visualizations/registry.ts`
   - Registration function, lookup, list
   - Validate minRuns requirement
-- [ ] T025 [US2] Create VisualizationNav component in `cloud/apps/web/src/components/compare/VisualizationNav.tsx`
+- [X] T025 [US2] Create VisualizationNav component in `cloud/apps/web/src/components/compare/VisualizationNav.tsx`
   - Tab navigation for registered visualizations
   - Disable tabs when minRuns not met
   - Sync with URL viz parameter
-- [ ] T026 [US2] Create OverviewViz component in `cloud/apps/web/src/components/compare/visualizations/OverviewViz.tsx`
+- [x] T026 [US2] Create OverviewViz component in `cloud/apps/web/src/components/compare/visualizations/OverviewViz.tsx`
   - Summary table with run stats (name, definition, models, sample size, mean)
   - Effect sizes (Cohen's d) between run pairs
   - Common vs unique models indicator
   - Hover for additional metadata
-- [ ] T027 [US2] Register OverviewViz in registry and integrate into Compare page
-- [ ] T028 [US2] Add tests for OverviewViz in `cloud/apps/web/tests/components/compare/visualizations/OverviewViz.test.tsx`
+- [x] T027 [US2] Register OverviewViz in registry and integrate into Compare page
+- [X] T028 [US2] Add tests for OverviewViz in `cloud/apps/web/tests/components/compare/visualizations/OverviewViz.test.tsx`
 
 **Checkpoint**: US2 complete - overview visualization shows comparative statistics
 
@@ -139,18 +139,18 @@
 
 ### Implementation for User Story 3
 
-- [ ] T029 [US3] Create ComparisonFilters component in `cloud/apps/web/src/components/compare/ComparisonFilters.tsx`
+- [X] T029 [US3] Create ComparisonFilters component in `cloud/apps/web/src/components/compare/ComparisonFilters.tsx`
   - Model filter dropdown
   - Display mode toggle (overlay/side-by-side)
   - Sync filters with URL
-- [ ] T030 [US3] Create DecisionsViz component in `cloud/apps/web/src/components/compare/visualizations/DecisionsViz.tsx`
+- [X] T030 [US3] Create DecisionsViz component in `cloud/apps/web/src/components/compare/visualizations/DecisionsViz.tsx`
   - Histogram/bar chart with Recharts
   - Overlay mode: stacked bars with colors per run
   - Side-by-side mode: small multiples
   - KS statistic display
   - Model aggregation toggle
-- [ ] T031 [US3] Register DecisionsViz in registry
-- [ ] T032 [US3] Add tests for DecisionsViz in `cloud/apps/web/tests/components/compare/visualizations/DecisionsViz.test.tsx`
+- [X] T031 [US3] Register DecisionsViz in registry
+- [X] T032 [US3] Add tests for DecisionsViz in `cloud/apps/web/tests/components/compare/visualizations/DecisionsViz.test.tsx`
 
 **Checkpoint**: US3 complete - decision distribution comparison works with both display modes
 
@@ -164,14 +164,14 @@
 
 ### Implementation for User Story 4
 
-- [ ] T033 [US4] Create ValuesViz component in `cloud/apps/web/src/components/compare/visualizations/ValuesViz.tsx`
+- [X] T033 [US4] Create ValuesViz component in `cloud/apps/web/src/components/compare/visualizations/ValuesViz.tsx`
   - Grouped bar chart (Recharts BarChart)
   - Each value has bars for each run
   - Highlight significant changes (>10% difference)
   - Click to show confidence intervals
   - Model filter integration
-- [ ] T034 [US4] Register ValuesViz in registry
-- [ ] T035 [US4] Add tests for ValuesViz in `cloud/apps/web/tests/components/compare/visualizations/ValuesViz.test.tsx`
+- [X] T034 [US4] Register ValuesViz in registry
+- [X] T035 [US4] Add tests for ValuesViz in `cloud/apps/web/tests/components/compare/visualizations/ValuesViz.test.tsx`
 
 **Checkpoint**: US4 complete - value win rate comparison shows patterns and significance
 
@@ -185,14 +185,14 @@
 
 ### Implementation for User Story 5
 
-- [ ] T036 [US5] Enhance useComparisonState to handle all filter parameters
+- [X] T036 [US5] Enhance useComparisonState to handle all filter parameters
   - viz, model, value, display mode
   - Ensure history.pushState vs replaceState used correctly
-- [ ] T037 [US5] Add browser history navigation tests in `cloud/apps/web/tests/hooks/useComparisonState.test.ts`
+- [X] T037 [US5] Add browser history navigation tests in `cloud/apps/web/tests/hooks/useComparisonState.test.ts`
   - Back/forward navigation
   - Invalid parameter handling
   - URL length edge cases
-- [ ] T038 [US5] Integration test for full comparison flow in `cloud/apps/web/tests/pages/Compare.test.tsx`
+- [X] T038 [US5] Integration test for full comparison flow in `cloud/apps/web/tests/pages/Compare.test.tsx`
 
 **Checkpoint**: US5 complete - URL captures full state, shareable links work perfectly
 
@@ -206,9 +206,9 @@
 
 ### Implementation for User Story 6
 
-- [ ] T039 [US6] Refine registry.ts with full documentation and example registration
-- [ ] T040 [US6] Create re-export index in `cloud/apps/web/src/components/compare/index.ts`
-- [ ] T041 [US6] Add developer documentation in `cloud/apps/web/src/components/compare/README.md`
+- [X] T039 [US6] Refine registry.ts with full documentation and example registration
+- [X] T040 [US6] Create re-export index in `cloud/apps/web/src/components/compare/index.ts`
+- [X] T041 [US6] Add developer documentation in `cloud/apps/web/src/components/compare/README.md`
   - How to add new visualizations
   - Interface contract explanation
   - Example code
@@ -225,15 +225,15 @@
 
 ### Implementation for User Story 7
 
-- [ ] T042 [US7] Create TimelineViz component in `cloud/apps/web/src/components/compare/visualizations/TimelineViz.tsx`
+- [X] T042 [US7] Create TimelineViz component in `cloud/apps/web/src/components/compare/visualizations/TimelineViz.tsx`
   - Line chart with Recharts LineChart/ComposedChart
   - X-axis: run completion dates
   - Y-axis: mean decision (selectable metric)
   - Multiple lines for common models
   - Model filter for single-model view
   - Tooltips with run details and links
-- [ ] T043 [US7] Register TimelineViz in registry
-- [ ] T044 [US7] Add tests for TimelineViz in `cloud/apps/web/tests/components/compare/visualizations/TimelineViz.test.tsx`
+- [X] T043 [US7] Register TimelineViz in registry
+- [X] T044 [US7] Add tests for TimelineViz in `cloud/apps/web/tests/components/compare/visualizations/TimelineViz.test.tsx`
 
 **Checkpoint**: US7 complete - timeline shows model behavioral drift over time
 
