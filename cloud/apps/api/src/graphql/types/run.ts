@@ -228,7 +228,7 @@ builder.objectType(RunRef, {
       },
     }),
 
-    // Relation: transcripts with optional model filter
+    // Relation: transcripts with optional model filter and pagination
     transcripts: t.field({
       type: [TranscriptRef],
       args: {
@@ -236,8 +236,33 @@ builder.objectType(RunRef, {
           required: false,
           description: 'Filter transcripts by model ID',
         }),
+        limit: t.arg.int({
+          required: false,
+          description: 'Maximum number of transcripts to return (default: all, max: 1000)',
+        }),
+        offset: t.arg.int({
+          required: false,
+          description: 'Number of transcripts to skip for pagination (default: 0)',
+        }),
       },
       resolve: async (run, args, ctx) => {
+        // When pagination is requested, do a direct DB query instead of using dataloader
+        if (args.limit !== undefined || args.offset !== undefined) {
+          const limit = Math.min(args.limit ?? 1000, 1000);
+          const offset = args.offset ?? 0;
+
+          return db.transcript.findMany({
+            where: {
+              runId: run.id,
+              ...(args.modelId ? { modelId: args.modelId } : {}),
+            },
+            orderBy: { createdAt: 'desc' },
+            take: limit,
+            skip: offset,
+          });
+        }
+
+        // No pagination - use dataloader for batching
         const transcripts = await ctx.loaders.transcriptsByRun.load(run.id);
         if (args.modelId) {
           return transcripts.filter((t) => t.modelId === args.modelId);
@@ -378,7 +403,7 @@ builder.objectType(RunRef, {
       },
     }),
 
-    // Probe results - detailed success/failure info for each model/scenario
+    // Probe results - detailed success/failure info for each model/scenario with pagination
     probeResults: t.field({
       type: [ProbeResultRef],
       args: {
@@ -389,6 +414,14 @@ builder.objectType(RunRef, {
         modelId: t.arg.string({
           required: false,
           description: 'Filter by model ID',
+        }),
+        limit: t.arg.int({
+          required: false,
+          description: 'Maximum number of results to return (default: all, max: 1000)',
+        }),
+        offset: t.arg.int({
+          required: false,
+          description: 'Number of results to skip for pagination (default: 0)',
         }),
       },
       description: 'Probe results with detailed success/failure information',
@@ -402,9 +435,14 @@ builder.objectType(RunRef, {
         if (args.modelId) {
           where.modelId = args.modelId;
         }
+
+        const limit = args.limit != null ? Math.min(args.limit, 1000) : undefined;
+        const offset = args.offset ?? 0;
+
         return db.probeResult.findMany({
           where,
           orderBy: [{ status: 'asc' }, { modelId: 'asc' }, { scenarioId: 'asc' }],
+          ...(limit !== undefined ? { take: limit, skip: offset } : {}),
         });
       },
     }),
