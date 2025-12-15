@@ -7,6 +7,7 @@
 import { db } from '@valuerank/db';
 import { createLogger, NotFoundError, RunStateError } from '@valuerank/shared';
 import { getBoss } from '../../queue/boss.js';
+import { invalidateCache } from '../analysis/cache.js';
 
 const log = createLogger('services:run:summarization');
 
@@ -183,6 +184,13 @@ export async function restartSummarization(
     // Ignore if PgBoss tables don't exist
   }
 
+  // Invalidate any cached analysis results so they get recomputed
+  // with the new decision codes after summarization completes
+  const invalidatedCount = await invalidateCache(runId);
+  if (invalidatedCount > 0) {
+    log.info({ runId, invalidatedCount }, 'Invalidated cached analysis results');
+  }
+
   // Get transcripts to re-summarize
   const whereClause = force
     ? { runId }
@@ -205,6 +213,19 @@ export async function restartSummarization(
       queuedCount: 0,
     };
   }
+
+  // Clear summarizedAt for transcripts being re-processed
+  // This ensures the job handler doesn't skip them
+  const transcriptIds = transcriptsToQueue.map((t) => t.id);
+  await db.transcript.updateMany({
+    where: { id: { in: transcriptIds } },
+    data: {
+      summarizedAt: null,
+      decisionCode: null,
+      decisionText: null,
+    },
+  });
+  log.info({ runId, count: transcriptIds.length }, 'Cleared summarizedAt for transcripts');
 
   // Update run status to SUMMARIZING and reset progress
   const updatedProgress: SummarizeProgress = {
