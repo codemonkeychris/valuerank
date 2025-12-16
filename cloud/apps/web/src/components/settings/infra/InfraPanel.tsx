@@ -178,7 +178,7 @@ export function InfraPanel() {
   };
 
   const handleSaveParallelism = async () => {
-    if (parallelismValue < 1 || parallelismValue > 100) return;
+    if (parallelismValue < 1 || parallelismValue > 500) return;
     setIsSavingParallelism(true);
     setSaveParallelismSuccess(false);
     await updateSetting({ input: { key: 'infra_max_parallel_summarizations', value: { value: parallelismValue } } });

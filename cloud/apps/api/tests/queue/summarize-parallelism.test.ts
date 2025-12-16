@@ -56,12 +56,12 @@ describe('Summarization Parallelism Integration', () => {
       expect(batchSize).toBe(1);
     });
 
-    it('respects maximum batchSize of 100', async () => {
-      await setMaxParallelSummarizations(100);
+    it('respects maximum batchSize of 500', async () => {
+      await setMaxParallelSummarizations(500);
       clearSummarizationCache();
 
       const batchSize = await getMaxParallelSummarizations();
-      expect(batchSize).toBe(100);
+      expect(batchSize).toBe(500);
     });
   });
 
@@ -103,7 +103,7 @@ describe('Summarization Parallelism Integration', () => {
       const defaultValue = await getMaxParallelSummarizations();
       expect(Number.isInteger(defaultValue)).toBe(true);
       expect(defaultValue).toBeGreaterThanOrEqual(1);
-      expect(defaultValue).toBeLessThanOrEqual(100);
+      expect(defaultValue).toBeLessThanOrEqual(500);
 
       // Set a specific value and verify
       await setMaxParallelSummarizations(32);
