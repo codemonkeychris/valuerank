@@ -5,9 +5,11 @@
  * URL state: /compare?runs=id1,id2&viz=overview&model=...&display=overlay
  */
 
+import { useEffect } from 'react';
 import { BarChart2 } from 'lucide-react';
 import { useComparisonState } from '../hooks/useComparisonState';
 import { useComparisonData } from '../hooks/useComparisonData';
+import { useTags } from '../hooks/useTags';
 import { RunSelector } from '../components/compare/RunSelector';
 import { ComparisonHeader } from '../components/compare/ComparisonHeader';
 import { VisualizationNav } from '../components/compare/VisualizationNav';
@@ -17,14 +19,33 @@ import { Loading } from '../components/ui/Loading';
 export function Compare() {
   const {
     selectedRunIds,
+    selectedTagIds,
     visualization,
     filters,
     setSelectedRunIds,
     toggleRunSelection,
     clearSelection,
+    setSelectedTagIds,
     setVisualization,
     updateFilters,
   } = useComparisonState();
+
+  // Get all available tags to validate tag IDs in URL
+  const { tags: allTags, loading: tagsLoading } = useTags();
+
+  // Clean up orphaned tag IDs (tags in URL that no longer exist)
+  useEffect(() => {
+    // Skip if tags are still loading or no tags selected
+    if (tagsLoading || selectedTagIds.length === 0 || allTags.length === 0) return;
+
+    const validTagIds = new Set(allTags.map((t) => t.id));
+    const validSelectedTagIds = selectedTagIds.filter((id) => validTagIds.has(id));
+
+    // If some tags were orphaned, update the URL to remove them
+    if (validSelectedTagIds.length !== selectedTagIds.length) {
+      setSelectedTagIds(validSelectedTagIds);
+    }
+  }, [selectedTagIds, allTags, tagsLoading, setSelectedTagIds]);
 
   const {
     availableRuns,
@@ -63,7 +84,7 @@ export function Compare() {
         {/* Main Layout - Full width with 1/3 + 2/3 split */}
         <div className="flex-1 flex gap-6 min-h-0">
           {/* Left Panel: Run Selector (1/3 width) */}
-          <div className="w-1/3 min-w-[300px] max-w-[500px] bg-white rounded-lg border border-gray-200 p-4 overflow-hidden flex flex-col shadow-sm">
+          <div className="w-1/3 min-w-[300px] max-w-[500px] bg-white rounded-lg border border-gray-200 p-4 flex flex-col shadow-sm">
             <RunSelector
               runs={availableRuns}
               selectedIds={selectedRunIds}
@@ -72,6 +93,8 @@ export function Compare() {
               hasNextPage={hasNextPage}
               totalCount={totalCount}
               error={error?.message}
+              selectedTagIds={selectedTagIds}
+              onTagIdsChange={setSelectedTagIds}
               onSelectionChange={setSelectedRunIds}
               onRefresh={refetchAvailable}
               onLoadMore={loadMoreAvailable}

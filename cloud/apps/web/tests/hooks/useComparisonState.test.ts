@@ -36,6 +36,7 @@ describe('useComparisonState', () => {
       });
 
       expect(result.current.selectedRunIds).toEqual([]);
+      expect(result.current.selectedTagIds).toEqual([]);
       expect(result.current.visualization).toBe('overview');
       expect(result.current.filters.displayMode).toBe('overlay');
       expect(result.current.filters.model).toBeUndefined();
@@ -254,11 +255,12 @@ describe('useComparisonState', () => {
     it('should handle URL with all parameters', () => {
       const { result } = renderHook(() => useComparisonState(), {
         wrapper: createWrapper(
-          '/compare?runs=run-1,run-2&viz=values&model=openai:gpt-4o&value=Freedom&display=side-by-side'
+          '/compare?runs=run-1,run-2&tags=tag-1,tag-2&viz=values&model=openai:gpt-4o&value=Freedom&display=side-by-side'
         ),
       });
 
       expect(result.current.selectedRunIds).toEqual(['run-1', 'run-2']);
+      expect(result.current.selectedTagIds).toEqual(['tag-1', 'tag-2']);
       expect(result.current.visualization).toBe('values');
       expect(result.current.filters.model).toBe('openai:gpt-4o');
       expect(result.current.filters.value).toBe('Freedom');
@@ -482,6 +484,119 @@ describe('useComparisonState', () => {
       expect(result.current.visualization).toBe('decisions');
       expect(result.current.filters.model).toBe('gpt-4');
       expect(result.current.filters.displayMode).toBe('side-by-side');
+    });
+  });
+
+  describe('selectedTagIds', () => {
+    it('should parse tag IDs from URL', () => {
+      const { result } = renderHook(() => useComparisonState(), {
+        wrapper: createWrapper('/compare?tags=tag-1,tag-2,tag-3'),
+      });
+
+      expect(result.current.selectedTagIds).toEqual(['tag-1', 'tag-2', 'tag-3']);
+    });
+
+    it('should return empty array when no tags param', () => {
+      const { result } = renderHook(() => useComparisonState(), {
+        wrapper: createWrapper('/compare'),
+      });
+
+      expect(result.current.selectedTagIds).toEqual([]);
+    });
+
+    it('should handle empty tag IDs in comma-separated list', () => {
+      const { result } = renderHook(() => useComparisonState(), {
+        wrapper: createWrapper('/compare?tags=tag-1,,tag-2'),
+      });
+
+      expect(result.current.selectedTagIds).toEqual(['tag-1', 'tag-2']);
+    });
+
+    it('should handle whitespace in tag IDs', () => {
+      const { result } = renderHook(() => useComparisonState(), {
+        wrapper: createWrapper('/compare?tags=tag-1, tag-2 ,tag-3'),
+      });
+
+      expect(result.current.selectedTagIds).toEqual(['tag-1', 'tag-2', 'tag-3']);
+    });
+
+    it('should handle only whitespace tag IDs', () => {
+      const { result } = renderHook(() => useComparisonState(), {
+        wrapper: createWrapper('/compare?tags=  ,  ,  '),
+      });
+
+      expect(result.current.selectedTagIds).toEqual([]);
+    });
+  });
+
+  describe('setSelectedTagIds', () => {
+    it('should update selected tag IDs', () => {
+      const { result } = renderHook(() => useComparisonState(), {
+        wrapper: createWrapper('/compare'),
+      });
+
+      act(() => {
+        result.current.setSelectedTagIds(['tag-1', 'tag-2']);
+      });
+
+      expect(result.current.selectedTagIds).toEqual(['tag-1', 'tag-2']);
+    });
+
+    it('should clear tags when set to empty array', () => {
+      const { result } = renderHook(() => useComparisonState(), {
+        wrapper: createWrapper('/compare?tags=tag-1,tag-2'),
+      });
+
+      expect(result.current.selectedTagIds).toHaveLength(2);
+
+      act(() => {
+        result.current.setSelectedTagIds([]);
+      });
+
+      expect(result.current.selectedTagIds).toEqual([]);
+    });
+
+    it('should preserve other params when updating tags', () => {
+      const { result } = renderHook(() => useComparisonState(), {
+        wrapper: createWrapper('/compare?runs=run-1&viz=values&model=gpt-4'),
+      });
+
+      act(() => {
+        result.current.setSelectedTagIds(['tag-1']);
+      });
+
+      // Tags updated
+      expect(result.current.selectedTagIds).toEqual(['tag-1']);
+      // Other params preserved
+      expect(result.current.selectedRunIds).toEqual(['run-1']);
+      expect(result.current.visualization).toBe('values');
+      expect(result.current.filters.model).toBe('gpt-4');
+    });
+
+    it('should preserve runs when updating tags', () => {
+      const { result } = renderHook(() => useComparisonState(), {
+        wrapper: createWrapper('/compare?runs=run-1,run-2'),
+      });
+
+      act(() => {
+        result.current.setSelectedTagIds(['tag-1', 'tag-2']);
+      });
+
+      expect(result.current.selectedRunIds).toEqual(['run-1', 'run-2']);
+      expect(result.current.selectedTagIds).toEqual(['tag-1', 'tag-2']);
+    });
+
+    it('should preserve tags when updating runs', () => {
+      const { result } = renderHook(() => useComparisonState(), {
+        wrapper: createWrapper('/compare?tags=tag-1,tag-2'),
+      });
+
+      act(() => {
+        result.current.setSelectedRunIds(['run-1']);
+      });
+
+      expect(result.current.selectedTagIds).toEqual(['tag-1', 'tag-2']);
+      expect(result.current.selectedRunIds).toEqual(['run-1']);
     });
   });
 

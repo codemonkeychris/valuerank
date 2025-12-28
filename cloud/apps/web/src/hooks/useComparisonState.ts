@@ -19,6 +19,7 @@ const PARAM_VIZ = 'viz';
 const PARAM_MODEL = 'model';
 const PARAM_VALUE = 'value';
 const PARAM_DISPLAY = 'display';
+const PARAM_TAGS = 'tags';
 
 // Defaults
 const DEFAULT_VIZ: VisualizationType = 'overview';
@@ -40,6 +41,8 @@ type UseComparisonStateResult = {
   config: ComparisonConfig;
   /** Selected run IDs */
   selectedRunIds: string[];
+  /** Selected tag IDs for filtering */
+  selectedTagIds: string[];
   /** Current visualization type */
   visualization: VisualizationType;
   /** Current filters */
@@ -50,6 +53,8 @@ type UseComparisonStateResult = {
   toggleRunSelection: (id: string) => void;
   /** Clear all selections */
   clearSelection: () => void;
+  /** Set selected tag IDs for filtering */
+  setSelectedTagIds: (ids: string[]) => void;
   /** Set visualization type */
   setVisualization: (viz: VisualizationType) => void;
   /** Update filters */
@@ -90,6 +95,18 @@ function parseRunIds(value: string | null): string[] {
 }
 
 /**
+ * Parses tag IDs from comma-separated string
+ */
+function parseTagIds(value: string | null): string[] {
+  if (!value) return [];
+
+  return value
+    .split(',')
+    .map((id) => id.trim())
+    .filter((id) => id.length > 0);
+}
+
+/**
  * Hook for managing comparison state via URL parameters.
  * All state is persisted in URL for sharing and browser history support.
  */
@@ -100,6 +117,11 @@ export function useComparisonState(): UseComparisonStateResult {
   // Parse current state from URL
   const selectedRunIds = useMemo(
     () => parseRunIds(searchParams.get(PARAM_RUNS)),
+    [searchParams]
+  );
+
+  const selectedTagIds = useMemo(
+    () => parseTagIds(searchParams.get(PARAM_TAGS)),
     [searchParams]
   );
 
@@ -181,6 +203,19 @@ export function useComparisonState(): UseComparisonStateResult {
     setSelectedRunIds([]);
   }, [setSelectedRunIds]);
 
+  // Set selected tag IDs for filtering (uses replaceState to avoid polluting history)
+  const setSelectedTagIds = useCallback(
+    (ids: string[]) => {
+      updateUrl(
+        {
+          [PARAM_TAGS]: ids.length > 0 ? ids.join(',') : undefined,
+        },
+        true // Use replaceState for filter changes
+      );
+    },
+    [updateUrl]
+  );
+
   // Set visualization type (uses pushState for history)
   const setVisualization = useCallback(
     (viz: VisualizationType) => {
@@ -227,11 +262,13 @@ export function useComparisonState(): UseComparisonStateResult {
   return {
     config,
     selectedRunIds,
+    selectedTagIds,
     visualization,
     filters,
     setSelectedRunIds,
     toggleRunSelection,
     clearSelection,
+    setSelectedTagIds,
     setVisualization,
     updateFilters,
     resetState,

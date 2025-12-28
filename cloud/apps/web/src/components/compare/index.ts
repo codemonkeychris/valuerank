@@ -24,6 +24,8 @@ export { RunSelectorItem } from './RunSelectorItem';
 export { ComparisonHeader } from './ComparisonHeader';
 export { ComparisonFilters } from './ComparisonFilters';
 export { VisualizationNav } from './VisualizationNav';
+export { TagFilterDropdown } from './TagFilterDropdown';
+export type { TagFilterDropdownProps } from './TagFilterDropdown';
 
 // ============================================================================
 // VISUALIZATIONS

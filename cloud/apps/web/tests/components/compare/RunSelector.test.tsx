@@ -6,11 +6,26 @@
  * Tests focus on functionality that doesn't depend on item rendering.
  */
 
-import { describe, it, expect, vi } from 'vitest';
+import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { RunSelector } from '../../../src/components/compare/RunSelector';
 import type { ComparisonRun } from '../../../src/api/operations/comparison';
+
+// Mock useTags hook to avoid urql Provider requirement
+vi.mock('../../../src/hooks/useTags', () => ({
+  useTags: vi.fn(() => ({
+    tags: [
+      { id: 'tag-1', name: 'safety' },
+      { id: 'tag-2', name: 'ethics' },
+      { id: 't1', name: 'ethics' },
+      { id: 't2', name: 'safety' },
+    ],
+    loading: false,
+    error: null,
+    refetch: vi.fn(),
+  })),
+}));
 
 function createMockRun(overrides: Partial<ComparisonRun> = {}): ComparisonRun {
   return {
@@ -177,6 +192,18 @@ describe('RunSelector', () => {
   });
 
   describe('search', () => {
+    // Helper to find the run count span with flexible text matching
+    function getRunCountText(container: HTMLElement): string {
+      const spans = container.querySelectorAll('span.text-xs.text-gray-500');
+      for (const span of spans) {
+        if (span.textContent?.includes('runs')) {
+          // Normalize whitespace
+          return span.textContent.replace(/\s+/g, ' ').trim();
+        }
+      }
+      return '';
+    }
+
     it('filters runs by search query and updates count', async () => {
       const user = userEvent.setup();
       const runs = [
@@ -184,7 +211,7 @@ describe('RunSelector', () => {
         createMockRun({ id: 'run-2', definition: { ...createMockRun().definition, name: 'Medical Ethics' } }),
       ];
 
-      render(
+      const { container } = render(
         <RunSelector
           runs={runs}
           selectedIds={[]}
@@ -197,9 +224,10 @@ describe('RunSelector', () => {
 
       await user.type(screen.getByPlaceholderText('Search runs...'), 'Trolley');
 
-      // After filtering, shows 1 run
+      // After filtering, shows 1 of 2 runs (filtered count)
       await waitFor(() => {
-        expect(screen.getByText('1 runs')).toBeInTheDocument();
+        const countText = getRunCountText(container);
+        expect(countText).toMatch(/1 of 2 runs/);
       });
     });
 
@@ -217,7 +245,8 @@ describe('RunSelector', () => {
 
       await user.type(screen.getByPlaceholderText('Search runs...'), 'nonexistent');
 
-      expect(screen.getByText('No runs match your search.')).toBeInTheDocument();
+      // Note: When filtering is active (search or tags), the empty state shows "No runs match your filters."
+      expect(screen.getByText('No runs match your filters.')).toBeInTheDocument();
     });
 
     it('searches by run ID and updates count', async () => {
@@ -227,7 +256,7 @@ describe('RunSelector', () => {
         createMockRun({ id: 'xyz789' }),
       ];
 
-      render(
+      const { container } = render(
         <RunSelector
           runs={runs}
           selectedIds={[]}
@@ -240,9 +269,10 @@ describe('RunSelector', () => {
 
       await user.type(screen.getByPlaceholderText('Search runs...'), 'abc');
 
-      // After filtering, shows 1 run
+      // After filtering, shows 1 of 2 runs
       await waitFor(() => {
-        expect(screen.getByText('1 runs')).toBeInTheDocument();
+        const countText = getRunCountText(container);
+        expect(countText).toMatch(/1 of 2 runs/);
       });
     });
 
@@ -259,7 +289,7 @@ describe('RunSelector', () => {
         }),
       ];
 
-      render(
+      const { container } = render(
         <RunSelector
           runs={runs}
           selectedIds={[]}
@@ -272,9 +302,10 @@ describe('RunSelector', () => {
 
       await user.type(screen.getByPlaceholderText('Search runs...'), 'ethics');
 
-      // After filtering, shows 1 run
+      // After filtering, shows 1 of 2 runs
       await waitFor(() => {
-        expect(screen.getByText('1 runs')).toBeInTheDocument();
+        const countText = getRunCountText(container);
+        expect(countText).toMatch(/1 of 2 runs/);
       });
     });
   });
@@ -337,6 +368,435 @@ describe('RunSelector', () => {
       await user.click(screen.getByTitle('Refresh runs'));
 
       expect(onRefresh).toHaveBeenCalled();
+    });
+  });
+
+  describe('tag filtering', () => {
+    // Note: Tests pass selectedTagIds without onTagIdsChange to avoid TagFilterDropdown
+    // rendering which requires urql Provider. Filtering logic is still fully tested.
+
+    // Helper to find the run count span with flexible text matching
+    function getRunCountText(container: HTMLElement): string {
+      const spans = container.querySelectorAll('span.text-xs.text-gray-500');
+      for (const span of spans) {
+        if (span.textContent?.includes('runs')) {
+          // Normalize whitespace
+          return span.textContent.replace(/\s+/g, ' ').trim();
+        }
+      }
+      return '';
+    }
+
+    it('filters runs by single tag and updates count', () => {
+      const runs = [
+        createMockRun({
+          id: 'run-1',
+          definition: { ...createMockRun().definition, tags: [{ id: 'tag-1', name: 'safety' }] },
+        }),
+        createMockRun({
+          id: 'run-2',
+          definition: { ...createMockRun().definition, tags: [{ id: 'tag-2', name: 'ethics' }] },
+        }),
+        createMockRun({
+          id: 'run-3',
+          definition: { ...createMockRun().definition, tags: [{ id: 'tag-1', name: 'safety' }] },
+        }),
+      ];
+
+      const { container } = render(
+        <RunSelector
+          runs={runs}
+          selectedIds={[]}
+          selectedTagIds={['tag-1']}
+          onSelectionChange={vi.fn()}
+        />
+      );
+
+      // Should show 2 of 3 runs (filtered count)
+      const countText = getRunCountText(container);
+      expect(countText).toMatch(/2 of 3 runs/);
+    });
+
+    it('filters runs by multiple tags with AND logic', () => {
+      const runs = [
+        createMockRun({
+          id: 'run-1',
+          definition: {
+            ...createMockRun().definition,
+            tags: [
+              { id: 'tag-1', name: 'safety' },
+              { id: 'tag-2', name: 'production' },
+            ],
+          },
+        }),
+        createMockRun({
+          id: 'run-2',
+          definition: { ...createMockRun().definition, tags: [{ id: 'tag-1', name: 'safety' }] },
+        }),
+        createMockRun({
+          id: 'run-3',
+          definition: { ...createMockRun().definition, tags: [{ id: 'tag-2', name: 'production' }] },
+        }),
+      ];
+
+      const { container } = render(
+        <RunSelector
+          runs={runs}
+          selectedIds={[]}
+          selectedTagIds={['tag-1', 'tag-2']}
+          onSelectionChange={vi.fn()}
+        />
+      );
+
+      // Only run-1 has BOTH tags, so should show 1 of 3 runs
+      const countText = getRunCountText(container);
+      expect(countText).toMatch(/1 of 3 runs/);
+    });
+
+    it('shows all runs when no tags selected', () => {
+      const runs = [
+        createMockRun({ id: 'run-1' }),
+        createMockRun({ id: 'run-2' }),
+      ];
+
+      render(
+        <RunSelector
+          runs={runs}
+          selectedIds={[]}
+          selectedTagIds={[]}
+          onSelectionChange={vi.fn()}
+        />
+      );
+
+      expect(screen.getByText('2 runs')).toBeInTheDocument();
+    });
+
+    it('shows empty state when no runs match tag filter', () => {
+      const runs = [
+        createMockRun({
+          id: 'run-1',
+          definition: { ...createMockRun().definition, tags: [{ id: 'tag-1', name: 'safety' }] },
+        }),
+      ];
+
+      render(
+        <RunSelector
+          runs={runs}
+          selectedIds={[]}
+          selectedTagIds={['tag-2']}
+          onSelectionChange={vi.fn()}
+        />
+      );
+
+      expect(screen.getByText('No runs match your filters.')).toBeInTheDocument();
+    });
+
+    it('combines tag filter with text search', async () => {
+      const user = userEvent.setup();
+      const runs = [
+        createMockRun({
+          id: 'run-1',
+          definition: {
+            ...createMockRun().definition,
+            name: 'Trolley Problem',
+            tags: [{ id: 'tag-1', name: 'safety' }],
+          },
+        }),
+        createMockRun({
+          id: 'run-2',
+          definition: {
+            ...createMockRun().definition,
+            name: 'Medical Ethics',
+            tags: [{ id: 'tag-1', name: 'safety' }],
+          },
+        }),
+        createMockRun({
+          id: 'run-3',
+          definition: {
+            ...createMockRun().definition,
+            name: 'Trolley Variant',
+            tags: [{ id: 'tag-2', name: 'ethics' }],
+          },
+        }),
+      ];
+
+      const { container } = render(
+        <RunSelector
+          runs={runs}
+          selectedIds={[]}
+          selectedTagIds={['tag-1']}
+          onSelectionChange={vi.fn()}
+        />
+      );
+
+      // Initially 2 runs match tag-1
+      let countText = getRunCountText(container);
+      expect(countText).toMatch(/2 of 3 runs/);
+
+      // Search for "Trolley" - should filter to just run-1 (has tag-1 AND matches search)
+      await user.type(screen.getByPlaceholderText('Search runs...'), 'Trolley');
+
+      await waitFor(() => {
+        countText = getRunCountText(container);
+        expect(countText).toMatch(/1 of 3 runs/);
+      });
+    });
+  });
+
+  describe('combined text and tag filtering', () => {
+    // Helper to find the run count span with flexible text matching
+    function getRunCountText(container: HTMLElement): string {
+      const spans = container.querySelectorAll('span.text-xs.text-gray-500');
+      for (const span of spans) {
+        if (span.textContent?.includes('runs')) {
+          // Normalize whitespace
+          return span.textContent.replace(/\s+/g, ' ').trim();
+        }
+      }
+      return '';
+    }
+
+    it('clear text search preserves tag filter', async () => {
+      const user = userEvent.setup();
+      const runs = [
+        createMockRun({
+          id: 'run-1',
+          definition: {
+            ...createMockRun().definition,
+            name: 'Trolley Problem',
+            tags: [{ id: 'tag-1', name: 'safety' }],
+          },
+        }),
+        createMockRun({
+          id: 'run-2',
+          definition: {
+            ...createMockRun().definition,
+            name: 'Medical Ethics',
+            tags: [{ id: 'tag-1', name: 'safety' }],
+          },
+        }),
+        createMockRun({
+          id: 'run-3',
+          definition: {
+            ...createMockRun().definition,
+            name: 'Another Run',
+            tags: [{ id: 'tag-2', name: 'ethics' }],
+          },
+        }),
+      ];
+
+      const { container } = render(
+        <RunSelector
+          runs={runs}
+          selectedIds={[]}
+          selectedTagIds={['tag-1']}
+          onSelectionChange={vi.fn()}
+        />
+      );
+
+      // Initially 2 runs match tag-1
+      let countText = getRunCountText(container);
+      expect(countText).toMatch(/2 of 3 runs/);
+
+      // Type search text
+      const searchInput = screen.getByPlaceholderText('Search runs...');
+      await user.type(searchInput, 'Trolley');
+
+      await waitFor(() => {
+        countText = getRunCountText(container);
+        expect(countText).toMatch(/1 of 3 runs/);
+      });
+
+      // Clear search text
+      await user.clear(searchInput);
+
+      // Should return to showing 2 runs (tag filter still active)
+      await waitFor(() => {
+        countText = getRunCountText(container);
+        expect(countText).toMatch(/2 of 3 runs/);
+      });
+    });
+
+    it('clear tag filter preserves text search', async () => {
+      const user = userEvent.setup();
+      const onTagIdsChange = vi.fn();
+      const runs = [
+        createMockRun({
+          id: 'run-1',
+          definition: {
+            ...createMockRun().definition,
+            name: 'Trolley Problem',
+            tags: [{ id: 'tag-1', name: 'safety' }],
+          },
+        }),
+        createMockRun({
+          id: 'run-2',
+          definition: {
+            ...createMockRun().definition,
+            name: 'Medical Ethics',
+            tags: [{ id: 'tag-1', name: 'safety' }],
+          },
+        }),
+        createMockRun({
+          id: 'run-3',
+          definition: {
+            ...createMockRun().definition,
+            name: 'Trolley Variant',
+            tags: [{ id: 'tag-2', name: 'ethics' }],
+          },
+        }),
+      ];
+
+      const { container, rerender } = render(
+        <RunSelector
+          runs={runs}
+          selectedIds={[]}
+          selectedTagIds={['tag-1']}
+          onTagIdsChange={onTagIdsChange}
+          onSelectionChange={vi.fn()}
+        />
+      );
+
+      // Initially 2 runs match tag-1
+      let countText = getRunCountText(container);
+      expect(countText).toMatch(/2 of 3 runs/);
+
+      // Type search text
+      const searchInput = screen.getByPlaceholderText('Search runs...');
+      await user.type(searchInput, 'Trolley');
+
+      await waitFor(() => {
+        countText = getRunCountText(container);
+        expect(countText).toMatch(/1 of 3 runs/);
+      });
+
+      // Simulate clearing tags (rerender with empty tags)
+      rerender(
+        <RunSelector
+          runs={runs}
+          selectedIds={[]}
+          selectedTagIds={[]}
+          onTagIdsChange={onTagIdsChange}
+          onSelectionChange={vi.fn()}
+        />
+      );
+
+      // Should now show 2 runs (both Trolley runs, no tag filter)
+      await waitFor(() => {
+        countText = getRunCountText(container);
+        expect(countText).toMatch(/2 of 3 runs/);
+      });
+
+      // Verify search text is still present
+      expect(searchInput).toHaveValue('Trolley');
+    });
+
+    it('both filters apply as AND logic', async () => {
+      const user = userEvent.setup();
+      const runs = [
+        createMockRun({
+          id: 'run-1',
+          definition: {
+            ...createMockRun().definition,
+            name: 'Trolley Problem',
+            tags: [{ id: 'tag-1', name: 'safety' }],
+          },
+        }),
+        createMockRun({
+          id: 'run-2',
+          definition: {
+            ...createMockRun().definition,
+            name: 'Trolley Variant',
+            tags: [{ id: 'tag-2', name: 'ethics' }],
+          },
+        }),
+        createMockRun({
+          id: 'run-3',
+          definition: {
+            ...createMockRun().definition,
+            name: 'Medical Problem',
+            tags: [{ id: 'tag-1', name: 'safety' }],
+          },
+        }),
+      ];
+
+      const { container } = render(
+        <RunSelector
+          runs={runs}
+          selectedIds={[]}
+          selectedTagIds={['tag-1']}
+          onSelectionChange={vi.fn()}
+        />
+      );
+
+      // Search for "Trolley" with tag-1 filter
+      await user.type(screen.getByPlaceholderText('Search runs...'), 'Trolley');
+
+      // Only run-1 matches both conditions (has tag-1 AND name contains Trolley)
+      await waitFor(() => {
+        const countText = getRunCountText(container);
+        expect(countText).toMatch(/1 of 3 runs/);
+      });
+    });
+  });
+
+  describe('tag chips', () => {
+    it('displays selected tag chips when tags are selected', () => {
+      const runs = [createMockRun()];
+      const onTagIdsChange = vi.fn();
+
+      render(
+        <RunSelector
+          runs={runs}
+          selectedIds={[]}
+          selectedTagIds={['tag-1', 'tag-2']}
+          onTagIdsChange={onTagIdsChange}
+          onSelectionChange={vi.fn()}
+        />
+      );
+
+      // Tag chips should be displayed with tag names
+      expect(screen.getByText('safety')).toBeInTheDocument();
+      expect(screen.getByText('ethics')).toBeInTheDocument();
+    });
+
+    it('removes individual tag when chip X button is clicked', async () => {
+      const user = userEvent.setup();
+      const onTagIdsChange = vi.fn();
+      const runs = [createMockRun()];
+
+      render(
+        <RunSelector
+          runs={runs}
+          selectedIds={[]}
+          selectedTagIds={['tag-1', 'tag-2']}
+          onTagIdsChange={onTagIdsChange}
+          onSelectionChange={vi.fn()}
+        />
+      );
+
+      // Click the X button on the 'safety' tag chip
+      const removeButton = screen.getByRole('button', { name: /remove safety filter/i });
+      await user.click(removeButton);
+
+      // Should call onTagIdsChange with tag-2 only (tag-1 removed)
+      expect(onTagIdsChange).toHaveBeenCalledWith(['tag-2']);
+    });
+
+    it('does not display tag chips when onTagIdsChange is not provided', () => {
+      const runs = [createMockRun()];
+
+      render(
+        <RunSelector
+          runs={runs}
+          selectedIds={[]}
+          selectedTagIds={['tag-1']}
+          onSelectionChange={vi.fn()}
+        />
+      );
+
+      // Tag chips should not be displayed since onTagIdsChange is not provided
+      expect(screen.queryByText('safety')).not.toBeInTheDocument();
     });
   });
 });

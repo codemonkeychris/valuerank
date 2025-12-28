@@ -8,10 +8,12 @@
 
 import { useState, useMemo, useRef, useEffect, useCallback } from 'react';
 import { useVirtualizer } from '@tanstack/react-virtual';
-import { Search, RefreshCw, AlertCircle, Loader2 } from 'lucide-react';
+import { Search, RefreshCw, AlertCircle, Loader2, X } from 'lucide-react';
 import { Button } from '../ui/Button';
 import { RunSelectorItem } from './RunSelectorItem';
+import { TagFilterDropdown } from './TagFilterDropdown';
 import { Loading } from '../ui/Loading';
+import { useTags } from '../../hooks/useTags';
 import type { ComparisonRun } from '../../api/operations/comparison';
 
 const MAX_RUNS = 10;
@@ -38,6 +40,10 @@ type RunSelectorProps = {
   totalCount?: number | null;
   /** Error message */
   error?: string | null;
+  /** Currently selected tag IDs for filtering */
+  selectedTagIds?: string[];
+  /** Callback when tag filter changes */
+  onTagIdsChange?: (tagIds: string[]) => void;
   /** Callback when selection changes */
   onSelectionChange: (ids: string[]) => void;
   /** Callback to refetch runs */
@@ -54,30 +60,69 @@ export function RunSelector({
   hasNextPage = false,
   totalCount,
   error,
+  selectedTagIds = [],
+  onTagIdsChange,
   onSelectionChange,
   onRefresh,
   onLoadMore,
 }: RunSelectorProps) {
   const [searchQuery, setSearchQuery] = useState('');
   const parentRef = useRef<HTMLDivElement>(null);
+  const { tags: allTags } = useTags();
 
-  // Filter runs by search query
+  // Get tag names for selected tag IDs (for chip display)
+  const selectedTagsWithNames = useMemo(() => {
+    return selectedTagIds
+      .map((id) => {
+        const tag = allTags.find((t) => t.id === id);
+        return tag ? { id: tag.id, name: tag.name } : null;
+      })
+      .filter((t): t is { id: string; name: string } => t !== null);
+  }, [selectedTagIds, allTags]);
+
+  // Handler to remove a single tag
+  const handleRemoveTag = useCallback(
+    (tagId: string) => {
+      if (onTagIdsChange) {
+        onTagIdsChange(selectedTagIds.filter((id) => id !== tagId));
+      }
+    },
+    [selectedTagIds, onTagIdsChange]
+  );
+
+  // Filter runs by tag filter and search query
   const filteredRuns = useMemo(() => {
-    if (!searchQuery.trim()) return runs;
+    let result = runs;
 
-    const query = searchQuery.toLowerCase();
-    return runs.filter((run) => {
-      const definitionName = run.definition?.name?.toLowerCase() || '';
-      const runId = run.id.toLowerCase();
-      const tags = run.definition?.tags?.map((t) => t.name.toLowerCase()) || [];
+    // Apply tag filter (AND logic - run must have ALL selected tags)
+    if (selectedTagIds.length > 0) {
+      result = result.filter((run) => {
+        const runTagIds = run.definition?.tags?.map((t) => t.id) || [];
+        return selectedTagIds.every((tagId) => runTagIds.includes(tagId));
+      });
+    }
 
-      return (
-        definitionName.includes(query) ||
-        runId.includes(query) ||
-        tags.some((tag) => tag.includes(query))
-      );
-    });
-  }, [runs, searchQuery]);
+    // Apply text search
+    if (searchQuery.trim()) {
+      const query = searchQuery.toLowerCase();
+      result = result.filter((run) => {
+        const definitionName = run.definition?.name?.toLowerCase() || '';
+        const runId = run.id.toLowerCase();
+        const tags = run.definition?.tags?.map((t) => t.name.toLowerCase()) || [];
+
+        return (
+          definitionName.includes(query) ||
+          runId.includes(query) ||
+          tags.some((tag) => tag.includes(query))
+        );
+      });
+    }
+
+    return result;
+  }, [runs, selectedTagIds, searchQuery]);
+
+  // Check if filtering is active (for count display)
+  const isFiltered = selectedTagIds.length > 0 || searchQuery.trim().length > 0;
 
   // Set up virtualizer
   const virtualizer = useVirtualizer({
@@ -98,12 +143,13 @@ export function RunSelector({
       const { scrollTop, scrollHeight, clientHeight } = scrollElement;
       const distanceFromBottom = scrollHeight - scrollTop - clientHeight;
 
-      // Only load more when not searching (search filters locally)
+      // Only load more when not filtering locally (search/tag filters filter locally)
       if (
         distanceFromBottom < LOAD_MORE_THRESHOLD &&
         hasNextPage &&
         !loadingMore &&
-        !searchQuery.trim()
+        !searchQuery.trim() &&
+        selectedTagIds.length === 0
       ) {
         onLoadMore();
       }
@@ -111,7 +157,7 @@ export function RunSelector({
 
     scrollElement.addEventListener('scroll', handleScroll);
     return () => scrollElement.removeEventListener('scroll', handleScroll);
-  }, [hasNextPage, loadingMore, onLoadMore, searchQuery]);
+  }, [hasNextPage, loadingMore, onLoadMore, searchQuery, selectedTagIds]);
 
   // Check if we've hit the selection limit
   const atLimit = selectedIds.length >= MAX_RUNS;
@@ -170,17 +216,48 @@ export function RunSelector({
         </div>
       </div>
 
-      {/* Search */}
-      <div className="relative mb-3">
-        <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
-        <input
-          type="text"
-          value={searchQuery}
-          onChange={(e) => setSearchQuery(e.target.value)}
-          placeholder="Search runs..."
-          className="w-full pl-9 pr-3 py-2 text-sm bg-gray-50 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent"
-        />
+      {/* Search and Tag Filter */}
+      <div className="flex items-center gap-2 mb-3">
+        <div className="relative flex-1">
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+          <input
+            type="text"
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            placeholder="Search runs..."
+            className="w-full pl-9 pr-3 py-2 text-sm bg-gray-50 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent"
+          />
+        </div>
+        {onTagIdsChange && (
+          <TagFilterDropdown
+            selectedTagIds={selectedTagIds}
+            onTagsChange={onTagIdsChange}
+          />
+        )}
       </div>
+
+      {/* Selected tag chips */}
+      {selectedTagsWithNames.length > 0 && onTagIdsChange && (
+        <div className="flex flex-wrap gap-1 mb-3">
+          {selectedTagsWithNames.map((tag) => (
+            <span
+              key={tag.id}
+              className="inline-flex items-center gap-1 px-2 py-1 bg-teal-100 text-teal-800 text-xs rounded-md"
+            >
+              {tag.name}
+              {/* eslint-disable-next-line react/forbid-elements -- Chip button requires custom compact layout */}
+              <button
+                type="button"
+                onClick={() => handleRemoveTag(tag.id)}
+                className="hover:text-teal-900"
+                aria-label={`Remove ${tag.name} filter`}
+              >
+                <X className="w-3 h-3" />
+              </button>
+            </span>
+          ))}
+        </div>
+      )}
 
       {/* Quick actions and count */}
       {filteredRuns.length > 0 && (
@@ -213,7 +290,10 @@ export function RunSelector({
           </div>
           <span className="text-xs text-gray-500">
             {filteredRuns.length}
-            {totalCount !== null && totalCount !== undefined && !searchQuery.trim() && (
+            {isFiltered && runs.length > 0 && (
+              <> of {runs.length}</>
+            )}
+            {!isFiltered && totalCount !== null && totalCount !== undefined && (
               <> of {totalCount}</>
             )}{' '}
             runs
@@ -238,7 +318,7 @@ export function RunSelector({
         {loading && runs.length === 0 ? (
           <Loading size="sm" text="Loading runs..." />
         ) : filteredRuns.length === 0 ? (
-          <EmptyState hasSearch={searchQuery.length > 0} totalRuns={runs.length} />
+          <EmptyState hasFilter={isFiltered} totalRuns={runs.length} />
         ) : (
           <div
             style={{
@@ -286,7 +366,7 @@ export function RunSelector({
         )}
 
         {/* End of list indicator */}
-        {!hasNextPage && runs.length > 0 && !searchQuery.trim() && (
+        {!hasNextPage && runs.length > 0 && !isFiltered && (
           <div className="text-center py-2 text-xs text-gray-400">
             All runs loaded
           </div>
@@ -306,12 +386,12 @@ export function RunSelector({
 /**
  * Empty state when no runs match
  */
-function EmptyState({ hasSearch, totalRuns }: { hasSearch: boolean; totalRuns: number }) {
-  if (hasSearch) {
+function EmptyState({ hasFilter, totalRuns }: { hasFilter: boolean; totalRuns: number }) {
+  if (hasFilter) {
     return (
       <div className="text-center py-8">
         <Search className="w-8 h-8 mx-auto text-gray-300 mb-2" />
-        <p className="text-sm text-gray-500">No runs match your search.</p>
+        <p className="text-sm text-gray-500">No runs match your filters.</p>
       </div>
     );
   }
