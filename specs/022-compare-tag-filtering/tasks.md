@@ -125,14 +125,14 @@
 
 ### Implementation for User Story 5
 
-- [ ] T017 [US5] Verify combined filtering logic in `cloud/apps/web/src/components/compare/RunSelector.tsx`
+- [X] T017 [US5] Verify combined filtering logic in `cloud/apps/web/src/components/compare/RunSelector.tsx`
   - Tag filter applies first
   - Text search applies to tag-filtered results
   - Both constraints must match (AND)
-- [ ] T018 [US5] Ensure clear text preserves tag filters in `cloud/apps/web/src/components/compare/RunSelector.tsx`
+- [X] T018 [US5] Ensure clear text preserves tag filters in `cloud/apps/web/src/components/compare/RunSelector.tsx`
   - Clearing search input doesn't clear tags
   - Clearing tags doesn't clear search input
-- [ ] T019 [US5] Add combined filtering tests in `cloud/apps/web/tests/components/compare/RunSelector.test.tsx`
+- [X] T019 [US5] Add combined filtering tests in `cloud/apps/web/tests/components/compare/RunSelector.test.tsx`
   - Test tag + text filter combination
   - Test clear text preserves tags
   - Test clear tags preserves text

@@ -543,6 +543,203 @@ describe('RunSelector', () => {
     });
   });
 
+  describe('combined text and tag filtering', () => {
+    // Helper to find the run count span with flexible text matching
+    function getRunCountText(container: HTMLElement): string {
+      const spans = container.querySelectorAll('span.text-xs.text-gray-500');
+      for (const span of spans) {
+        if (span.textContent?.includes('runs')) {
+          // Normalize whitespace
+          return span.textContent.replace(/\s+/g, ' ').trim();
+        }
+      }
+      return '';
+    }
+
+    it('clear text search preserves tag filter', async () => {
+      const user = userEvent.setup();
+      const runs = [
+        createMockRun({
+          id: 'run-1',
+          definition: {
+            ...createMockRun().definition,
+            name: 'Trolley Problem',
+            tags: [{ id: 'tag-1', name: 'safety' }],
+          },
+        }),
+        createMockRun({
+          id: 'run-2',
+          definition: {
+            ...createMockRun().definition,
+            name: 'Medical Ethics',
+            tags: [{ id: 'tag-1', name: 'safety' }],
+          },
+        }),
+        createMockRun({
+          id: 'run-3',
+          definition: {
+            ...createMockRun().definition,
+            name: 'Another Run',
+            tags: [{ id: 'tag-2', name: 'ethics' }],
+          },
+        }),
+      ];
+
+      const { container } = render(
+        <RunSelector
+          runs={runs}
+          selectedIds={[]}
+          selectedTagIds={['tag-1']}
+          onSelectionChange={vi.fn()}
+        />
+      );
+
+      // Initially 2 runs match tag-1
+      let countText = getRunCountText(container);
+      expect(countText).toMatch(/2 of 3 runs/);
+
+      // Type search text
+      const searchInput = screen.getByPlaceholderText('Search runs...');
+      await user.type(searchInput, 'Trolley');
+
+      await waitFor(() => {
+        countText = getRunCountText(container);
+        expect(countText).toMatch(/1 of 3 runs/);
+      });
+
+      // Clear search text
+      await user.clear(searchInput);
+
+      // Should return to showing 2 runs (tag filter still active)
+      await waitFor(() => {
+        countText = getRunCountText(container);
+        expect(countText).toMatch(/2 of 3 runs/);
+      });
+    });
+
+    it('clear tag filter preserves text search', async () => {
+      const user = userEvent.setup();
+      const onTagIdsChange = vi.fn();
+      const runs = [
+        createMockRun({
+          id: 'run-1',
+          definition: {
+            ...createMockRun().definition,
+            name: 'Trolley Problem',
+            tags: [{ id: 'tag-1', name: 'safety' }],
+          },
+        }),
+        createMockRun({
+          id: 'run-2',
+          definition: {
+            ...createMockRun().definition,
+            name: 'Medical Ethics',
+            tags: [{ id: 'tag-1', name: 'safety' }],
+          },
+        }),
+        createMockRun({
+          id: 'run-3',
+          definition: {
+            ...createMockRun().definition,
+            name: 'Trolley Variant',
+            tags: [{ id: 'tag-2', name: 'ethics' }],
+          },
+        }),
+      ];
+
+      const { container, rerender } = render(
+        <RunSelector
+          runs={runs}
+          selectedIds={[]}
+          selectedTagIds={['tag-1']}
+          onTagIdsChange={onTagIdsChange}
+          onSelectionChange={vi.fn()}
+        />
+      );
+
+      // Initially 2 runs match tag-1
+      let countText = getRunCountText(container);
+      expect(countText).toMatch(/2 of 3 runs/);
+
+      // Type search text
+      const searchInput = screen.getByPlaceholderText('Search runs...');
+      await user.type(searchInput, 'Trolley');
+
+      await waitFor(() => {
+        countText = getRunCountText(container);
+        expect(countText).toMatch(/1 of 3 runs/);
+      });
+
+      // Simulate clearing tags (rerender with empty tags)
+      rerender(
+        <RunSelector
+          runs={runs}
+          selectedIds={[]}
+          selectedTagIds={[]}
+          onTagIdsChange={onTagIdsChange}
+          onSelectionChange={vi.fn()}
+        />
+      );
+
+      // Should now show 2 runs (both Trolley runs, no tag filter)
+      await waitFor(() => {
+        countText = getRunCountText(container);
+        expect(countText).toMatch(/2 of 3 runs/);
+      });
+
+      // Verify search text is still present
+      expect(searchInput).toHaveValue('Trolley');
+    });
+
+    it('both filters apply as AND logic', async () => {
+      const user = userEvent.setup();
+      const runs = [
+        createMockRun({
+          id: 'run-1',
+          definition: {
+            ...createMockRun().definition,
+            name: 'Trolley Problem',
+            tags: [{ id: 'tag-1', name: 'safety' }],
+          },
+        }),
+        createMockRun({
+          id: 'run-2',
+          definition: {
+            ...createMockRun().definition,
+            name: 'Trolley Variant',
+            tags: [{ id: 'tag-2', name: 'ethics' }],
+          },
+        }),
+        createMockRun({
+          id: 'run-3',
+          definition: {
+            ...createMockRun().definition,
+            name: 'Medical Problem',
+            tags: [{ id: 'tag-1', name: 'safety' }],
+          },
+        }),
+      ];
+
+      const { container } = render(
+        <RunSelector
+          runs={runs}
+          selectedIds={[]}
+          selectedTagIds={['tag-1']}
+          onSelectionChange={vi.fn()}
+        />
+      );
+
+      // Search for "Trolley" with tag-1 filter
+      await user.type(screen.getByPlaceholderText('Search runs...'), 'Trolley');
+
+      // Only run-1 matches both conditions (has tag-1 AND name contains Trolley)
+      await waitFor(() => {
+        const countText = getRunCountText(container);
+        expect(countText).toMatch(/1 of 3 runs/);
+      });
+    });
+  });
+
   describe('tag chips', () => {
     it('displays selected tag chips when tags are selected', () => {
       const runs = [createMockRun()];
