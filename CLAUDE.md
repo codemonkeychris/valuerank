@@ -9,24 +9,33 @@ This project uses a dual-repository setup:
 
 | Repository | Purpose |
 |------------|---------|
-| [codemonkeychris/valuerank](https://github.com/codemonkeychris/valuerank) | **Development fork** - active dev work happens here |
-| [chrislawcodes/valuerank](https://github.com/chrislawcodes/valuerank) | **Authoritative repo** - issue tracking, PRs for review |
+| [codemonkeychris/valuerank](https://github.com/codemonkeychris/valuerank) | **Primary dev repo** - all PRs and active development happen here |
+| [chrislawcodes/valuerank](https://github.com/chrislawcodes/valuerank) | **Mirror/archive** - issue tracking only, synced from dev repo |
 
 **Railway deployment** pulls from `codemonkeychris/valuerank`.
+
+### Pull Requests
+
+**IMPORTANT: Always create PRs against `codemonkeychris/valuerank`**, never against `chrislawcodes/valuerank`.
+
+```bash
+# Create PR on the dev repo
+gh pr create --repo codemonkeychris/valuerank
+```
 
 ### Git Remote Setup
 
 ```bash
-# Origin = dev fork (where you push)
+# Origin = dev repo (where you push and create PRs)
 git remote add origin git@github.com:codemonkeychris/valuerank.git
 
-# Upstream = authoritative repo (for syncing)
+# Upstream = mirror repo (for syncing after merges)
 git remote add upstream git@github.com:chrislawcodes/valuerank.git
 ```
 
-### Syncing Changes to Upstream
+### Syncing Changes to Mirror
 
-After merging features to main in the dev fork:
+After merging PRs to main in the dev repo, sync to the mirror:
 
 ```bash
 # Fetch upstream state
@@ -38,7 +47,7 @@ git push upstream main
 
 ### Creating Issues
 
-Create issues on the **authoritative repo** (chrislawcodes/valuerank) so they're visible for project tracking.
+Create issues on `chrislawcodes/valuerank` for project tracking and visibility.
 
 ## Critical Documentation
 
