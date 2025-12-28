@@ -76,13 +76,13 @@
 
 ### Implementation for User Story 3
 
-- [ ] T010 [US3] Add "Clear tags" action to TagFilterDropdown in `cloud/apps/web/src/components/compare/TagFilterDropdown.tsx`
+- [X] T010 [US3] Add "Clear tags" action to TagFilterDropdown in `cloud/apps/web/src/components/compare/TagFilterDropdown.tsx`
   - Show only when tags are selected
   - Clears all selected tags
-- [ ] T011 [US3] Add selected tag chips display to RunSelector in `cloud/apps/web/src/components/compare/RunSelector.tsx`
+- [X] T011 [US3] Add selected tag chips display to RunSelector in `cloud/apps/web/src/components/compare/RunSelector.tsx`
   - Show chips for each selected tag
   - X button to remove individual tags
-- [ ] T012 [US3] Add tests for clear functionality in `cloud/apps/web/tests/components/compare/TagFilterDropdown.test.tsx`
+- [X] T012 [US3] Add tests for clear functionality in `cloud/apps/web/tests/components/compare/TagFilterDropdown.test.tsx`
   - Test clear all action
   - Test individual tag removal via chip
 

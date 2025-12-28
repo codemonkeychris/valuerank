@@ -8,11 +8,12 @@
 
 import { useState, useMemo, useRef, useEffect, useCallback } from 'react';
 import { useVirtualizer } from '@tanstack/react-virtual';
-import { Search, RefreshCw, AlertCircle, Loader2 } from 'lucide-react';
+import { Search, RefreshCw, AlertCircle, Loader2, X } from 'lucide-react';
 import { Button } from '../ui/Button';
 import { RunSelectorItem } from './RunSelectorItem';
 import { TagFilterDropdown } from './TagFilterDropdown';
 import { Loading } from '../ui/Loading';
+import { useTags } from '../../hooks/useTags';
 import type { ComparisonRun } from '../../api/operations/comparison';
 
 const MAX_RUNS = 10;
@@ -67,6 +68,27 @@ export function RunSelector({
 }: RunSelectorProps) {
   const [searchQuery, setSearchQuery] = useState('');
   const parentRef = useRef<HTMLDivElement>(null);
+  const { tags: allTags } = useTags();
+
+  // Get tag names for selected tag IDs (for chip display)
+  const selectedTagsWithNames = useMemo(() => {
+    return selectedTagIds
+      .map((id) => {
+        const tag = allTags.find((t) => t.id === id);
+        return tag ? { id: tag.id, name: tag.name } : null;
+      })
+      .filter((t): t is { id: string; name: string } => t !== null);
+  }, [selectedTagIds, allTags]);
+
+  // Handler to remove a single tag
+  const handleRemoveTag = useCallback(
+    (tagId: string) => {
+      if (onTagIdsChange) {
+        onTagIdsChange(selectedTagIds.filter((id) => id !== tagId));
+      }
+    },
+    [selectedTagIds, onTagIdsChange]
+  );
 
   // Filter runs by tag filter and search query
   const filteredRuns = useMemo(() => {
@@ -213,6 +235,29 @@ export function RunSelector({
           />
         )}
       </div>
+
+      {/* Selected tag chips */}
+      {selectedTagsWithNames.length > 0 && onTagIdsChange && (
+        <div className="flex flex-wrap gap-1 mb-3">
+          {selectedTagsWithNames.map((tag) => (
+            <span
+              key={tag.id}
+              className="inline-flex items-center gap-1 px-2 py-1 bg-teal-100 text-teal-800 text-xs rounded-md"
+            >
+              {tag.name}
+              {/* eslint-disable-next-line react/forbid-elements -- Chip button requires custom compact layout */}
+              <button
+                type="button"
+                onClick={() => handleRemoveTag(tag.id)}
+                className="hover:text-teal-900"
+                aria-label={`Remove ${tag.name} filter`}
+              >
+                <X className="w-3 h-3" />
+              </button>
+            </span>
+          ))}
+        </div>
+      )}
 
       {/* Quick actions and count */}
       {filteredRuns.length > 0 && (

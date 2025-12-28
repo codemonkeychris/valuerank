@@ -6,11 +6,26 @@
  * Tests focus on functionality that doesn't depend on item rendering.
  */
 
-import { describe, it, expect, vi } from 'vitest';
+import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { RunSelector } from '../../../src/components/compare/RunSelector';
 import type { ComparisonRun } from '../../../src/api/operations/comparison';
+
+// Mock useTags hook to avoid urql Provider requirement
+vi.mock('../../../src/hooks/useTags', () => ({
+  useTags: vi.fn(() => ({
+    tags: [
+      { id: 'tag-1', name: 'safety' },
+      { id: 'tag-2', name: 'ethics' },
+      { id: 't1', name: 'ethics' },
+      { id: 't2', name: 'safety' },
+    ],
+    loading: false,
+    error: null,
+    refetch: vi.fn(),
+  })),
+}));
 
 function createMockRun(overrides: Partial<ComparisonRun> = {}): ComparisonRun {
   return {
@@ -525,6 +540,66 @@ describe('RunSelector', () => {
         countText = getRunCountText(container);
         expect(countText).toMatch(/1 of 3 runs/);
       });
+    });
+  });
+
+  describe('tag chips', () => {
+    it('displays selected tag chips when tags are selected', () => {
+      const runs = [createMockRun()];
+      const onTagIdsChange = vi.fn();
+
+      render(
+        <RunSelector
+          runs={runs}
+          selectedIds={[]}
+          selectedTagIds={['tag-1', 'tag-2']}
+          onTagIdsChange={onTagIdsChange}
+          onSelectionChange={vi.fn()}
+        />
+      );
+
+      // Tag chips should be displayed with tag names
+      expect(screen.getByText('safety')).toBeInTheDocument();
+      expect(screen.getByText('ethics')).toBeInTheDocument();
+    });
+
+    it('removes individual tag when chip X button is clicked', async () => {
+      const user = userEvent.setup();
+      const onTagIdsChange = vi.fn();
+      const runs = [createMockRun()];
+
+      render(
+        <RunSelector
+          runs={runs}
+          selectedIds={[]}
+          selectedTagIds={['tag-1', 'tag-2']}
+          onTagIdsChange={onTagIdsChange}
+          onSelectionChange={vi.fn()}
+        />
+      );
+
+      // Click the X button on the 'safety' tag chip
+      const removeButton = screen.getByRole('button', { name: /remove safety filter/i });
+      await user.click(removeButton);
+
+      // Should call onTagIdsChange with tag-2 only (tag-1 removed)
+      expect(onTagIdsChange).toHaveBeenCalledWith(['tag-2']);
+    });
+
+    it('does not display tag chips when onTagIdsChange is not provided', () => {
+      const runs = [createMockRun()];
+
+      render(
+        <RunSelector
+          runs={runs}
+          selectedIds={[]}
+          selectedTagIds={['tag-1']}
+          onSelectionChange={vi.fn()}
+        />
+      );
+
+      // Tag chips should not be displayed since onTagIdsChange is not provided
+      expect(screen.queryByText('safety')).not.toBeInTheDocument();
     });
   });
 });
