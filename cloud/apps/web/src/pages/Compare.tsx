@@ -5,9 +5,11 @@
  * URL state: /compare?runs=id1,id2&viz=overview&model=...&display=overlay
  */
 
+import { useEffect } from 'react';
 import { BarChart2 } from 'lucide-react';
 import { useComparisonState } from '../hooks/useComparisonState';
 import { useComparisonData } from '../hooks/useComparisonData';
+import { useTags } from '../hooks/useTags';
 import { RunSelector } from '../components/compare/RunSelector';
 import { ComparisonHeader } from '../components/compare/ComparisonHeader';
 import { VisualizationNav } from '../components/compare/VisualizationNav';
@@ -27,6 +29,23 @@ export function Compare() {
     setVisualization,
     updateFilters,
   } = useComparisonState();
+
+  // Get all available tags to validate tag IDs in URL
+  const { tags: allTags, loading: tagsLoading } = useTags();
+
+  // Clean up orphaned tag IDs (tags in URL that no longer exist)
+  useEffect(() => {
+    // Skip if tags are still loading or no tags selected
+    if (tagsLoading || selectedTagIds.length === 0 || allTags.length === 0) return;
+
+    const validTagIds = new Set(allTags.map((t) => t.id));
+    const validSelectedTagIds = selectedTagIds.filter((id) => validTagIds.has(id));
+
+    // If some tags were orphaned, update the URL to remove them
+    if (validSelectedTagIds.length !== selectedTagIds.length) {
+      setSelectedTagIds(validSelectedTagIds);
+    }
+  }, [selectedTagIds, allTags, tagsLoading, setSelectedTagIds]);
 
   const {
     availableRuns,

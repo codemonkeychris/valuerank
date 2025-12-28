@@ -101,7 +101,7 @@ export function TagFilterDropdown({
 
       {isOpen && (
         <div
-          className="absolute z-50 mt-1 w-48 bg-white rounded-lg shadow-lg border border-gray-200 overflow-hidden"
+          className="absolute z-50 mt-1 w-80 bg-white rounded-lg shadow-lg border border-gray-200 overflow-hidden"
           role="listbox"
           aria-multiselectable="true"
         >

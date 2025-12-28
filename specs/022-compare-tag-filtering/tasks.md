@@ -145,16 +145,17 @@
 
 **Purpose**: Edge cases, documentation, and final validation
 
-- [ ] T020 [P] Handle empty tag list edge case in `TagFilterDropdown`
+- [X] T020 [P] Handle empty tag list edge case in `TagFilterDropdown`
   - Show "No tags available" message
-- [ ] T021 [P] Handle no matching runs empty state in `RunSelector`
+- [X] T021 [P] Handle no matching runs empty state in `RunSelector`
   - Update EmptyState component to handle tag filter case
-- [ ] T022 [P] Handle orphaned tag filters (tag in URL but deleted) in `useComparisonState`
+- [X] T022 [P] Handle orphaned tag filters (tag in URL but deleted) in `Compare.tsx`
   - Filter out non-existent tag IDs gracefully
-- [ ] T023 [P] Ensure tag dropdown is scrollable with max-height for large tag lists
-- [ ] T024 Run manual validation from quickstart.md
-- [ ] T025 Verify mobile responsiveness (per SC-004)
-- [ ] T026 Run full test suite and verify coverage
+- [X] T023 [P] Ensure tag dropdown is scrollable with max-height for large tag lists
+  - Also widened dropdown to w-80 for better readability
+- [X] T024 Run manual validation from quickstart.md
+- [X] T025 Verify mobile responsiveness (per SC-004)
+- [X] T026 Run full test suite and verify coverage
 
 **Checkpoint**: Feature complete with all edge cases handled
 
