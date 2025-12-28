@@ -14,7 +14,7 @@
 
 **Purpose**: Project initialization and branch setup
 
-- [ ] T001 Create feature branch `feature/022-compare-tag-filtering`
+- [X] T001 Create feature branch `feature/022-compare-tag-filtering`
 
 **Checkpoint**: Ready to begin implementation
 
@@ -26,15 +26,15 @@
 
 ⚠️ **CRITICAL**: No user story work can begin until this phase is complete
 
-- [ ] T002 Create `TagFilterDropdown` component in `cloud/apps/web/src/components/compare/TagFilterDropdown.tsx`
+- [X] T002 Create `TagFilterDropdown` component in `cloud/apps/web/src/components/compare/TagFilterDropdown.tsx`
   - Extract reusable tag filter dropdown from existing `RunFilters.tsx` pattern
   - Props: `selectedTagIds`, `onTagsChange`, `className?`
   - Include dropdown, checkboxes, badge count
-- [ ] T003 [P] Add unit tests for TagFilterDropdown in `cloud/apps/web/tests/components/compare/TagFilterDropdown.test.tsx`
+- [X] T003 [P] Add unit tests for TagFilterDropdown in `cloud/apps/web/tests/components/compare/TagFilterDropdown.test.tsx`
   - Test render with tags
   - Test tag selection/deselection
   - Test badge count display
-- [ ] T004 Export TagFilterDropdown from `cloud/apps/web/src/components/compare/index.ts`
+- [X] T004 Export TagFilterDropdown from `cloud/apps/web/src/components/compare/index.ts`
 
 **Checkpoint**: Foundation ready - user story implementation can now begin
 
