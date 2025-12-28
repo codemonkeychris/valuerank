@@ -98,17 +98,17 @@
 
 ### Implementation for User Story 4
 
-- [ ] T013 [US4] Add `tags` URL parameter to `useComparisonState` in `cloud/apps/web/src/hooks/useComparisonState.ts`
+- [X] T013 [US4] Add `tags` URL parameter to `useComparisonState` in `cloud/apps/web/src/hooks/useComparisonState.ts`
   - Add PARAM_TAGS constant
   - Parse tags from URL: `parseTagIds(searchParams.get(PARAM_TAGS))`
   - Serialize tags to URL on change
-- [ ] T014 [US4] Add `setSelectedTagIds` callback to `useComparisonState` in `cloud/apps/web/src/hooks/useComparisonState.ts`
+- [X] T014 [US4] Add `setSelectedTagIds` callback to `useComparisonState` in `cloud/apps/web/src/hooks/useComparisonState.ts`
   - Use `replaceState` for filter changes (avoid polluting history)
   - Handle empty array (remove param from URL)
-- [ ] T015 [US4] Update Compare.tsx to use URL-based tag state in `cloud/apps/web/src/pages/Compare.tsx`
+- [X] T015 [US4] Update Compare.tsx to use URL-based tag state in `cloud/apps/web/src/pages/Compare.tsx`
   - Replace local state with useComparisonState values
   - Wire up setSelectedTagIds handler
-- [ ] T016 [US4] Add tests for URL state in `cloud/apps/web/tests/hooks/useComparisonState.test.ts`
+- [X] T016 [US4] Add tests for URL state in `cloud/apps/web/tests/hooks/useComparisonState.test.ts`
   - Test tag parsing from URL
   - Test URL update on tag change
   - Test browser history behavior

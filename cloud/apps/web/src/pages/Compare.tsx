@@ -5,7 +5,6 @@
  * URL state: /compare?runs=id1,id2&viz=overview&model=...&display=overlay
  */
 
-import { useState, useCallback } from 'react';
 import { BarChart2 } from 'lucide-react';
 import { useComparisonState } from '../hooks/useComparisonState';
 import { useComparisonData } from '../hooks/useComparisonData';
@@ -16,19 +15,15 @@ import { getVisualization, PlaceholderVisualization } from '../components/compar
 import { Loading } from '../components/ui/Loading';
 
 export function Compare() {
-  // Tag filter state (will be moved to URL in a later phase)
-  const [selectedTagIds, setSelectedTagIds] = useState<string[]>([]);
-
-  const handleTagIdsChange = useCallback((tagIds: string[]) => {
-    setSelectedTagIds(tagIds);
-  }, []);
   const {
     selectedRunIds,
+    selectedTagIds,
     visualization,
     filters,
     setSelectedRunIds,
     toggleRunSelection,
     clearSelection,
+    setSelectedTagIds,
     setVisualization,
     updateFilters,
   } = useComparisonState();
@@ -70,7 +65,7 @@ export function Compare() {
         {/* Main Layout - Full width with 1/3 + 2/3 split */}
         <div className="flex-1 flex gap-6 min-h-0">
           {/* Left Panel: Run Selector (1/3 width) */}
-          <div className="w-1/3 min-w-[300px] max-w-[500px] bg-white rounded-lg border border-gray-200 p-4 overflow-hidden flex flex-col shadow-sm">
+          <div className="w-1/3 min-w-[300px] max-w-[500px] bg-white rounded-lg border border-gray-200 p-4 flex flex-col shadow-sm">
             <RunSelector
               runs={availableRuns}
               selectedIds={selectedRunIds}
@@ -80,7 +75,7 @@ export function Compare() {
               totalCount={totalCount}
               error={error?.message}
               selectedTagIds={selectedTagIds}
-              onTagIdsChange={handleTagIdsChange}
+              onTagIdsChange={setSelectedTagIds}
               onSelectionChange={setSelectedRunIds}
               onRefresh={refetchAvailable}
               onLoadMore={loadMoreAvailable}
