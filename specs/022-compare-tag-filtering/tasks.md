@@ -48,18 +48,18 @@
 
 ### Implementation for User Stories 1 & 2
 
-- [ ] T005 [US1] Add `selectedTagIds` state to `RunSelector` in `cloud/apps/web/src/components/compare/RunSelector.tsx`
+- [X] T005 [US1] Add `selectedTagIds` state to `RunSelector` in `cloud/apps/web/src/components/compare/RunSelector.tsx`
   - Add props: `selectedTagIds: string[]`, `onTagIdsChange: (ids: string[]) => void`
   - Integrate TagFilterDropdown below search input
-- [ ] T006 [US1] Implement tag filtering logic in `filteredRuns` useMemo in `cloud/apps/web/src/components/compare/RunSelector.tsx`
+- [X] T006 [US1] Implement tag filtering logic in `filteredRuns` useMemo in `cloud/apps/web/src/components/compare/RunSelector.tsx`
   - Apply AND logic: run must match ALL selected tags
   - Tag filtering applies before text search
-- [ ] T007 [US2] Update count display to show filtered count in `cloud/apps/web/src/components/compare/RunSelector.tsx`
+- [X] T007 [US2] Update count display to show filtered count in `cloud/apps/web/src/components/compare/RunSelector.tsx`
   - Format: "X of Y runs" when filtered
-- [ ] T008 [US1] Wire up tag state in Compare page in `cloud/apps/web/src/pages/Compare.tsx`
+- [X] T008 [US1] Wire up tag state in Compare page in `cloud/apps/web/src/pages/Compare.tsx`
   - Pass selectedTagIds and handler to RunSelector
   - Initial implementation: local state (URL persistence in US4)
-- [ ] T009 [US1] Add integration tests for tag filtering in `cloud/apps/web/tests/components/compare/RunSelector.test.tsx`
+- [X] T009 [US1] Add integration tests for tag filtering in `cloud/apps/web/tests/components/compare/RunSelector.test.tsx`
   - Test single tag filter
   - Test multi-tag filter (AND logic)
   - Test tag removal

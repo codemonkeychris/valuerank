@@ -5,6 +5,7 @@
  * URL state: /compare?runs=id1,id2&viz=overview&model=...&display=overlay
  */
 
+import { useState, useCallback } from 'react';
 import { BarChart2 } from 'lucide-react';
 import { useComparisonState } from '../hooks/useComparisonState';
 import { useComparisonData } from '../hooks/useComparisonData';
@@ -15,6 +16,12 @@ import { getVisualization, PlaceholderVisualization } from '../components/compar
 import { Loading } from '../components/ui/Loading';
 
 export function Compare() {
+  // Tag filter state (will be moved to URL in a later phase)
+  const [selectedTagIds, setSelectedTagIds] = useState<string[]>([]);
+
+  const handleTagIdsChange = useCallback((tagIds: string[]) => {
+    setSelectedTagIds(tagIds);
+  }, []);
   const {
     selectedRunIds,
     visualization,
@@ -72,6 +79,8 @@ export function Compare() {
               hasNextPage={hasNextPage}
               totalCount={totalCount}
               error={error?.message}
+              selectedTagIds={selectedTagIds}
+              onTagIdsChange={handleTagIdsChange}
               onSelectionChange={setSelectedRunIds}
               onRefresh={refetchAvailable}
               onLoadMore={loadMoreAvailable}
