@@ -243,6 +243,62 @@ describe('startRun service', () => {
       expect(scenarioIds1).toEqual(scenarioIds2);
     });
 
+    it('produces deterministic results without seed (derives from definitionId)', async () => {
+      // Create definition with scenarios
+      const definition = await db.definition.create({
+        data: {
+          name: 'Default Deterministic Test',
+          content: { schema_version: 1, preamble: 'Test' },
+        },
+      });
+      createdDefinitionIds.push(definition.id);
+
+      const scenarioData = Array.from({ length: 20 }, (_, i) => ({
+        definitionId: definition.id,
+        name: `Scenario ${i + 1}`,
+        content: { test: i + 1 },
+      }));
+
+      await db.scenario.createMany({ data: scenarioData });
+
+      // Run twice WITHOUT seed - should still be deterministic
+      const result1 = await startRun({
+        definitionId: definition.id,
+        models: ['gpt-4'],
+        samplePercentage: 30,
+        // No sampleSeed - should derive from definitionId
+        userId: testUserId,
+      });
+      createdRunIds.push(result1.run.id);
+
+      const result2 = await startRun({
+        definitionId: definition.id,
+        models: ['gpt-4'],
+        samplePercentage: 30,
+        // No sampleSeed - should derive from definitionId
+        userId: testUserId,
+      });
+      createdRunIds.push(result2.run.id);
+
+      // Both should have same job count
+      expect(result1.jobCount).toBe(result2.jobCount);
+
+      // Check that scenario selections are the same
+      const selections1 = await db.runScenarioSelection.findMany({
+        where: { runId: result1.run.id },
+        orderBy: { scenarioId: 'asc' },
+      });
+      const selections2 = await db.runScenarioSelection.findMany({
+        where: { runId: result2.run.id },
+        orderBy: { scenarioId: 'asc' },
+      });
+
+      const scenarioIds1 = selections1.map((s) => s.scenarioId);
+      const scenarioIds2 = selections2.map((s) => s.scenarioId);
+
+      expect(scenarioIds1).toEqual(scenarioIds2);
+    });
+
     it('samples at least one scenario even at very low percentage', async () => {
       const definition = await db.definition.create({
         data: {
