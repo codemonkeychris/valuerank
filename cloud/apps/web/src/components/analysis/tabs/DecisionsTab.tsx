@@ -6,15 +6,16 @@
 
 import { DecisionDistributionChart } from '../DecisionDistributionChart';
 import { ModelConsistencyChart } from '../ModelConsistencyChart';
-import type { VisualizationData } from '../../../api/operations/analysis';
+import type { VisualizationData, VarianceAnalysis } from '../../../api/operations/analysis';
 import type { PerModelStats } from './types';
 
 type DecisionsTabProps = {
   visualizationData: VisualizationData | null | undefined;
   perModel: Record<string, PerModelStats>;
+  varianceAnalysis?: VarianceAnalysis | null;
 };
 
-export function DecisionsTab({ visualizationData, perModel }: DecisionsTabProps) {
+export function DecisionsTab({ visualizationData, perModel, varianceAnalysis }: DecisionsTabProps) {
   if (!visualizationData) {
     return (
       <div className="text-center py-8 text-gray-500">
@@ -27,7 +28,7 @@ export function DecisionsTab({ visualizationData, perModel }: DecisionsTabProps)
     <div className="space-y-8">
       <DecisionDistributionChart visualizationData={visualizationData} />
       <div className="border-t border-gray-200 pt-6">
-        <ModelConsistencyChart perModel={perModel} />
+        <ModelConsistencyChart perModel={perModel} varianceAnalysis={varianceAnalysis} />
       </div>
     </div>
   );

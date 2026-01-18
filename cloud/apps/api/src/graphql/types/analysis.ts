@@ -34,11 +34,21 @@ type VisualizationDataShape = {
   modelScenarioMatrix: Record<string, Record<string, number>>;
 };
 
+// Type for variance analysis from multi-sample runs
+type VarianceAnalysisShape = {
+  isMultiSample: boolean;
+  samplesPerScenario: number;
+  perModel: Record<string, unknown>;
+  mostVariableScenarios: Array<Record<string, unknown>>;
+  leastVariableScenarios: Array<Record<string, unknown>>;
+};
+
 // Type for output data stored in JSONB
 type AnalysisOutput = {
   perModel: Record<string, unknown>;
   modelAgreement: Record<string, unknown>;
   dimensionAnalysis?: Record<string, unknown>;
+  varianceAnalysis?: VarianceAnalysisShape;
   visualizationData?: VisualizationDataShape;
   mostContestedScenarios: ContestedScenarioShape[];
   methodsUsed: Record<string, unknown>;
@@ -172,6 +182,16 @@ builder.objectType(AnalysisResultRef, {
       resolve: (analysis) => {
         const output = analysis.output as AnalysisOutput | null;
         return output?.warnings ?? [];
+      },
+    }),
+
+    varianceAnalysis: t.field({
+      type: 'JSON',
+      nullable: true,
+      description: 'Variance analysis from multi-sample runs (when samplesPerScenario > 1)',
+      resolve: (analysis) => {
+        const output = analysis.output as AnalysisOutput | null;
+        return output?.varianceAnalysis ?? null;
       },
     }),
 
