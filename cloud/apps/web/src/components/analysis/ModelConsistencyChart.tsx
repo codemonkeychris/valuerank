@@ -98,6 +98,10 @@ export function ModelConsistencyChart({ perModel, varianceAnalysis }: ModelConsi
   // Transform data for chart
   const chartData: ChartDataPoint[] = Object.entries(perModel).map(([model, stats], idx) => {
     const multiSampleData = varianceAnalysis?.perModel?.[model];
+    // Convert variance to stdDev for error bars
+    const withinScenarioStdDev = multiSampleData?.avgWithinScenarioVariance !== undefined
+      ? Math.sqrt(multiSampleData.avgWithinScenarioVariance)
+      : undefined;
     return {
       model: model.length > 15 ? model.slice(0, 13) + '...' : model,
       fullName: model,
@@ -105,10 +109,10 @@ export function ModelConsistencyChart({ perModel, varianceAnalysis }: ModelConsi
       variance: stats.overall.stdDev,
       color: MODEL_COLORS[idx % MODEL_COLORS.length] ?? '#6b7280',
       // Add multi-sample variance data when available
-      multiSampleVariance: multiSampleData?.stdDev,
+      multiSampleVariance: withinScenarioStdDev,
       consistencyScore: multiSampleData?.consistencyScore,
       // Error bar shows +/- stdDev from the multi-sample analysis
-      errorBarValue: multiSampleData?.stdDev,
+      errorBarValue: withinScenarioStdDev,
     };
   });
 

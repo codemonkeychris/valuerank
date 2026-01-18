@@ -94,19 +94,32 @@ export type VisualizationData = {
 export type ScenarioVarianceStats = {
   scenarioId: string;
   scenarioName: string;
+  modelId?: string;
   mean: number;
   stdDev: number;
   variance: number;
   range: number;
-  consistencyScore: number;
   sampleCount: number;
 };
 
-export type ModelVarianceStats = {
+export type PerScenarioVarianceStats = {
+  sampleCount: number;
   mean: number;
   stdDev: number;
+  variance: number;
+  min: number;
+  max: number;
+  range: number;
+};
+
+export type ModelVarianceStats = {
+  totalSamples: number;
+  uniqueScenarios: number;
+  samplesPerScenario: number;
+  avgWithinScenarioVariance: number;
+  maxWithinScenarioVariance: number;
   consistencyScore: number;
-  perScenario: Record<string, ScenarioVarianceStats>;
+  perScenario: Record<string, PerScenarioVarianceStats>;
 };
 
 export type VarianceAnalysis = {

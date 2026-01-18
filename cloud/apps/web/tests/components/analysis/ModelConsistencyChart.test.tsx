@@ -129,14 +129,20 @@ describe('ModelConsistencyChart', () => {
         samplesPerScenario: 5,
         perModel: {
           'gpt-4': {
-            mean: 2.5,
-            stdDev: 0.15,
+            totalSamples: 50,
+            uniqueScenarios: 10,
+            samplesPerScenario: 5,
+            avgWithinScenarioVariance: 0.0225, // stdDev = 0.15
+            maxWithinScenarioVariance: 0.04,
             consistencyScore: 0.92,
             perScenario: {},
           },
           'claude-3': {
-            mean: 3.0,
-            stdDev: 0.25,
+            totalSamples: 50,
+            uniqueScenarios: 10,
+            samplesPerScenario: 5,
+            avgWithinScenarioVariance: 0.0625, // stdDev = 0.25
+            maxWithinScenarioVariance: 0.09,
             consistencyScore: 0.85,
             perScenario: {},
           },
@@ -149,7 +155,6 @@ describe('ModelConsistencyChart', () => {
             stdDev: 0.8,
             variance: 0.64,
             range: 3.0,
-            consistencyScore: 0.7,
             sampleCount: 5,
           },
         ],
@@ -161,7 +166,6 @@ describe('ModelConsistencyChart', () => {
             stdDev: 0.1,
             variance: 0.01,
             range: 0.5,
-            consistencyScore: 0.98,
             sampleCount: 5,
           },
         ],
