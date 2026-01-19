@@ -296,13 +296,16 @@ export async function startRun(input: StartRunInput): Promise<StartRunResult> {
   }
   log.debug({ runId: run.id, queueDistribution: Object.fromEntries(queueCounts) }, 'Job queue distribution');
 
-  // Send jobs to provider-specific queues
+  // Send jobs to provider-specific queues in parallel chunks
+  // This improves startup time for large multi-sample runs (e.g., 10 scenarios × 5 models × 10 samples = 500 jobs)
   const jobIds: string[] = [];
-  for (const job of jobs) {
-    const jobId = await boss.send(job.queueName, job.data, job.options);
-    if (jobId) {
-      jobIds.push(jobId);
-    }
+  const chunkSize = 50;
+  for (let i = 0; i < jobs.length; i += chunkSize) {
+    const chunk = jobs.slice(i, i + chunkSize);
+    const chunkIds = await Promise.all(
+      chunk.map((job) => boss.send(job.queueName, job.data, job.options))
+    );
+    jobIds.push(...chunkIds.filter((id): id is string => id !== null));
   }
 
   log.info(

@@ -101,8 +101,12 @@ export function ScenarioVarianceChart({ varianceAnalysis, maxScenarios = 15 }: S
     .sort((a, b) => b.stdDev - a.stdDev)
     .slice(0, maxScenarios);
 
-  const maxStdDev = Math.max(...sortedScenarios.map((s) => s.stdDev));
-  const avgStdDev = sortedScenarios.reduce((sum, s) => sum + s.stdDev, 0) / sortedScenarios.length;
+  const maxStdDev = sortedScenarios.length > 0
+    ? Math.max(...sortedScenarios.map((s) => s.stdDev))
+    : 0;
+  const avgStdDev = sortedScenarios.length > 0
+    ? sortedScenarios.reduce((sum, s) => sum + s.stdDev, 0) / sortedScenarios.length
+    : 0;
 
   // Transform for chart
   const chartData: ChartDataPoint[] = sortedScenarios.map((s) => ({
