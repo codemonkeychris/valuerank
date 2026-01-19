@@ -378,7 +378,11 @@ export function addPivotTable(
   zip.updateFile('xl/_rels/workbook.xml.rels', Buffer.from(updatedWorkbookRels, 'utf-8'));
 
   // Get or create worksheet rels
-  const worksheetRelsPath = worksheetPath.replace('xl/', 'xl/_rels/').replace('.xml', '.xml.rels');
+  // The rels file should be in a _rels folder next to the worksheet file
+  // e.g., xl/worksheets/sheet3.xml -> xl/worksheets/_rels/sheet3.xml.rels
+  const worksheetDir = worksheetPath.substring(0, worksheetPath.lastIndexOf('/'));
+  const worksheetFilename = worksheetPath.substring(worksheetPath.lastIndexOf('/') + 1);
+  const worksheetRelsPath = `${worksheetDir}/_rels/${worksheetFilename}.rels`;
   let worksheetRels = zip.getEntry(worksheetRelsPath)?.getData().toString('utf-8');
 
   if (worksheetRels) {
