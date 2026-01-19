@@ -112,7 +112,6 @@ function generatePivotCacheDefinition(
 ): string {
   const cacheFields = fields
     .map((field) => {
-      const hasBlank = field.uniqueValues.includes('');
       const sharedItems = field.uniqueValues
         .map((v) => `<s v="${escapeXml(v)}"/>`)
         .join('');
@@ -271,9 +270,10 @@ function generatePivotTableDefinition(
   }
 
   // Data fields (values) - using COUNT aggregation
+  // baseField and baseItem are required for proper value display
   const valueLabel = config.valueFieldLabel ?? `Count of ${config.valueField}`;
   const dataFields = `<dataFields count="1">
-    <dataField name="${escapeXml(valueLabel)}" fld="${valueFieldIndex}" subtotal="count"/>
+    <dataField name="${escapeXml(valueLabel)}" fld="${valueFieldIndex}" subtotal="count" baseField="0" baseItem="0"/>
   </dataFields>`;
 
   return `<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
