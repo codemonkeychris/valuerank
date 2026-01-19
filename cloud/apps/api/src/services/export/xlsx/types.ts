@@ -8,32 +8,6 @@
 import type { Transcript, Scenario, Run } from '@prisma/client';
 
 // ============================================================================
-// XLSX-CHART TYPES (package has no @types)
-// ============================================================================
-
-/**
- * Options for xlsx-chart generate method.
- */
-export type XLSXChartOptions = {
-  chart: 'bar' | 'column' | 'line' | 'area' | 'radar' | 'scatter' | 'pie';
-  titles: string[];
-  fields: string[];
-  data: Record<string, Record<string, number>>;
-};
-
-/**
- * Callback for xlsx-chart generate method.
- */
-export type XLSXChartGenerateCallback = (err: Error | null, data: Buffer) => void;
-
-/**
- * XLSXChart instance interface.
- */
-export interface XLSXChartInstance {
-  generate(options: XLSXChartOptions, callback: XLSXChartGenerateCallback): void;
-}
-
-// ============================================================================
 // TRANSCRIPT TYPES
 // ============================================================================
 

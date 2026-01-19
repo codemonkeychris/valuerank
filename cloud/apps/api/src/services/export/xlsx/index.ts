@@ -8,8 +8,9 @@
 import { createLogger } from '@valuerank/shared';
 
 import { createWorkbook, workbookToBuffer, generateXlsxFilename, XLSX_MIME_TYPE } from './workbook.js';
+import { addPivotTable, type PivotTableConfig } from './pivotTable.js';
 
-import type { XlsxExportOptions, XlsxExportResult, RunExportData } from './types.js';
+import type { XlsxExportOptions, XlsxExportResult, RunExportData, TranscriptWithScenario } from './types.js';
 
 const log = createLogger('export:xlsx');
 
@@ -92,17 +93,9 @@ export async function generateExcelExport(
   const modelStats = buildModelSummarySheet(workbook, data.transcripts);
 
   // Build Charts worksheet (if enabled and we have data)
-  // Store chart buffer for later merging
-  let chartBuffer: Buffer | null = null;
   if (includeCharts && modelStats.length > 0) {
-    log.debug({ runId, modelCount: modelStats.length }, 'Building Charts worksheet with native chart');
-    chartBuffer = await buildChartsSheet(workbook, modelStats);
-    if (chartBuffer === null) {
-      // Fallback to simple chart worksheet if native chart fails
-      log.debug({ runId }, 'Native chart generation failed, using fallback');
-      const { buildSimpleChartsSheet } = await import('./charts.js');
-      buildSimpleChartsSheet(workbook, modelStats);
-    }
+    log.debug({ runId, modelCount: modelStats.length }, 'Building Charts worksheet');
+    buildChartsSheet(workbook, modelStats);
   }
 
   // Build analysis worksheets (if enabled and data available)
@@ -140,15 +133,62 @@ export async function generateExcelExport(
   log.debug({ runId }, 'Serializing workbook to buffer');
   let buffer = await workbookToBuffer(workbook);
 
-  // Merge native chart if generated
-  if (chartBuffer !== null) {
-    log.debug({ runId }, 'Merging native chart into workbook');
+  // Add PivotTable to Charts worksheet (if enabled and we have data)
+  if (includeCharts && modelStats.length > 0) {
     try {
-      const { mergeChartIntoWorkbook } = await import('./charts.js');
-      buffer = mergeChartIntoWorkbook(buffer, chartBuffer, 'Charts');
-      log.debug({ runId }, 'Native chart merged successfully');
+      log.debug({ runId }, 'Adding PivotTable to Charts worksheet');
+
+      // Prepare source data for PivotTable (must match Raw Data columns)
+      const pivotSourceData = preparePivotSourceData(data.transcripts);
+      const lastRow = pivotSourceData.length;
+      const lastCol = pivotSourceData[0]?.length ?? 1;
+      const lastColLetter = String.fromCharCode(64 + lastCol);
+
+      const pivotConfig: PivotTableConfig = {
+        name: 'DecisionDistribution',
+        sourceSheet: 'Raw Data',
+        sourceRange: `A1:${lastColLetter}${lastRow}`,
+        targetSheet: 'Charts',
+        targetCell: 'A6',
+        rowFields: ['AI Model Name'],
+        columnFields: ['Decision Code'],
+        valueField: 'Decision Code',
+        valueFieldLabel: 'Count',
+      };
+
+      buffer = addPivotTable(buffer, pivotConfig, pivotSourceData);
+      log.debug({ runId }, 'PivotTable added successfully');
     } catch (err) {
-      log.warn({ runId, err }, 'Failed to merge native chart, chart may not appear');
+      log.warn({ runId, err }, 'Failed to add PivotTable, falling back to simple charts');
+
+      // Rebuild workbook with simple charts fallback
+      const fallbackWorkbook = createWorkbook(runId);
+      const { buildRawDataSheet: rebuildRawData, buildModelSummarySheet: rebuildModelSummary, buildMethodsSheet: rebuildMethods } = await import('./worksheets.js');
+      const { buildSimpleChartsSheet } = await import('./charts.js');
+
+      rebuildRawData(fallbackWorkbook, data.transcripts);
+      rebuildModelSummary(fallbackWorkbook, data.transcripts);
+      buildSimpleChartsSheet(fallbackWorkbook, modelStats);
+
+      if (includeAnalysis && data.analysisResult) {
+        const { buildModelAgreementSheet, buildContestedScenariosSheet, buildDimensionImpactSheet } = await import('./worksheets.js');
+        if (data.analysisResult.modelAgreement && modelStats.length >= 2) {
+          buildModelAgreementSheet(fallbackWorkbook, data.analysisResult.modelAgreement);
+        }
+        if (data.analysisResult.contestedScenarios && data.analysisResult.contestedScenarios.length > 0) {
+          buildContestedScenariosSheet(fallbackWorkbook, data.analysisResult.contestedScenarios);
+        }
+        if (data.analysisResult.dimensionImpact && data.analysisResult.dimensionImpact.length > 0) {
+          buildDimensionImpactSheet(fallbackWorkbook, data.analysisResult.dimensionImpact);
+        }
+      }
+
+      if (includeMethods) {
+        const warnings = collectWarnings(data);
+        rebuildMethods(fallbackWorkbook, warnings);
+      }
+
+      buffer = await workbookToBuffer(fallbackWorkbook);
     }
   }
 
@@ -168,6 +208,37 @@ export async function generateExcelExport(
     filename: generateXlsxFilename(runId),
     mimeType: XLSX_MIME_TYPE,
   };
+}
+
+// ============================================================================
+// PIVOT TABLE DATA PREPARATION
+// ============================================================================
+
+/**
+ * Extract short model name from model ID.
+ */
+function getModelName(modelId: string): string {
+  const withoutProvider = modelId.includes(':') ? modelId.split(':')[1] ?? modelId : modelId;
+  return withoutProvider.replace(/-\d{8}$/, '');
+}
+
+/**
+ * Prepare source data for PivotTable creation.
+ *
+ * Returns a 2D array where first row is headers and remaining rows are data.
+ * The columns match the key columns from Raw Data sheet that are useful for pivoting.
+ */
+function preparePivotSourceData(transcripts: TranscriptWithScenario[]): string[][] {
+  // Headers - simplified set for PivotTable
+  const headers = ['AI Model Name', 'Decision Code'];
+
+  // Data rows
+  const dataRows = transcripts.map((t) => [
+    getModelName(t.modelId),
+    t.decisionCode ?? 'unknown',
+  ]);
+
+  return [headers, ...dataRows];
 }
 
 // ============================================================================

@@ -33,7 +33,7 @@ function createMockModelStats(count: number = 3): ModelStatistics[] {
 }
 
 // ============================================================================
-// BUILD CHARTS SHEET TESTS (ASYNC WITH NATIVE CHART)
+// BUILD CHARTS SHEET TESTS (PIVOT TABLE PLACEHOLDER)
 // ============================================================================
 
 describe('buildChartsSheet', () => {
@@ -43,17 +43,17 @@ describe('buildChartsSheet', () => {
     workbook = createWorkbook('test-run');
   });
 
-  it('creates a worksheet named "Charts"', async () => {
+  it('creates a worksheet named "Charts"', () => {
     const stats = createMockModelStats();
-    await buildChartsSheet(workbook, stats);
+    buildChartsSheet(workbook, stats);
 
     const worksheet = workbook.getWorksheet('Charts');
     expect(worksheet).toBeDefined();
   });
 
-  it('includes title in worksheet', async () => {
+  it('includes title in worksheet', () => {
     const stats = createMockModelStats();
-    await buildChartsSheet(workbook, stats);
+    buildChartsSheet(workbook, stats);
 
     const worksheet = workbook.getWorksheet('Charts');
     let foundTitle = false;
@@ -68,78 +68,60 @@ describe('buildChartsSheet', () => {
     expect(foundTitle).toBe(true);
   });
 
-  it('includes model names in data table', async () => {
-    const stats = createMockModelStats(2);
-    await buildChartsSheet(workbook, stats);
+  it('includes PivotTable label', () => {
+    const stats = createMockModelStats();
+    buildChartsSheet(workbook, stats);
 
     const worksheet = workbook.getWorksheet('Charts');
-    let foundModels = 0;
+    let foundPivotLabel = false;
 
     worksheet!.eachRow((row) => {
-      row.eachCell((cell) => {
-        if (cell.value === 'claude-3-5-sonnet' || cell.value === 'gpt-4o') {
-          foundModels++;
-        }
-      });
+      const cellValue = row.getCell(1).value;
+      if (typeof cellValue === 'string' && cellValue.includes('PivotTable')) {
+        foundPivotLabel = true;
+      }
     });
 
-    expect(foundModels).toBeGreaterThan(0);
+    expect(foundPivotLabel).toBe(true);
   });
 
-  it('includes decision code headers', async () => {
+  it('includes data source reference', () => {
     const stats = createMockModelStats();
-    await buildChartsSheet(workbook, stats);
+    buildChartsSheet(workbook, stats);
 
     const worksheet = workbook.getWorksheet('Charts');
-    let foundScoreHeaders = 0;
+    let foundDataSource = false;
 
     worksheet!.eachRow((row) => {
-      row.eachCell((cell) => {
-        const value = cell.value;
-        if (typeof value === 'string' && value.startsWith('Score ')) {
-          foundScoreHeaders++;
-        }
-      });
+      const cellValue = row.getCell(1).value;
+      if (typeof cellValue === 'string' && cellValue.includes('Raw Data')) {
+        foundDataSource = true;
+      }
     });
 
-    // Should have Score 1, Score 2, Score 3, Score 4, Score 5
-    expect(foundScoreHeaders).toBe(5);
+    expect(foundDataSource).toBe(true);
   });
 
-  it('returns a buffer for native chart', async () => {
-    const stats = createMockModelStats();
-    const result = await buildChartsSheet(workbook, stats);
+  it('handles empty model statistics', () => {
+    buildChartsSheet(workbook, []);
 
-    // Returns Buffer or null depending on xlsx-chart availability
-    expect(result === null || Buffer.isBuffer(result)).toBe(true);
-  });
+    const worksheet = workbook.getWorksheet('Charts');
+    expect(worksheet).toBeDefined();
 
-  it('handles empty model statistics by returning null', async () => {
-    const result = await buildChartsSheet(workbook, []);
-    expect(result).toBe(null);
-  });
+    let foundNoDataMessage = false;
+    worksheet!.eachRow((row) => {
+      const cellValue = row.getCell(1).value;
+      if (typeof cellValue === 'string' && cellValue.includes('No model data')) {
+        foundNoDataMessage = true;
+      }
+    });
 
-  it('handles stats with no numeric decision codes', async () => {
-    const stats: ModelStatistics[] = [
-      {
-        modelName: 'test-model',
-        sampleCount: 10,
-        meanScore: 0,
-        stdDev: 0,
-        decisionDistribution: {
-          error: 5,
-          unknown: 5,
-        },
-      },
-    ];
-
-    const result = await buildChartsSheet(workbook, stats);
-    expect(result).toBe(null);
+    expect(foundNoDataMessage).toBe(true);
   });
 });
 
 // ============================================================================
-// BUILD SIMPLE CHARTS SHEET TESTS (FALLBACK)
+// BUILD SIMPLE CHARTS SHEET TESTS (FALLBACK WITH DATA TABLE)
 // ============================================================================
 
 describe('buildSimpleChartsSheet', () => {
@@ -157,7 +139,7 @@ describe('buildSimpleChartsSheet', () => {
     expect(worksheet).toBeDefined();
   });
 
-  it('includes title', () => {
+  it('includes title in worksheet', () => {
     const stats = createMockModelStats();
     buildSimpleChartsSheet(workbook, stats);
 
@@ -174,7 +156,7 @@ describe('buildSimpleChartsSheet', () => {
     expect(foundTitle).toBe(true);
   });
 
-  it('includes model names in data', () => {
+  it('includes model names in data table', () => {
     const stats = createMockModelStats(2);
     buildSimpleChartsSheet(workbook, stats);
 
@@ -192,23 +174,24 @@ describe('buildSimpleChartsSheet', () => {
     expect(foundModels).toBeGreaterThan(0);
   });
 
-  it('includes score headers', () => {
+  it('includes decision code headers', () => {
     const stats = createMockModelStats();
     buildSimpleChartsSheet(workbook, stats);
 
     const worksheet = workbook.getWorksheet('Charts');
-    let foundHeaders = 0;
+    let foundScoreHeaders = 0;
 
     worksheet!.eachRow((row) => {
       row.eachCell((cell) => {
         const value = cell.value;
         if (typeof value === 'string' && value.startsWith('Score ')) {
-          foundHeaders++;
+          foundScoreHeaders++;
         }
       });
     });
 
-    expect(foundHeaders).toBe(5);
+    // Should have Score 1, Score 2, Score 3, Score 4, Score 5
+    expect(foundScoreHeaders).toBe(5);
   });
 
   it('includes total column', () => {
@@ -238,7 +221,7 @@ describe('buildSimpleChartsSheet', () => {
 
     worksheet!.eachRow((row) => {
       const cellValue = row.getCell(1).value;
-      if (typeof cellValue === 'string' && cellValue.includes('To create a chart')) {
+      if (typeof cellValue === 'string' && cellValue.includes('Insert')) {
         foundInstructions = true;
       }
     });
@@ -246,11 +229,38 @@ describe('buildSimpleChartsSheet', () => {
     expect(foundInstructions).toBe(true);
   });
 
+  it('includes mean scores section', () => {
+    const stats = createMockModelStats();
+    buildSimpleChartsSheet(workbook, stats);
+
+    const worksheet = workbook.getWorksheet('Charts');
+    let foundMeanScores = false;
+
+    worksheet!.eachRow((row) => {
+      const cellValue = row.getCell(1).value;
+      if (typeof cellValue === 'string' && cellValue.includes('Mean Scores')) {
+        foundMeanScores = true;
+      }
+    });
+
+    expect(foundMeanScores).toBe(true);
+  });
+
   it('handles empty model statistics', () => {
     buildSimpleChartsSheet(workbook, []);
 
     const worksheet = workbook.getWorksheet('Charts');
     expect(worksheet).toBeDefined();
+
+    let foundNoDataMessage = false;
+    worksheet!.eachRow((row) => {
+      const cellValue = row.getCell(1).value;
+      if (typeof cellValue === 'string' && cellValue.includes('No model data')) {
+        foundNoDataMessage = true;
+      }
+    });
+
+    expect(foundNoDataMessage).toBe(true);
   });
 
   it('handles stats with no numeric decision codes', () => {
