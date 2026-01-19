@@ -112,11 +112,13 @@ function generatePivotCacheDefinition(
 ): string {
   const cacheFields = fields
     .map((field) => {
+      const hasBlank = field.uniqueValues.includes('');
       const sharedItems = field.uniqueValues
         .map((v) => `<s v="${escapeXml(v)}"/>`)
         .join('');
+      // Excel requires these attributes on sharedItems to properly parse the cache
       return `<cacheField name="${escapeXml(field.name)}" numFmtId="0">
-        <sharedItems count="${field.uniqueValues.length}">${sharedItems}</sharedItems>
+        <sharedItems containsSemiMixedTypes="0" containsString="1" containsBlank="${hasBlank ? '1' : '0'}" containsNumber="0" count="${field.uniqueValues.length}">${sharedItems}</sharedItems>
       </cacheField>`;
     })
     .join('\n');
@@ -125,6 +127,8 @@ function generatePivotCacheDefinition(
 <pivotCacheDefinition ${PIVOT_CACHE_DEFINITION_NS}
     r:id="rId1"
     refreshOnLoad="1"
+    refreshedBy="ValueRank"
+    refreshedVersion="6"
     recordCount="${recordCount}">
   <cacheSource type="worksheet">
     <worksheetSource ref="${config.sourceRange}" sheet="${escapeXml(config.sourceSheet)}"/>
@@ -169,18 +173,20 @@ function generatePivotTableDefinition(
   fields: FieldInfo[],
   targetLocation: string
 ): string {
-  // Find field indices
-  const rowFieldIndices = config.rowFields.map((name) => {
+  // Find field indices and their field info
+  const rowFieldInfos = config.rowFields.map((name) => {
     const field = fields.find((f) => f.name === name);
     if (!field) throw new Error(`Row field not found: ${name}`);
-    return field.index;
+    return field;
   });
+  const rowFieldIndices = rowFieldInfos.map((f) => f.index);
 
-  const colFieldIndices = config.columnFields.map((name) => {
+  const colFieldInfos = config.columnFields.map((name) => {
     const field = fields.find((f) => f.name === name);
     if (!field) throw new Error(`Column field not found: ${name}`);
-    return field.index;
+    return field;
   });
+  const colFieldIndices = colFieldInfos.map((f) => f.index);
 
   const valueFieldIndex = fields.find((f) => f.name === config.valueField)?.index;
   if (valueFieldIndex === undefined) {
@@ -194,28 +200,26 @@ function generatePivotTableDefinition(
       const isColField = colFieldIndices.includes(field.index);
       const isValueField = field.index === valueFieldIndex;
 
-      let axis = '';
-      if (isRowField) axis = 'axisRow';
-      else if (isColField) axis = 'axisCol';
+      // Build attributes - a field can have both axis and dataField attributes
+      const attrs: string[] = [];
+      if (isRowField) {
+        attrs.push('axis="axisRow"');
+      } else if (isColField) {
+        attrs.push('axis="axisCol"');
+      }
+      if (isValueField) {
+        attrs.push('dataField="1"');
+      }
+      attrs.push('showAll="0"');
 
       const items = field.uniqueValues
         .map((_, i) => `<item x="${i}"/>`)
         .concat(['<item t="default"/>'])
         .join('');
 
-      if (isValueField) {
-        return `<pivotField dataField="1" showAll="0">
+      return `<pivotField ${attrs.join(' ')}>
           <items count="${field.uniqueValues.length + 1}">${items}</items>
         </pivotField>`;
-      } else if (axis) {
-        return `<pivotField axis="${axis}" showAll="0">
-          <items count="${field.uniqueValues.length + 1}">${items}</items>
-        </pivotField>`;
-      } else {
-        return `<pivotField showAll="0">
-          <items count="${field.uniqueValues.length + 1}">${items}</items>
-        </pivotField>`;
-      }
     })
     .join('\n');
 
@@ -226,12 +230,44 @@ function generatePivotTableDefinition(
        </rowFields>`
     : '';
 
+  // Row items - one <i> for each unique value plus grand total
+  // Each <i> has <x v="index"/> referencing the pivotField item
+  let rowItems = '';
+  if (rowFieldInfos.length > 0) {
+    const rowField = rowFieldInfos[0];
+    if (rowField) {
+      const items = rowField.uniqueValues
+        .map((_, i) => `<i><x v="${i}"/></i>`)
+        .concat(['<i t="grand"><x/></i>'])
+        .join('\n');
+      rowItems = `<rowItems count="${rowField.uniqueValues.length + 1}">
+        ${items}
+      </rowItems>`;
+    }
+  }
+
   // Column fields reference
   const colFields = colFieldIndices.length > 0
     ? `<colFields count="${colFieldIndices.length}">
         ${colFieldIndices.map((i) => `<field x="${i}"/>`).join('')}
        </colFields>`
     : '';
+
+  // Column items - one <i> for each unique value plus grand total
+  // Excel requires colItems even if empty - minimum is <colItems count="1"><i/></colItems>
+  let colItems = '<colItems count="1"><i/></colItems>';
+  if (colFieldInfos.length > 0) {
+    const colField = colFieldInfos[0];
+    if (colField) {
+      const items = colField.uniqueValues
+        .map((_, i) => `<i><x v="${i}"/></i>`)
+        .concat(['<i t="grand"><x/></i>'])
+        .join('\n');
+      colItems = `<colItems count="${colField.uniqueValues.length + 1}">
+        ${items}
+      </colItems>`;
+    }
+  }
 
   // Data fields (values) - using COUNT aggregation
   const valueLabel = config.valueFieldLabel ?? `Count of ${config.valueField}`;
@@ -264,7 +300,9 @@ function generatePivotTableDefinition(
     ${pivotFields}
   </pivotFields>
   ${rowFields}
+  ${rowItems}
   ${colFields}
+  ${colItems}
   ${dataFields}
   <pivotTableStyleInfo name="PivotStyleMedium9" showRowHeaders="1" showColHeaders="1" showRowStripes="0" showColStripes="0" showLastColumn="1"/>
 </pivotTableDefinition>`;
