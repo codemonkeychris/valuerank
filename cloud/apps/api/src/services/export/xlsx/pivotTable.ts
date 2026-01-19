@@ -278,7 +278,7 @@ function generatePivotTableDefinition(
   return `<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <pivotTableDefinition ${PIVOT_TABLE_DEFINITION_NS}
     name="${escapeXml(config.name)}"
-    cacheId="0"
+    cacheId="1"
     applyNumberFormats="0"
     applyBorderFormats="0"
     applyFontFormats="0"
@@ -401,7 +401,7 @@ export function addPivotTable(
   const updatedWorkbookXml = workbookXml.replace(
     '</workbook>',
     `<pivotCaches>
-      <pivotCache cacheId="0" r:id="rId99"/>
+      <pivotCache cacheId="1" r:id="rId99"/>
     </pivotCaches>
 </workbook>`
   );
