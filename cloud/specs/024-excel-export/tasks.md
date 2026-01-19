@@ -38,10 +38,13 @@
 - [X] T027 Add rowItems element with item references
 - [X] T028 Add colItems element with item references
 - [X] T029 Change cacheId from 0 to 1 (Excel convention)
-- [ ] T030 Verify Excel opens without repair warning
-- [ ] T031 Validate XML against ECMA-376 XSD schema
+- [X] T030a Add saveData, createdVersion, minRefreshableVersion to cache definition
+- [X] T030b Add containsNonDate, containsMixedTypes to sharedItems
+- [X] T030c Remove refreshOnLoad to prevent refresh issues
+- [ ] T030 Verify Excel opens without repair warning (WAITING USER TEST)
+- [X] T031 Validate XML against ECMA-376 XSD schema
 
 ## Phase 6: Polish
 - [X] T032 Run full test suite
-- [ ] T033 Commit final changes
+- [X] T033 Commit final changes
 - [ ] T034 Create PR if needed
