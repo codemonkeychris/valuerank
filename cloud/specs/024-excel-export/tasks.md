@@ -41,7 +41,7 @@
 - [X] T030a Add saveData, createdVersion, minRefreshableVersion to cache definition
 - [X] T030b Add containsNonDate, containsMixedTypes to sharedItems
 - [X] T030c Remove refreshOnLoad to prevent refresh issues
-- [ ] T030 Verify Excel opens without repair warning (WAITING USER TEST)
+- [X] T030 Verify Excel opens without repair warning
 - [X] T031 Validate XML against ECMA-376 XSD schema
 
 ## Phase 6: Polish

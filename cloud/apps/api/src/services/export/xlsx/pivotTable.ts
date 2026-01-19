@@ -116,22 +116,20 @@ function generatePivotCacheDefinition(
       const sharedItems = field.uniqueValues
         .map((v) => `<s v="${escapeXml(v)}"/>`)
         .join('');
-      // Excel requires these attributes on sharedItems to properly parse the cache
+      // Excel prefers minimal sharedItems - just count attribute
       return `<cacheField name="${escapeXml(field.name)}" numFmtId="0">
-        <sharedItems containsSemiMixedTypes="0" containsNonDate="1" containsString="1" containsBlank="${hasBlank ? '1' : '0'}" containsMixedTypes="0" containsNumber="0" count="${field.uniqueValues.length}">${sharedItems}</sharedItems>
+        <sharedItems count="${field.uniqueValues.length}">${sharedItems}</sharedItems>
       </cacheField>`;
     })
     .join('\n');
 
+  // Simplified attributes to match Excel's expected format
   return `<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <pivotCacheDefinition ${PIVOT_CACHE_DEFINITION_NS}
     r:id="rId1"
-    saveData="1"
+    refreshOnLoad="1"
     refreshedBy="ValueRank"
-    refreshedDate="45678.5"
-    createdVersion="6"
-    refreshedVersion="6"
-    minRefreshableVersion="3"
+    refreshedVersion="8"
     recordCount="${recordCount}">
   <cacheSource type="worksheet">
     <worksheetSource ref="${config.sourceRange}" sheet="${escapeXml(config.sourceSheet)}"/>
