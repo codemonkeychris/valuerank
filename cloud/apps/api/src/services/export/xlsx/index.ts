@@ -92,9 +92,17 @@ export async function generateExcelExport(
   const modelStats = buildModelSummarySheet(workbook, data.transcripts);
 
   // Build Charts worksheet (if enabled and we have data)
+  // Store chart buffer for later merging
+  let chartBuffer: Buffer | null = null;
   if (includeCharts && modelStats.length > 0) {
-    log.debug({ runId, modelCount: modelStats.length }, 'Building Charts worksheet');
-    buildChartsSheet(workbook, modelStats);
+    log.debug({ runId, modelCount: modelStats.length }, 'Building Charts worksheet with native chart');
+    chartBuffer = await buildChartsSheet(workbook, modelStats);
+    if (chartBuffer === null) {
+      // Fallback to simple chart worksheet if native chart fails
+      log.debug({ runId }, 'Native chart generation failed, using fallback');
+      const { buildSimpleChartsSheet } = await import('./charts.js');
+      buildSimpleChartsSheet(workbook, modelStats);
+    }
   }
 
   // Build analysis worksheets (if enabled and data available)
@@ -130,7 +138,19 @@ export async function generateExcelExport(
 
   // Serialize workbook to buffer
   log.debug({ runId }, 'Serializing workbook to buffer');
-  const buffer = await workbookToBuffer(workbook);
+  let buffer = await workbookToBuffer(workbook);
+
+  // Merge native chart if generated
+  if (chartBuffer !== null) {
+    log.debug({ runId }, 'Merging native chart into workbook');
+    try {
+      const { mergeChartIntoWorkbook } = await import('./charts.js');
+      buffer = mergeChartIntoWorkbook(buffer, chartBuffer, 'Charts');
+      log.debug({ runId }, 'Native chart merged successfully');
+    } catch (err) {
+      log.warn({ runId, err }, 'Failed to merge native chart, chart may not appear');
+    }
+  }
 
   const duration = Date.now() - startTime;
   log.info(

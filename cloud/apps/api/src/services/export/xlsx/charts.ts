@@ -1,378 +1,402 @@
 /**
  * XLSX Charts Module
  *
- * Functions for creating Excel charts in the export.
- * Uses ExcelJS chart capabilities for native Excel charts.
+ * Functions for creating native Excel charts using xlsx-chart library.
+ * Charts are created in a separate workbook and merged at the ZIP level.
  */
 
+// @ts-expect-error xlsx-chart has no TypeScript types
+import XLSXChartDefault from 'xlsx-chart';
+import AdmZip from 'adm-zip';
 import type ExcelJS from 'exceljs';
 
 import { addWorksheet } from './workbook.js';
-import { CHART_COLORS } from './formatting.js';
-import type { ModelStatistics } from './types.js';
+import type { ModelStatistics, XLSXChartInstance, XLSXChartOptions } from './types.js';
+
+// Cast the imported class constructor to our typed interface
+const XLSXChart = XLSXChartDefault as unknown as new () => XLSXChartInstance;
 
 // ============================================================================
-// CHARTS WORKSHEET
+// NATIVE CHART GENERATION
 // ============================================================================
 
 /**
- * Build the Charts worksheet with model comparison visualizations.
+ * Generate a native Excel bar chart as a buffer.
  *
- * Creates:
- * - Bar chart comparing mean scores across models
- * - Stacked bar chart showing decision distribution
+ * @param title - Chart title
+ * @param data - Model statistics for the chart
+ * @returns Promise resolving to chart workbook buffer
  */
-export function buildChartsSheet(
+async function generateNativeBarChart(
+  _title: string,
+  models: string[],
+  decisionCodes: string[],
+  distributionData: Record<string, Record<string, number>>
+): Promise<Buffer> {
+  const xlsxChart = new XLSXChart();
+
+  // Build the data structure for xlsx-chart
+  // titles = series names (models)
+  // fields = categories (decision codes)
+  // data = { model: { code: count } }
+  const opts: XLSXChartOptions = {
+    chart: 'bar',
+    titles: models,
+    fields: decisionCodes,
+    data: distributionData,
+  };
+
+  return new Promise((resolve, reject) => {
+    xlsxChart.generate(opts, (err: Error | null, data: Buffer) => {
+      if (err) {
+        reject(err);
+      } else {
+        resolve(data);
+      }
+    });
+  });
+}
+
+// ============================================================================
+// CHART DATA PREPARATION
+// ============================================================================
+
+/**
+ * Prepare chart data from model statistics.
+ */
+function prepareChartData(modelStats: ModelStatistics[]): {
+  models: string[];
+  decisionCodes: string[];
+  distributionData: Record<string, Record<string, number>>;
+} {
+  // Collect all unique decision codes
+  const allCodes = new Set<string>();
+  for (const stat of modelStats) {
+    for (const code of Object.keys(stat.decisionDistribution)) {
+      // Only include numeric decision codes (1-5 scale)
+      if (/^\d+$/.test(code)) {
+        allCodes.add(code);
+      }
+    }
+  }
+  const decisionCodes = Array.from(allCodes).sort();
+
+  // Build distribution data in xlsx-chart format
+  const models = modelStats.map((s) => s.modelName);
+  const distributionData: Record<string, Record<string, number>> = {};
+
+  for (const stat of modelStats) {
+    const modelData: Record<string, number> = {};
+    for (const code of decisionCodes) {
+      modelData[code] = stat.decisionDistribution[code] ?? 0;
+    }
+    distributionData[stat.modelName] = modelData;
+  }
+
+  return { models, decisionCodes, distributionData };
+}
+
+// ============================================================================
+// ZIP MERGE UTILITY
+// ============================================================================
+
+/**
+ * Merge chart from xlsx-chart workbook into ExcelJS workbook buffer.
+ *
+ * This extracts the chart XML parts from the chart workbook and
+ * injects them into the main workbook at the ZIP level.
+ */
+export function mergeChartIntoWorkbook(
+  mainWorkbookBuffer: Buffer,
+  chartWorkbookBuffer: Buffer,
+  _chartSheetName: string
+): Buffer {
+  const mainZip = new AdmZip(mainWorkbookBuffer);
+  const chartZip = new AdmZip(chartWorkbookBuffer);
+
+  // Get chart-related files from the chart workbook
+  const chartEntries = chartZip.getEntries();
+
+  // Find chart, drawing, and relationship files
+  for (const entry of chartEntries) {
+    const name = entry.entryName;
+
+    // Copy chart files
+    if (name.startsWith('xl/charts/')) {
+      const content = entry.getData();
+      mainZip.addFile(name, content);
+    }
+
+    // Copy drawing files
+    if (name.startsWith('xl/drawings/')) {
+      const content = entry.getData();
+      mainZip.addFile(name, content);
+    }
+
+    // Copy chart relationships
+    if (name.startsWith('xl/charts/_rels/')) {
+      const content = entry.getData();
+      mainZip.addFile(name, content);
+    }
+
+    // Copy drawing relationships
+    if (name.startsWith('xl/drawings/_rels/')) {
+      const content = entry.getData();
+      mainZip.addFile(name, content);
+    }
+  }
+
+  // Update Content_Types.xml to include chart content types
+  const contentTypesEntry = mainZip.getEntry('[Content_Types].xml');
+  if (contentTypesEntry) {
+    let contentTypes = contentTypesEntry.getData().toString('utf8');
+
+    // Add chart content type if not present
+    if (!contentTypes.includes('application/vnd.openxmlformats-officedocument.drawingml.chart+xml')) {
+      contentTypes = contentTypes.replace(
+        '</Types>',
+        '  <Override PartName="/xl/charts/chart1.xml" ContentType="application/vnd.openxmlformats-officedocument.drawingml.chart+xml"/>\n' +
+          '  <Override PartName="/xl/drawings/drawing1.xml" ContentType="application/vnd.openxmlformats-officedocument.drawing+xml"/>\n' +
+          '</Types>'
+      );
+      mainZip.updateFile('[Content_Types].xml', Buffer.from(contentTypes, 'utf8'));
+    }
+  }
+
+  // Find the Charts worksheet and add drawing reference
+  const entries = mainZip.getEntries();
+  let chartSheetIndex = -1;
+
+  for (const entry of entries) {
+    if (entry.entryName.startsWith('xl/worksheets/sheet') && entry.entryName.endsWith('.xml')) {
+      const sheetContent = entry.getData().toString('utf8');
+      if (sheetContent.includes(`<sheetData`) || entry.entryName.includes('sheet')) {
+        // Try to find the Charts worksheet by checking the workbook.xml
+        const match = entry.entryName.match(/sheet(\d+)\.xml/);
+        if (match && match[1]) {
+          const idx = parseInt(match[1], 10);
+          if (idx > chartSheetIndex) {
+            chartSheetIndex = idx;
+          }
+        }
+      }
+    }
+  }
+
+  // Add drawing reference to the last worksheet (Charts)
+  if (chartSheetIndex > 0) {
+    const sheetPath = `xl/worksheets/sheet${chartSheetIndex}.xml`;
+    const sheetEntry = mainZip.getEntry(sheetPath);
+
+    if (sheetEntry) {
+      let sheetXml = sheetEntry.getData().toString('utf8');
+
+      // Add drawing reference if not present
+      if (!sheetXml.includes('<drawing')) {
+        sheetXml = sheetXml.replace(
+          '</worksheet>',
+          '  <drawing r:id="rId1"/>\n</worksheet>'
+        );
+
+        // Ensure namespace is present
+        if (!sheetXml.includes('xmlns:r=')) {
+          sheetXml = sheetXml.replace(
+            '<worksheet',
+            '<worksheet xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships"'
+          );
+        }
+
+        mainZip.updateFile(sheetPath, Buffer.from(sheetXml, 'utf8'));
+      }
+
+      // Create relationship file for the worksheet
+      const relsPath = `xl/worksheets/_rels/sheet${chartSheetIndex}.xml.rels`;
+      const relsContent = `<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">
+  <Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/drawing" Target="../drawings/drawing1.xml"/>
+</Relationships>`;
+      mainZip.addFile(relsPath, Buffer.from(relsContent, 'utf8'));
+    }
+  }
+
+  return mainZip.toBuffer();
+}
+
+// ============================================================================
+// CHARTS WORKSHEET BUILDER
+// ============================================================================
+
+/**
+ * Build the Charts worksheet with data and native charts.
+ *
+ * Creates a data table that will be used as the source for the native chart.
+ * The native chart is added in a post-processing step via mergeChartIntoWorkbook.
+ *
+ * @returns Chart buffer to be merged, or null if no chart created
+ */
+export async function buildChartsSheet(
   workbook: ExcelJS.Workbook,
   modelStats: ModelStatistics[]
-): void {
-  // Create charts worksheet
+): Promise<Buffer | null> {
+  if (modelStats.length === 0) {
+    return null;
+  }
+
+  // Prepare chart data
+  const { models, decisionCodes, distributionData } = prepareChartData(modelStats);
+
+  if (decisionCodes.length === 0) {
+    // No numeric decision codes, can't create distribution chart
+    return null;
+  }
+
+  // Create charts worksheet with data source
   const worksheet = addWorksheet(workbook, {
     name: 'Charts',
     type: 'charts',
   });
 
-  // Add summary data for charts (hidden data source)
-  // ExcelJS charts need data in the worksheet
-  let dataRow = 1;
+  // Add title
+  worksheet.getCell('A1').value = 'Decision Distribution by Model';
+  worksheet.getCell('A1').font = { bold: true, size: 14 };
 
-  // Mean Scores section
-  worksheet.getCell(dataRow, 1).value = 'Mean Scores by Model';
-  worksheet.getCell(dataRow, 1).font = { bold: true, size: 14 };
-  dataRow += 2;
+  // Add note about native chart
+  worksheet.getCell('A2').value = 'Chart is displayed below the data table.';
+  worksheet.getCell('A2').font = { italic: true, size: 10, color: { argb: 'FF666666' } };
 
-  // Headers
-  worksheet.getCell(dataRow, 1).value = 'Model';
-  worksheet.getCell(dataRow, 2).value = 'Mean Score';
-  worksheet.getCell(dataRow, 1).font = { bold: true };
-  worksheet.getCell(dataRow, 2).font = { bold: true };
-  dataRow++;
+  // Build data table for the chart (starting at row 4)
+  let row = 4;
 
-  const meanScoresStartRow = dataRow;
-
-  // Add model data
-  for (const stat of modelStats) {
-    worksheet.getCell(dataRow, 1).value = stat.modelName;
-    worksheet.getCell(dataRow, 2).value = stat.meanScore;
-    dataRow++;
+  // Header row: blank | Code1 | Code2 | ...
+  worksheet.getCell(row, 1).value = 'Model';
+  worksheet.getCell(row, 1).font = { bold: true };
+  let col = 2;
+  for (const code of decisionCodes) {
+    worksheet.getCell(row, col).value = `Score ${code}`;
+    worksheet.getCell(row, col).font = { bold: true };
+    col++;
   }
-
-  const meanScoresEndRow = dataRow - 1;
-
-  // Set column widths for data section
-  worksheet.getColumn(1).width = 25;
-  worksheet.getColumn(2).width = 15;
-
-  // Add bar chart for mean scores
-  addBarChart(worksheet, {
-    title: 'Mean Decision Score by Model',
-    dataRange: {
-      startRow: meanScoresStartRow,
-      endRow: meanScoresEndRow,
-      labelCol: 1,
-      valueCol: 2,
-    },
-    position: { col: 4, row: 1 },
-    xAxisTitle: 'Model',
-    yAxisTitle: 'Mean Score',
-  });
-
-  // Decision Distribution section
-  dataRow += 3;
-  worksheet.getCell(dataRow, 1).value = 'Decision Distribution';
-  worksheet.getCell(dataRow, 1).font = { bold: true, size: 14 };
-  dataRow += 2;
-
-  // Collect all unique decision codes
-  const allCodes = new Set<string>();
-  for (const stat of modelStats) {
-    for (const code of Object.keys(stat.decisionDistribution)) {
-      allCodes.add(code);
-    }
-  }
-  const sortedCodes = Array.from(allCodes).sort();
-
-  // Headers
-  worksheet.getCell(dataRow, 1).value = 'Model';
-  worksheet.getCell(dataRow, 1).font = { bold: true };
-  let colIdx = 2;
-  for (const code of sortedCodes) {
-    worksheet.getCell(dataRow, colIdx).value = `Code ${code}`;
-    worksheet.getCell(dataRow, colIdx).font = { bold: true };
-    colIdx++;
-  }
-  dataRow++;
-
-  const distStartRow = dataRow;
-
-  // Add distribution data
-  for (const stat of modelStats) {
-    worksheet.getCell(dataRow, 1).value = stat.modelName;
-    colIdx = 2;
-    for (const code of sortedCodes) {
-      worksheet.getCell(dataRow, colIdx).value = stat.decisionDistribution[code] ?? 0;
-      colIdx++;
-    }
-    dataRow++;
-  }
-
-  const distEndRow = dataRow - 1;
-
-  // Add stacked bar chart for decision distribution
-  if (sortedCodes.length > 0) {
-    addStackedBarChart(worksheet, {
-      title: 'Decision Code Distribution by Model',
-      dataRange: {
-        startRow: distStartRow,
-        endRow: distEndRow,
-        labelCol: 1,
-        valueStartCol: 2,
-        valueEndCol: 1 + sortedCodes.length,
-        seriesNames: sortedCodes.map((c) => `Code ${c}`),
-      },
-      position: { col: 4, row: meanScoresEndRow + 5 },
-      xAxisTitle: 'Model',
-      yAxisTitle: 'Count',
-    });
-  }
-}
-
-// ============================================================================
-// BAR CHART
-// ============================================================================
-
-type BarChartOptions = {
-  title: string;
-  dataRange: {
-    startRow: number;
-    endRow: number;
-    labelCol: number;
-    valueCol: number;
-  };
-  position: { col: number; row: number };
-  xAxisTitle?: string;
-  yAxisTitle?: string;
-};
-
-/**
- * Add a bar chart to a worksheet.
- *
- * Note: ExcelJS has limited chart support. We create a basic structure
- * that Excel can render. For complex charts, the data is provided and
- * users can create charts manually if needed.
- */
-function addBarChart(worksheet: ExcelJS.Worksheet, options: BarChartOptions): void {
-  const { title, dataRange, position } = options;
-
-  // ExcelJS doesn't have full chart API, so we add a visual indicator
-  // The actual chart needs to be created by reading the data
-
-  // Add chart placeholder text
-  const chartCell = worksheet.getCell(position.row, position.col);
-  chartCell.value = `📊 ${title}`;
-  chartCell.font = { bold: true, size: 12 };
-
-  // Add note about data location
-  const noteCell = worksheet.getCell(position.row + 1, position.col);
-  noteCell.value = `(Chart data in columns A-B, rows ${dataRange.startRow}-${dataRange.endRow})`;
-  noteCell.font = { italic: true, size: 10, color: { argb: 'FF666666' } };
-
-  // Since ExcelJS doesn't support chart creation well, we'll add
-  // a formatted data table that users can select to create a chart
-
-  // Copy data to chart area for easy selection
-  const chartDataStartRow = position.row + 3;
-  let chartRow = chartDataStartRow;
-
-  // Header
-  worksheet.getCell(chartRow, position.col).value = 'Model';
-  worksheet.getCell(chartRow, position.col + 1).value = 'Score';
-  worksheet.getCell(chartRow, position.col).font = { bold: true };
-  worksheet.getCell(chartRow, position.col + 1).font = { bold: true };
-  chartRow++;
-
-  // Data
-  for (let r = dataRange.startRow; r <= dataRange.endRow; r++) {
-    const label = worksheet.getCell(r, dataRange.labelCol).value;
-    const value = worksheet.getCell(r, dataRange.valueCol).value;
-    worksheet.getCell(chartRow, position.col).value = label;
-    worksheet.getCell(chartRow, position.col + 1).value = value;
-    chartRow++;
-  }
-
-  // Add visual bar representation using characters
-  chartRow++;
-  for (let r = dataRange.startRow; r <= dataRange.endRow; r++) {
-    const label = worksheet.getCell(r, dataRange.labelCol).value;
-    const value = worksheet.getCell(r, dataRange.valueCol).value;
-    const numValue = typeof value === 'number' ? value : 0;
-
-    // Create a simple text-based bar (scale 0-5 to 0-20 characters)
-    const barLength = Math.round((numValue / 5) * 20);
-    const bar = '█'.repeat(Math.max(0, barLength));
-
-    worksheet.getCell(chartRow, position.col).value = label;
-    worksheet.getCell(chartRow, position.col + 1).value = bar;
-    worksheet.getCell(chartRow, position.col + 2).value = numValue;
-    worksheet.getCell(chartRow, position.col + 1).font = {
-      color: { argb: CHART_COLORS[0] ? `FF${CHART_COLORS[0]}` : 'FF4472C4' },
-    };
-    chartRow++;
-  }
-}
-
-// ============================================================================
-// STACKED BAR CHART
-// ============================================================================
-
-type StackedBarChartOptions = {
-  title: string;
-  dataRange: {
-    startRow: number;
-    endRow: number;
-    labelCol: number;
-    valueStartCol: number;
-    valueEndCol: number;
-    seriesNames: string[];
-  };
-  position: { col: number; row: number };
-  xAxisTitle?: string;
-  yAxisTitle?: string;
-};
-
-/**
- * Add a stacked bar chart to a worksheet.
- */
-function addStackedBarChart(worksheet: ExcelJS.Worksheet, options: StackedBarChartOptions): void {
-  const { title, dataRange, position } = options;
-
-  // Add chart placeholder text
-  const chartCell = worksheet.getCell(position.row, position.col);
-  chartCell.value = `📊 ${title}`;
-  chartCell.font = { bold: true, size: 12 };
-
-  // Add note about data location
-  const noteCell = worksheet.getCell(position.row + 1, position.col);
-  noteCell.value = `(Data for stacked chart in rows ${dataRange.startRow}-${dataRange.endRow})`;
-  noteCell.font = { italic: true, size: 10, color: { argb: 'FF666666' } };
-
-  // Add a summary table showing totals
-  const summaryStartRow = position.row + 3;
-  let summaryRow = summaryStartRow;
-
-  // Header
-  worksheet.getCell(summaryRow, position.col).value = 'Model';
-  worksheet.getCell(summaryRow, position.col).font = { bold: true };
-  let colOffset = 1;
-  for (const seriesName of dataRange.seriesNames) {
-    worksheet.getCell(summaryRow, position.col + colOffset).value = seriesName;
-    worksheet.getCell(summaryRow, position.col + colOffset).font = { bold: true };
-    colOffset++;
-  }
-  worksheet.getCell(summaryRow, position.col + colOffset).value = 'Total';
-  worksheet.getCell(summaryRow, position.col + colOffset).font = { bold: true };
-  summaryRow++;
-
-  // Data rows with visual representation
-  for (let r = dataRange.startRow; r <= dataRange.endRow; r++) {
-    const label = worksheet.getCell(r, dataRange.labelCol).value;
-    worksheet.getCell(summaryRow, position.col).value = label;
-
-    let total = 0;
-    colOffset = 1;
-    for (let c = dataRange.valueStartCol; c <= dataRange.valueEndCol; c++) {
-      const value = worksheet.getCell(r, c).value;
-      const numValue = typeof value === 'number' ? value : 0;
-      worksheet.getCell(summaryRow, position.col + colOffset).value = numValue;
-      total += numValue;
-      colOffset++;
-    }
-    worksheet.getCell(summaryRow, position.col + colOffset).value = total;
-    summaryRow++;
-  }
-
-  // Add text-based stacked bar visualization
-  summaryRow++;
-  worksheet.getCell(summaryRow, position.col).value = 'Visual Distribution:';
-  worksheet.getCell(summaryRow, position.col).font = { bold: true };
-  summaryRow++;
-
-  for (let r = dataRange.startRow; r <= dataRange.endRow; r++) {
-    const label = worksheet.getCell(r, dataRange.labelCol).value;
-    worksheet.getCell(summaryRow, position.col).value = label;
-
-    // Build stacked bar string
-    let stackedBar = '';
-    let colorIdx = 0;
-    for (let c = dataRange.valueStartCol; c <= dataRange.valueEndCol; c++) {
-      const value = worksheet.getCell(r, c).value;
-      const numValue = typeof value === 'number' ? value : 0;
-      // Use different characters for different series
-      const chars = ['█', '▓', '▒', '░', '▄'];
-      const char = chars[colorIdx % chars.length] ?? '█';
-      stackedBar += char.repeat(Math.min(numValue, 20));
-      colorIdx++;
-    }
-
-    worksheet.getCell(summaryRow, position.col + 1).value = stackedBar;
-    summaryRow++;
-  }
-}
-
-// ============================================================================
-// HORIZONTAL BAR CHART (for Dimension Impact)
-// ============================================================================
-
-type HorizontalBarChartOptions = {
-  title: string;
-  labels: string[];
-  values: number[];
-  position: { col: number; row: number };
-  yAxisTitle?: string;
-};
-
-/**
- * Add a horizontal bar chart for dimension impact visualization.
- */
-export function addHorizontalBarChart(
-  worksheet: ExcelJS.Worksheet,
-  options: HorizontalBarChartOptions
-): void {
-  const { title, labels, values, position } = options;
-
-  // Add chart title
-  const chartCell = worksheet.getCell(position.row, position.col);
-  chartCell.value = `📊 ${title}`;
-  chartCell.font = { bold: true, size: 12 };
-
-  // Normalize values to create proportional bars
-  const maxValue = Math.max(...values, 0.001);
-  const maxBarLength = 30;
-
-  let row = position.row + 2;
-
-  // Header
-  worksheet.getCell(row, position.col).value = 'Dimension';
-  worksheet.getCell(row, position.col + 1).value = 'Impact';
-  worksheet.getCell(row, position.col + 2).value = 'Effect Size';
-  worksheet.getCell(row, position.col).font = { bold: true };
-  worksheet.getCell(row, position.col + 1).font = { bold: true };
-  worksheet.getCell(row, position.col + 2).font = { bold: true };
   row++;
 
-  // Data with visual bars
-  for (let i = 0; i < labels.length; i++) {
-    const label = labels[i] ?? '';
-    const value = values[i] ?? 0;
-    const barLength = Math.round((value / maxValue) * maxBarLength);
-    const bar = '█'.repeat(Math.max(0, barLength));
-
-    worksheet.getCell(row, position.col).value = label;
-    worksheet.getCell(row, position.col + 1).value = bar;
-    worksheet.getCell(row, position.col + 1).font = {
-      color: { argb: 'FF4472C4' },
-    };
-    worksheet.getCell(row, position.col + 2).value = value;
+  // Data rows: Model | Count1 | Count2 | ...
+  for (const stat of modelStats) {
+    worksheet.getCell(row, 1).value = stat.modelName;
+    col = 2;
+    for (const code of decisionCodes) {
+      worksheet.getCell(row, col).value = stat.decisionDistribution[code] ?? 0;
+      col++;
+    }
     row++;
   }
+
+  // Set column widths
+  worksheet.getColumn(1).width = 25;
+  for (let c = 2; c <= decisionCodes.length + 1; c++) {
+    worksheet.getColumn(c).width = 12;
+  }
+
+  // Generate native bar chart
+  try {
+    const chartBuffer = await generateNativeBarChart(
+      'Decision Distribution by Model',
+      models,
+      decisionCodes.map((c) => `Score ${c}`),
+      Object.fromEntries(
+        Object.entries(distributionData).map(([model, data]) => [
+          model,
+          Object.fromEntries(
+            Object.entries(data).map(([code, count]) => [`Score ${code}`, count])
+          ),
+        ])
+      )
+    );
+
+    return chartBuffer;
+  } catch {
+    // If chart generation fails, return null (chart won't be included)
+    return null;
+  }
+}
+
+// ============================================================================
+// SIMPLE CHARTS WORKSHEET (FALLBACK)
+// ============================================================================
+
+/**
+ * Build a simple charts worksheet without native charts (fallback).
+ * Used when chart generation fails or for testing.
+ */
+export function buildSimpleChartsSheet(
+  workbook: ExcelJS.Workbook,
+  modelStats: ModelStatistics[]
+): void {
+  const worksheet = addWorksheet(workbook, {
+    name: 'Charts',
+    type: 'charts',
+  });
+
+  // Add title
+  worksheet.getCell('A1').value = 'Decision Distribution by Model';
+  worksheet.getCell('A1').font = { bold: true, size: 14 };
+
+  if (modelStats.length === 0) {
+    worksheet.getCell('A3').value = 'No model data available for chart.';
+    return;
+  }
+
+  // Prepare data
+  const { models, decisionCodes, distributionData } = prepareChartData(modelStats);
+
+  if (decisionCodes.length === 0) {
+    worksheet.getCell('A3').value = 'No numeric decision codes found for chart.';
+    return;
+  }
+
+  // Build data table
+  let row = 3;
+
+  // Header row
+  worksheet.getCell(row, 1).value = 'Model';
+  worksheet.getCell(row, 1).font = { bold: true };
+  let col = 2;
+  for (const code of decisionCodes) {
+    worksheet.getCell(row, col).value = `Score ${code}`;
+    worksheet.getCell(row, col).font = { bold: true };
+    col++;
+  }
+  worksheet.getCell(row, col).value = 'Total';
+  worksheet.getCell(row, col).font = { bold: true };
+  row++;
+
+  // Data rows
+  for (const model of models) {
+    worksheet.getCell(row, 1).value = model;
+    col = 2;
+    let total = 0;
+    for (const code of decisionCodes) {
+      const count = distributionData[model]?.[code] ?? 0;
+      worksheet.getCell(row, col).value = count;
+      total += count;
+      col++;
+    }
+    worksheet.getCell(row, col).value = total;
+    row++;
+  }
+
+  // Set column widths
+  worksheet.getColumn(1).width = 25;
+  for (let c = 2; c <= decisionCodes.length + 2; c++) {
+    worksheet.getColumn(c).width = 12;
+  }
+
+  // Add note about creating a chart
+  row += 2;
+  worksheet.getCell(row, 1).value = '📊 To create a chart:';
+  worksheet.getCell(row, 1).font = { bold: true };
+  row++;
+  worksheet.getCell(row, 1).value = '1. Select the data table above (including headers)';
+  row++;
+  worksheet.getCell(row, 1).value = '2. Go to Insert > Charts > Bar Chart';
+  row++;
+  worksheet.getCell(row, 1).value = '3. Choose "Clustered Bar" for best visualization';
 }
