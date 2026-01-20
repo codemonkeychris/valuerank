@@ -6,7 +6,7 @@
  */
 
 import { useMemo, useState, useCallback } from 'react';
-import { BarChart2, AlertCircle, Clock, RefreshCw, Loader2, Info, FileSpreadsheet } from 'lucide-react';
+import { BarChart2, AlertCircle, Clock, RefreshCw, Loader2, Info, FileSpreadsheet, Link2, Check } from 'lucide-react';
 import { Button } from '../ui/Button';
 import { Loading } from '../ui/Loading';
 import { ErrorMessage } from '../ui/ErrorMessage';
@@ -24,7 +24,7 @@ import {
   type AnalysisTab,
 } from './tabs';
 import { useAnalysis } from '../../hooks/useAnalysis';
-import { exportRunAsXLSX } from '../../api/export';
+import { exportRunAsXLSX, getODataFeedUrl } from '../../api/export';
 import type { PerModelStats, AnalysisWarning } from '../../api/operations/analysis';
 
 type AnalysisPanelProps = {
@@ -176,6 +176,7 @@ export function AnalysisPanel({ runId, analysisStatus }: AnalysisPanelProps) {
   });
   const [isExporting, setIsExporting] = useState(false);
   const [exportError, setExportError] = useState<string | null>(null);
+  const [odataLinkCopied, setOdataLinkCopied] = useState(false);
 
   const handleExportExcel = useCallback(async () => {
     setIsExporting(true);
@@ -186,6 +187,18 @@ export function AnalysisPanel({ runId, analysisStatus }: AnalysisPanelProps) {
       setExportError(err instanceof Error ? err.message : 'Export failed');
     } finally {
       setIsExporting(false);
+    }
+  }, [runId]);
+
+  const handleCopyODataLink = useCallback(async () => {
+    const url = getODataFeedUrl(runId);
+    try {
+      await navigator.clipboard.writeText(url);
+      setOdataLinkCopied(true);
+      setTimeout(() => setOdataLinkCopied(false), 2000);
+    } catch {
+      // Fallback: show the URL in an alert if clipboard fails
+      window.prompt('Copy this OData URL for Excel:', url);
     }
   }, [runId]);
 
@@ -274,6 +287,19 @@ export function AnalysisPanel({ runId, analysisStatus }: AnalysisPanelProps) {
               <FileSpreadsheet className="w-4 h-4 mr-2" />
             )}
             Export Excel
+          </Button>
+          <Button
+            variant="secondary"
+            size="sm"
+            onClick={() => void handleCopyODataLink()}
+            title="Copy OData URL for Excel's 'From OData Feed' feature"
+          >
+            {odataLinkCopied ? (
+              <Check className="w-4 h-4 mr-2 text-green-600" />
+            ) : (
+              <Link2 className="w-4 h-4 mr-2" />
+            )}
+            {odataLinkCopied ? 'Copied!' : 'OData Link'}
           </Button>
           <Button variant="secondary" size="sm" onClick={() => void recompute()} disabled={recomputing}>
             {recomputing ? (

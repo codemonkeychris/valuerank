@@ -2,6 +2,7 @@
  * Export API
  *
  * Functions for exporting run data as CSV/JSON/XLSX and definitions as MD/YAML.
+ * Also provides OData URL generation for live Excel connections.
  */
 
 /**
@@ -10,6 +11,20 @@
 function getApiBaseUrl(): string {
   // Use environment variable or default to same origin
   return import.meta.env.VITE_API_URL || '';
+}
+
+/**
+ * Get the OData feed URL for a run.
+ * This URL can be used in Excel's "From OData Feed" to connect directly to run data.
+ *
+ * @param runId - The run ID
+ * @returns The OData feed URL for the run's transcripts
+ */
+export function getODataFeedUrl(runId: string): string {
+  // Get base URL - use VITE_API_URL if set, otherwise use current origin
+  const baseUrl = import.meta.env.VITE_API_URL || window.location.origin;
+  // Return the Transcripts entity set URL - this is what Excel needs
+  return `${baseUrl}/api/odata/runs/${runId}/Transcripts`;
 }
 
 /**
