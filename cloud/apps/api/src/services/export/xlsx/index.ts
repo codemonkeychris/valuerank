@@ -80,7 +80,7 @@ export async function generateExcelExport(
 
   // Import worksheet builders dynamically to keep this file small
   const { buildRawDataSheet, buildModelSummarySheet, buildMethodsSheet } = await import(
-    './worksheets.js'
+    './worksheets/index.js'
   );
   const { buildChartsSheet } = await import('./charts.js');
 
@@ -104,7 +104,7 @@ export async function generateExcelExport(
       buildModelAgreementSheet,
       buildContestedScenariosSheet,
       buildDimensionImpactSheet,
-    } = await import('./worksheets.js');
+    } = await import('./worksheets/index.js');
 
     if (data.analysisResult.modelAgreement && modelStats.length >= 2) {
       log.debug({ runId }, 'Building Model Agreement worksheet');
@@ -166,7 +166,7 @@ export async function generateExcelExport(
 
       // Rebuild workbook with simple charts fallback
       const fallbackWorkbook = createWorkbook(runId);
-      const { buildRawDataSheet: rebuildRawData, buildModelSummarySheet: rebuildModelSummary, buildMethodsSheet: rebuildMethods } = await import('./worksheets.js');
+      const { buildRawDataSheet: rebuildRawData, buildModelSummarySheet: rebuildModelSummary, buildMethodsSheet: rebuildMethods } = await import('./worksheets/index.js');
       const { buildSimpleChartsSheet } = await import('./charts.js');
 
       rebuildRawData(fallbackWorkbook, data.transcripts);
@@ -174,7 +174,7 @@ export async function generateExcelExport(
       buildSimpleChartsSheet(fallbackWorkbook, modelStats);
 
       if (includeAnalysis && data.analysisResult) {
-        const { buildModelAgreementSheet, buildContestedScenariosSheet, buildDimensionImpactSheet } = await import('./worksheets.js');
+        const { buildModelAgreementSheet, buildContestedScenariosSheet, buildDimensionImpactSheet } = await import('./worksheets/index.js');
         if (data.analysisResult.modelAgreement && modelStats.length >= 2) {
           buildModelAgreementSheet(fallbackWorkbook, data.analysisResult.modelAgreement);
         }

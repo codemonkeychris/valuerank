@@ -14,7 +14,7 @@ import {
   buildContestedScenariosSheet,
   buildDimensionImpactSheet,
   buildMethodsSheet,
-} from '../../../../src/services/export/xlsx/worksheets.js';
+} from '../../../../src/services/export/xlsx/worksheets/index.js';
 import type {
   TranscriptWithScenario,
   ModelAgreementData,
