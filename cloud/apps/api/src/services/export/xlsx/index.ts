@@ -138,15 +138,18 @@ export async function generateExcelExport(
     try {
       log.debug({ runId }, 'Adding PivotTable to Charts worksheet');
 
-      // Prepare source data for PivotTable (must match Raw Data columns)
+      // Prepare source data for PivotTable
       const pivotSourceData = preparePivotSourceData(data.transcripts);
       const lastRow = pivotSourceData.length;
       const lastCol = pivotSourceData[0]?.length ?? 1;
       const lastColLetter = String.fromCharCode(64 + lastCol);
 
+      // Add hidden sheet with pivot source data (Raw Data has different column order)
+      buffer = await addPivotSourceSheet(buffer, pivotSourceData);
+
       const pivotConfig: PivotTableConfig = {
         name: 'DecisionDistribution',
-        sourceSheet: 'Raw Data',
+        sourceSheet: 'Pivot Source',  // Hidden sheet with just pivot columns
         sourceRange: `A1:${lastColLetter}${lastRow}`,
         targetSheet: 'Charts',
         targetCell: 'A6',
@@ -239,6 +242,46 @@ function preparePivotSourceData(transcripts: TranscriptWithScenario[]): string[]
   ]);
 
   return [headers, ...dataRows];
+}
+
+/**
+ * Add a hidden "Pivot Source" sheet to the workbook buffer.
+ *
+ * This is needed because the Raw Data sheet has many columns (dimensions, etc.)
+ * but the PivotTable only needs AI Model Name and Decision Code. By creating
+ * a separate hidden sheet, we ensure the pivot cache columns match the worksheet.
+ */
+async function addPivotSourceSheet(xlsxBuffer: Buffer, sourceData: string[][]): Promise<Buffer> {
+  const ExcelJS = await import('exceljs');
+  const workbook = new ExcelJS.Workbook();
+  await workbook.xlsx.load(xlsxBuffer as unknown as ArrayBuffer);
+
+  // Create hidden worksheet
+  const sheet = workbook.addWorksheet('Pivot Source', {
+    state: 'veryHidden', // Cannot be unhidden from Excel UI
+  });
+
+  // Add headers
+  const headers = sourceData[0];
+  if (headers) {
+    sheet.columns = headers.map((h, i) => ({
+      header: h,
+      key: `col${i}`,
+      width: 15,
+    }));
+  }
+
+  // Add data rows
+  for (let i = 1; i < sourceData.length; i++) {
+    const row = sourceData[i];
+    if (row) {
+      sheet.addRow(row);
+    }
+  }
+
+  // Return updated buffer
+  const newBuffer = await workbook.xlsx.writeBuffer();
+  return Buffer.from(newBuffer) as Buffer;
 }
 
 // ============================================================================
