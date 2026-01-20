@@ -253,7 +253,7 @@ function preparePivotSourceData(transcripts: TranscriptWithScenario[]): string[]
  */
 async function addPivotSourceSheet(xlsxBuffer: Buffer, sourceData: string[][]): Promise<Buffer> {
   const ExcelJS = await import('exceljs');
-  const workbook = new ExcelJS.Workbook();
+  const workbook = new ExcelJS.default.Workbook();
   await workbook.xlsx.load(xlsxBuffer as unknown as ArrayBuffer);
 
   // Create hidden worksheet
