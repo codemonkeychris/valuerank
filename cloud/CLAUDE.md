@@ -516,12 +516,61 @@ docker ps | grep valuerank
 docker exec valuerank-pgbouncer pg_isready -h localhost -p 6432 -U valuerank
 ```
 
+### Upgrading Existing Local Environments
+
+If you're upgrading from a version without PgBouncer:
+
+1. Update your `.env` file:
+   ```bash
+   # OLD (direct connection)
+   DATABASE_URL="postgresql://valuerank:valuerank@localhost:5433/valuerank"
+
+   # NEW (via PgBouncer)
+   DATABASE_URL="postgresql://valuerank:valuerank@localhost:6432/valuerank?pgbouncer=true"
+   DIRECT_URL="postgresql://valuerank:valuerank@localhost:5433/valuerank"
+   ```
+
+2. Restart docker-compose to start PgBouncer:
+   ```bash
+   docker-compose down
+   docker-compose up -d
+   ```
+
+3. Verify PgBouncer is running:
+   ```bash
+   docker exec valuerank-pgbouncer pg_isready -h localhost -p 6432 -U valuerank
+   ```
+
 ### PgBouncer Configuration (Local)
 
 The local PgBouncer runs in **transaction mode** with these settings:
 - `PGBOUNCER_POOL_MODE=transaction` - Connection returned after each transaction
 - `PGBOUNCER_DEFAULT_POOL_SIZE=20` - Max connections to PostgreSQL per database
 - `PGBOUNCER_MAX_CLIENT_CONN=200` - Max client connections PgBouncer accepts
+
+### Monitoring PgBouncer
+
+Check connection pool stats locally:
+
+```bash
+# View pool statistics (connections per database)
+docker exec valuerank-pgbouncer psql -p 6432 -U valuerank pgbouncer -c 'SHOW POOLS'
+
+# View aggregate stats (total queries, wait time, etc.)
+docker exec valuerank-pgbouncer psql -p 6432 -U valuerank pgbouncer -c 'SHOW STATS'
+
+# View connected clients
+docker exec valuerank-pgbouncer psql -p 6432 -U valuerank pgbouncer -c 'SHOW CLIENTS'
+
+# View server connections to PostgreSQL
+docker exec valuerank-pgbouncer psql -p 6432 -U valuerank pgbouncer -c 'SHOW SERVERS'
+```
+
+Key metrics to watch:
+- `cl_active` - Active client connections (should stay below `max_client_conn`)
+- `sv_active` - Active server connections (should stay below `default_pool_size`)
+- `sv_idle` - Idle server connections (available for reuse)
+- `avg_wait_time` - Average wait time for a connection (should be < 1ms)
 
 ### Running Commands with Database Access
 
