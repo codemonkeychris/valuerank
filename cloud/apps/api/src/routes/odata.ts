@@ -91,9 +91,12 @@ function extractDimensionNames(content: unknown): string[] {
     return [];
   }
 
-  return dimensions
+  const names = dimensions
     .map((d) => d?.name)
     .filter((name): name is string => typeof name === 'string' && name.length > 0);
+
+  // Deduplicate dimension names
+  return Array.from(new Set(names));
 }
 
 /**
@@ -146,7 +149,10 @@ odataRouter.get(
       }
 
       // Extract dimension names from the definition content
-      const dimensionNames = extractDimensionNames(run.definition.content);
+      // Guard against missing definition relation (shouldn't happen but be defensive)
+      const dimensionNames = run.definition
+        ? extractDimensionNames(run.definition.content)
+        : [];
 
       log.debug({ runId, dimensionNames }, 'Generating OData metadata with dimensions');
 
