@@ -33,7 +33,12 @@ describe('startRun service', () => {
   const createdExperimentIds: string[] = [];
   const createdRunIds: string[] = [];
 
-  // Ensure test user exists before all tests
+  // Shared test model for all tests
+  const sharedTestPrefix = `start-test-${Date.now()}`;
+  let sharedProviderId: string;
+  let sharedModelId: string;
+
+  // Ensure test user and shared model exist before all tests
   beforeAll(async () => {
     await db.user.upsert({
       where: { id: TEST_USER.id },
@@ -44,6 +49,55 @@ describe('startRun service', () => {
       },
       update: {},
     });
+
+    // Create shared provider and model for tests that use 'gpt-4'
+    const provider = await db.llmProvider.upsert({
+      where: { name: `${sharedTestPrefix}-openai` },
+      create: { name: `${sharedTestPrefix}-openai`, displayName: 'Test OpenAI' },
+      update: {},
+    });
+    sharedProviderId = provider.id;
+
+    // Helper to ensure model exists (create if not, update if yes)
+    async function ensureModel(
+      modelId: string,
+      displayName: string,
+      costInput: number,
+      costOutput: number,
+    ) {
+      const existing = await db.llmModel.findFirst({ where: { modelId } });
+      if (existing) {
+        return existing;
+      }
+      return db.llmModel.create({
+        data: {
+          providerId: provider.id,
+          modelId,
+          displayName,
+          costInputPerMillion: costInput,
+          costOutputPerMillion: costOutput,
+        },
+      });
+    }
+
+    const model = await ensureModel('gpt-4', 'GPT-4 (Test)', 2.5, 10.0);
+    sharedModelId = model.modelId;
+
+    // Also create claude-3 and gemini-pro for tests that use multiple models
+    await ensureModel('claude-3', 'Claude 3 (Test)', 3.0, 15.0);
+    await ensureModel('gemini-pro', 'Gemini Pro (Test)', 1.0, 5.0);
+  });
+
+  afterAll(async () => {
+    // Clean up shared models and provider
+    await db.llmModel.deleteMany({
+      where: { modelId: { in: ['gpt-4', 'claude-3', 'gemini-pro'] } },
+    });
+    if (sharedProviderId) {
+      await db.llmProvider.deleteMany({
+        where: { id: sharedProviderId },
+      });
+    }
   });
 
   beforeEach(() => {

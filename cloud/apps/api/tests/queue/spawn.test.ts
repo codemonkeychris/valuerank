@@ -10,6 +10,24 @@ import { spawnPython } from '../../src/queue/spawn.js';
 import { writeFileSync, unlinkSync, mkdirSync, existsSync } from 'fs';
 import { join } from 'path';
 import { tmpdir } from 'os';
+import { execSync } from 'child_process';
+
+// Check if Python is available
+function isPythonAvailable(): boolean {
+  try {
+    execSync('python3 --version', { stdio: 'ignore' });
+    return true;
+  } catch {
+    try {
+      execSync('python --version', { stdio: 'ignore' });
+      return true;
+    } catch {
+      return false;
+    }
+  }
+}
+
+const pythonAvailable = isPythonAvailable();
 
 const testDir = join(tmpdir(), 'valuerank-spawn-tests');
 const echoScript = join(testDir, 'echo.py');
@@ -18,7 +36,7 @@ const slowScript = join(testDir, 'slow.py');
 const invalidJsonScript = join(testDir, 'invalid_json.py');
 const stderrScript = join(testDir, 'stderr.py');
 
-describe('spawnPython', () => {
+describe.skipIf(!pythonAvailable)('spawnPython', () => {
   beforeAll(() => {
     // Create test directory
     if (!existsSync(testDir)) {

@@ -904,12 +904,12 @@ describe('GraphQL Definition Query', () => {
     });
 
     it('returns overrides showing which fields are locally set', async () => {
+      // Note: preamble is not exposed in GraphQL overrides (deprecated)
       const query = `
         query GetDefinition($id: ID!) {
           definition(id: $id) {
             id
             overrides {
-              preamble
               template
               dimensions
             }
@@ -925,7 +925,6 @@ describe('GraphQL Definition Query', () => {
 
       expect(response.body.errors).toBeUndefined();
       const overrides = response.body.data.definition.overrides;
-      expect(overrides.preamble).toBe(true); // Overridden locally
       expect(overrides.template).toBe(false); // Inherited
       expect(overrides.dimensions).toBe(false); // Inherited
     });

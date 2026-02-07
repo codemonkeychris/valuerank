@@ -43,15 +43,18 @@ describe('Summarization Parallelism Service', () => {
   });
 
   describe('getDefaultParallelism', () => {
-    it('returns 8 as default', () => {
-      expect(getDefaultParallelism()).toBe(8);
+    it('returns a smart default based on system resources', () => {
+      const defaultValue = getDefaultParallelism();
+      // Smart default should be between 1 and the environment cap (16 for dev/test)
+      expect(defaultValue).toBeGreaterThanOrEqual(1);
+      expect(defaultValue).toBeLessThanOrEqual(16);
     });
   });
 
   describe('getMaxParallelSummarizations', () => {
     it('returns default value when setting does not exist', async () => {
       const value = await getMaxParallelSummarizations();
-      expect(value).toBe(8);
+      expect(value).toBe(getDefaultParallelism());
     });
 
     it('returns stored value when setting exists', async () => {
@@ -78,7 +81,7 @@ describe('Summarization Parallelism Service', () => {
 
       clearSummarizationCache();
       const value = await getMaxParallelSummarizations();
-      expect(value).toBe(8);
+      expect(value).toBe(getDefaultParallelism());
     });
 
     it('returns default for invalid stored value (too high)', async () => {
@@ -91,7 +94,7 @@ describe('Summarization Parallelism Service', () => {
 
       clearSummarizationCache();
       const value = await getMaxParallelSummarizations();
-      expect(value).toBe(8);
+      expect(value).toBe(getDefaultParallelism());
     });
 
     it('returns default for invalid stored value (wrong type)', async () => {
@@ -104,7 +107,7 @@ describe('Summarization Parallelism Service', () => {
 
       clearSummarizationCache();
       const value = await getMaxParallelSummarizations();
-      expect(value).toBe(8);
+      expect(value).toBe(getDefaultParallelism());
     });
 
     it('returns default for malformed setting (no value field)', async () => {
@@ -117,7 +120,7 @@ describe('Summarization Parallelism Service', () => {
 
       clearSummarizationCache();
       const value = await getMaxParallelSummarizations();
-      expect(value).toBe(8);
+      expect(value).toBe(getDefaultParallelism());
     });
 
     it('caches the value for subsequent calls', async () => {

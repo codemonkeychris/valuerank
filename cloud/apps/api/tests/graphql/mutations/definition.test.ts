@@ -352,7 +352,7 @@ describe('GraphQL Definition Mutations', () => {
       const parent = await db.definition.create({
         data: {
           name: 'Parent for Override',
-          content: { schema_version: 1, preamble: 'Original', template: 'Original template' },
+          content: { schema_version: 1, preamble: 'Original', template: 'Original template', dimensions: [] },
         },
       });
       createdDefinitionIds.push(parent.id);
@@ -377,7 +377,7 @@ describe('GraphQL Definition Mutations', () => {
             input: {
               parentId: parent.id,
               name: 'Fork with Override',
-              content: { preamble: 'New preamble' },
+              content: { template: 'New template' },
             },
           },
         })
@@ -388,14 +388,14 @@ describe('GraphQL Definition Mutations', () => {
       const fork = response.body.data.forkDefinition;
       createdDefinitionIds.push(fork.id);
 
-      // Local content only has preamble override (v2 sparse content)
-      expect(fork.content.preamble).toBe('New preamble');
+      // Local content only has template override (v2 sparse content)
+      expect(fork.content.template).toBe('New template');
       expect(fork.content.schema_version).toBe(2); // v2 sparse content
-      expect(fork.content.template).toBeUndefined(); // Not in local content
+      expect(fork.content.dimensions).toBeUndefined(); // Not in local content
 
       // resolvedContent shows local override + inherited values
-      expect(fork.resolvedContent.preamble).toBe('New preamble'); // Local override
-      expect(fork.resolvedContent.template).toBe('Original template'); // Inherited from parent
+      expect(fork.resolvedContent.template).toBe('New template'); // Local override
+      expect(fork.resolvedContent.dimensions).toEqual([]); // Inherited from parent
     });
 
     it('returns error for non-existent parent', async () => {

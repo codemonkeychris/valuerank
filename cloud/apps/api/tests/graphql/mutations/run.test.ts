@@ -4,7 +4,7 @@
  * Tests startRun, pauseRun, resumeRun, cancelRun mutations.
  */
 
-import { describe, it, expect, afterEach, vi } from 'vitest';
+import { describe, it, expect, afterEach, beforeAll, vi } from 'vitest';
 import request from 'supertest';
 import { createServer } from '../../../src/server.js';
 import { db } from '@valuerank/db';
@@ -31,6 +31,38 @@ const app = createServer();
 describe('GraphQL Run Mutations', () => {
   const createdDefinitionIds: string[] = [];
   const createdRunIds: string[] = [];
+  let testProviderId: string;
+
+  // Ensure test models exist before all tests
+  beforeAll(async () => {
+    // Create or find provider
+    let provider = await db.llmProvider.findFirst({ where: { name: 'test-run-mutations' } });
+    if (!provider) {
+      provider = await db.llmProvider.create({
+        data: { name: 'test-run-mutations', displayName: 'Test Run Mutations Provider' },
+      });
+    }
+    testProviderId = provider.id;
+
+    // Helper to ensure model exists
+    async function ensureModel(modelId: string, displayName: string) {
+      const existing = await db.llmModel.findFirst({ where: { modelId } });
+      if (!existing) {
+        await db.llmModel.create({
+          data: {
+            providerId: provider!.id,
+            modelId,
+            displayName,
+            costInputPerMillion: 2.5,
+            costOutputPerMillion: 10.0,
+          },
+        });
+      }
+    }
+
+    await ensureModel('gpt-4', 'GPT-4 (Test)');
+    await ensureModel('claude-3', 'Claude 3 (Test)');
+  });
 
   afterEach(async () => {
     // Clean up runs first

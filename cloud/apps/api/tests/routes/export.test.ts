@@ -121,9 +121,9 @@ describe('CSV Export Endpoint', () => {
     const lines = response.text.split('\n');
     // First line after BOM is header
     const headerLine = lines[0]?.replace('\uFEFF', '');
-    // Headers: Model, Sample Index, Variables (alphabetical), Decision Code, Decision Text, Transcript ID, Target Response
+    // Headers: Model, Batch, Sample Index, Variables (alphabetical), Decision Code, Transcript ID, Target Response
     expect(headerLine).toBe(
-      'AI Model Name,Sample Index,Certainty,Stakes,Decision Code,Decision Text,Transcript ID,Target Response'
+      'AI Model Name,Batch,Sample Index,Certainty,Stakes,Decision Code,Transcript ID,Target Response'
     );
   });
 
@@ -145,11 +145,11 @@ describe('CSV Export Endpoint', () => {
     // Check for decision codes
     expect(dataLines.some((l) => l.includes(',1,'))).toBe(true);
     expect(dataLines.some((l) => l.includes(',2,'))).toBe(true);
-    // Model name should be first column followed by sample index (no scenario column anymore)
-    expect(dataLines.some((l) => l.startsWith('gpt-4o,0,'))).toBe(true);
-    expect(dataLines.some((l) => l.startsWith('claude-3-5-sonnet,0,'))).toBe(true);
-    // Variable values come after model name and sample index: Certainty=2, Stakes=1
-    expect(dataLines.some((l) => l.includes('gpt-4o,0,2,1,'))).toBe(true);
+    // Model name should be first column followed by batch (empty) then sample index
+    expect(dataLines.some((l) => l.startsWith('gpt-4o,,0,'))).toBe(true);
+    expect(dataLines.some((l) => l.startsWith('claude-3-5-sonnet,,0,'))).toBe(true);
+    // Variable values come after model name, batch, and sample index: Certainty=2, Stakes=1
+    expect(dataLines.some((l) => l.includes('gpt-4o,,0,2,1,'))).toBe(true);
   });
 
   it('sets correct Content-Disposition header', async () => {
@@ -217,8 +217,8 @@ describe('CSV Export Endpoint', () => {
     }
   });
 
-  it('handles special characters in decision text', async () => {
-    // Create transcript with special characters in decisionText
+  it('handles special characters in target response', async () => {
+    // Create transcript with special characters in targetResponse
     const scenario = await db.scenario.findFirst({
       where: { definitionId: testDefinitionId },
     });
@@ -229,12 +229,12 @@ describe('CSV Export Endpoint', () => {
         scenarioId: scenario!.id,
         modelId: 'test-model',
         modelVersion: 'version-1',
-        content: { test: 'data' },
+        content: { turns: [{ targetResponse: 'Response with, comma and "quotes"' }] },
         turnCount: 1,
         tokenCount: 10,
         durationMs: 100,
         decisionCode: '3',
-        decisionText: 'Decision with, comma and "quotes"',
+        decisionText: 'Test',
         summarizedAt: new Date(),
       },
     });
@@ -247,7 +247,7 @@ describe('CSV Export Endpoint', () => {
       expect(response.status).toBe(200);
 
       // The special characters should be properly escaped with quotes
-      expect(response.text).toMatch(/"Decision with, comma and ""quotes"""/);
+      expect(response.text).toMatch(/"Response with, comma and ""quotes"""/);
     } finally {
       await db.transcript.delete({ where: { id: specialTranscript.id } });
     }
@@ -296,8 +296,8 @@ describe('CSV Serialization Helper', () => {
     expect(formatted).toContain('gpt-4o');
     // Scores read directly from content.dimensions
     expect(row.variables).toEqual({ Stakes: 1, Certainty: 2 });
-    // Format: Model, SampleIndex, Certainty, Stakes, DecisionCode, DecisionText, TranscriptId, TargetResponse
-    expect(formatted).toContain('gpt-4o,0,2,1,1,AI chose safety,test-id');
+    // Format: Model, Batch, SampleIndex, Certainty, Stakes, DecisionCode, TranscriptId, TargetResponse
+    expect(formatted).toContain('gpt-4o,,0,2,1,1,test-id,I choose option A');
     expect(row.targetResponse).toBe('I choose option A');
   });
 
@@ -371,8 +371,8 @@ describe('CSV Serialization Helper', () => {
 
     const row = transcriptToCSVRow(mockTranscript as Parameters<typeof transcriptToCSVRow>[0]);
 
+    // decisionCode defaults to 'pending' when null (decisionText is not in CSVRow)
     expect(row.decisionCode).toBe('pending');
-    expect(row.decisionText).toBe('Summary not yet generated');
   });
 
   it('generates correct filename', async () => {
@@ -420,9 +420,9 @@ describe('CSV Serialization Helper', () => {
     const formatted = formatCSVRow(row, ['Stakes', 'Certainty']);
 
     // Variable values should be empty when no dimensions
-    // Format: Model,SampleIndex,Stakes,Certainty,DecisionCode,...
-    // With empty Stakes and Certainty, we get: model,0,,,DecisionCode,...
-    expect(formatted).toContain('gpt-4o,0,,');
+    // Format: Model,Batch,SampleIndex,Stakes,Certainty,DecisionCode,TranscriptId,TargetResponse
+    // With empty Batch, Stakes and Certainty, we get: model,,0,,,DecisionCode,...
+    expect(formatted).toContain('gpt-4o,,0,,,1,transcript-id');
     expect(row.variables).toEqual({});
   });
 
@@ -494,7 +494,7 @@ describe('CSV Serialization Helper', () => {
     const formatted = formatCSVRow(row, ['Stakes']);
 
     expect(row.sampleIndex).toBe(3);
-    // Format: Model,SampleIndex,Stakes,DecisionCode,...
-    expect(formatted).toContain('gpt-4o,3,2,1');
+    // Format: Model,Batch,SampleIndex,Stakes,DecisionCode,TranscriptId,TargetResponse
+    expect(formatted).toContain('gpt-4o,,3,2,1,transcript-id,');
   });
 });

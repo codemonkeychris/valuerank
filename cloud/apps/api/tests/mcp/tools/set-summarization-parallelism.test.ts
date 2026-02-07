@@ -57,7 +57,7 @@ describe('set_summarization_parallelism MCP Tool', () => {
 
     it('returns default when setting does not exist', async () => {
       const value = await getMaxParallelSummarizations();
-      expect(value).toBe(8);
+      expect(value).toBe(getDefaultParallelism());
     });
 
     it('updates existing setting', async () => {
@@ -154,8 +154,11 @@ describe('set_summarization_parallelism MCP Tool', () => {
       expect(getSettingKey()).toBe(SETTING_KEY);
     });
 
-    it('getDefaultParallelism returns 8', () => {
-      expect(getDefaultParallelism()).toBe(8);
+    it('getDefaultParallelism returns smart default based on system resources', () => {
+      const defaultValue = getDefaultParallelism();
+      // Smart default should be between 1 and the environment cap (16 for dev/test)
+      expect(defaultValue).toBeGreaterThanOrEqual(1);
+      expect(defaultValue).toBeLessThanOrEqual(16);
     });
   });
 
